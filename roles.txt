@@ -1,0 +1,25 @@
+ROLEPLAY
+Alessandro:
+- Project Manager
+- Helper Function
+- User Login
+
+Burro:
+-Syntax Highlighting
+- Code Parser
+- JS Page
+
+Lino:
+- multiplex programming(socket)
+- Solution Broadcast
+- Express
+- Database
+
+Sara and Alessandra:
+- CSS window
+- JS window
+- Preview window
+- HTML window
+- Diff. checker
+- Dark/Light theme
+- HTML page
