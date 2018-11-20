@@ -5,7 +5,10 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const sassMiddleware = require('node-sass-middleware');
-const adaro = require('adaro');
+const kleiDust = require('klei-dust');
+const mongoose = require('mongoose');
+const passport = require('passport');
+const session = require('express-session');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
@@ -13,8 +16,9 @@ const users = require('./routes/users');
 const app = express();
 
 // view engine setup
-app.engine('dust', adaro.dust());
-app.set('views', path.join(__dirname, 'views'));
+kleiDust.setOptions({ useHelpers: true });
+app.set('views', `${__dirname}/views`);
+app.engine('dust', kleiDust.dust);
 app.set('view engine', 'dust');
 
 // uncomment after placing your favicon in /public
@@ -29,6 +33,9 @@ app.use(sassMiddleware({
     indentedSyntax: true, // true = .sass and false = .scss
     sourceMap: true,
 }));
+
+mongoose.connect('mongodb://localhost/final-project', { useNewUrlParser: true });
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
