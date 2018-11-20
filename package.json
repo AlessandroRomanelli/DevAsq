@@ -11,9 +11,13 @@
         "cookie-parser": "~1.4.3",
         "debug": "~2.6.9",
         "express": "~4.15.5",
+        "express-session": "^1.15.6",
         "install": "^0.12.2",
+        "klei-dust": "^1.0.0",
+        "mongoose": "^5.3.13",
         "morgan": "~1.9.0",
         "node-sass-middleware": "0.9.8",
+        "passport": "^0.4.0",
         "serve-favicon": "~2.4.5"
     },
     "devDependencies": {
