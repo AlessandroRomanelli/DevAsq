@@ -8,9 +8,6 @@ const sassMiddleware = require('node-sass-middleware');
 const adaro = require('adaro');
 const routers = require('./routes/routers');
 
-const index = require('./routes/index/index');
-const users = require('./routes/users');
-
 const app = express();
 
 // view engine setup
@@ -32,8 +29,7 @@ app.use(sassMiddleware({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/users', users);
+app.use('/', routers.root);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -52,7 +48,5 @@ app.use((err, req, res, next) => {
     res.status(err.status || 500);
     res.render('error');
 });
-
-app.use('/', routers.index);
 
 module.exports = app;

@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const dirEntries = fs.readdirSync(__dirname);
 const base = `${__dirname}/`;
-const routers = {};
+let routers = {};
 
 try {
     dirEntries.forEach((dirEntry) => {
