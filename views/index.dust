@@ -19,6 +19,6 @@
 
     </textarea>
 
-    <iframe id="iframe" src="index.html" height="200" width="300"></iframe>
+    <iframe id="iframe" src="index.dust" height="200" width="300"></iframe>
   </body>
 </html>
