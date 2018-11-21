@@ -9,8 +9,6 @@ const kleiDust = require('klei-dust');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
-const GitHubStrategy = require('passport-github2').Strategy;
-const bcrypt = require('bcrypt');
 const config = require('./config');
 
 const index = require('./routes/index');
@@ -48,48 +46,8 @@ mongoose.connect(config.MONGODB_URL + config.MONGODB_DBNAME, { useNewUrlParser: 
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-const { User } = require('./models');
-
-passport.use(new GitHubStrategy({
-    clientID: config.GIT_CLIENT_ID,
-    clientSecret: config.GIT_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3000/users/login/github/callback',
-},
-((accessToken, refreshToken, profile, done) => {
-    const {
-        id, username, profileUrl, emails,
-    } = profile;
-    emails.forEach((email, i) => {
-        emails[i] = email.value;
-    });
-    User.findOne({ githubID: id }).then((user) => {
-        if (user === null) {
-            const password = Math.random().toString().slice(2);
-            bcrypt.hash(password, config.SALT_ROUNDS).then(hash => User.create({
-                githubID: id,
-                githubUrl: profileUrl,
-                emails,
-                username,
-                password: hash,
-            })).then((created) => {
-                console.log('Created a new user');
-                console.log(created);
-                done(null, created);
-            });
-        } else {
-            done(null, user);
-        }
-    }).catch(err => done(err, null));
-})));
-
-passport.serializeUser((user, done) => {
-    done(null, user);
-});
-
-passport.deserializeUser((obj, done) => {
-    done(null, obj);
-});
+// Setting up passport
+require('./passport');
 
 app.use(passport.initialize());
 app.use(passport.session());
