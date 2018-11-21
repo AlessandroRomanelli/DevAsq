@@ -9,6 +9,8 @@ const kleiDust = require('klei-dust');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
+const config = require('./config');
+
 const index = require('./routes/index');
 const preview = require('./routes/preview');
 
@@ -33,9 +35,22 @@ app.use(sassMiddleware({
     sourceMap: true,
 }));
 
-mongoose.connect('mongodb://localhost/final-project', { useNewUrlParser: true });
+app.use(session({
+    secret: 'dreamteam',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+}));
+
+mongoose.connect(config.MONGODB_URL + config.MONGODB_DBNAME, { useNewUrlParser: true });
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Setting up passport
+require('./passport');
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', index);
 app.use('/preview', preview);
