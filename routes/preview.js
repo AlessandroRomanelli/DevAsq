@@ -12,7 +12,17 @@ router.get('/', (req, res, next) => {
             console.log(err);
         } else {
             console.log(preview);
-            res.render('preview', preview[0]);
+            const html = `
+            <html>
+                <head> <style> ${preview[0].css} </style> </head>
+                <body>
+                    ${preview[0].html}
+                    <script> ${preview[0].js} </script>
+                </body>
+            </html>
+            `
+            res.send(html);
+            // res.render('preview', preview[0]);
         }
     });
 });
