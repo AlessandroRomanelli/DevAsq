@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>{title}</title>
-    <link rel='stylesheet' href='../public/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
     <h1>{title}</h1>
@@ -20,7 +20,7 @@
     </textarea>
 
     <iframe id="iframe" src="preview.html" height="200" width="300"></iframe>
-    <script src="scripts/fetch.js" charset="utf-8"></script>
-    <script src="scripts/main.js" charset="utf-8"></script>
+    <script src="/scripts/fetch.js" charset="utf-8"></script>
+    <script src="/scripts/main.js" charset="utf-8"></script>
   </body>
 </html>
