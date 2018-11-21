@@ -8,8 +8,12 @@ router.get('/', (req, res, next) => {
     res.send('respond with a resource');
 });
 
-router.post('/login', (req, res) => {
-    res.redirect('back');
+router.get('/login', (req, res) => {
+    res.send('Should login here');
+});
+
+router.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), (req, res) => {
+    res.redirect('/');
 });
 
 router.get('/login/github', passport.authenticate('github', { scope: ['user:email'] }));
