@@ -12,8 +12,17 @@ router.get('/login', (req, res) => {
     res.send('Should login here');
 });
 
+router.get('/signup', (req, res) => {
+    res.send('Should signup here');
+});
+
 router.post('/login', passport.authenticate('local', { failureRedirect: '/login' }), (req, res) => {
     res.redirect('/');
+});
+
+router.post('/signup', (req, res) => {
+    console.log(req.body);
+    res.redirect('/users/login');
 });
 
 router.get('/login/github', passport.authenticate('github', { scope: ['user:email'] }));
