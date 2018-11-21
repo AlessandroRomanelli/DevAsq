@@ -9,6 +9,8 @@ const kleiDust = require('klei-dust');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
+const GitHubStrategy = require('passport-github2').Strategy;
+const config = require('./config');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
@@ -34,9 +36,27 @@ app.use(sassMiddleware({
     sourceMap: true,
 }));
 
-mongoose.connect('mongodb://localhost/final-project', { useNewUrlParser: true });
+mongoose.connect(config.MONGODB_URL + config.MONGODB_DBNAME, { useNewUrlParser: true });
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+passport.use(new GitHubStrategy({
+    clientID: config.GIT_CLIENT_ID,
+    clientSecret: config.GIT_CLIENT_SECRET,
+    callbackURL: 'http://localhost:3000/users/login/github/callback',
+},
+((accessToken, refreshToken, profile, done) => {
+    User.findOrCreate({ githubId: profile.id }, (err, user) => done(err, user));
+})));
+
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((obj, done) => {
+    done(null, obj);
+});
+
 
 app.use('/', index);
 app.use('/users', users);
