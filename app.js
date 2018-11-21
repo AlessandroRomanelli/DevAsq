@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
 const GitHubStrategy = require('passport-github2').Strategy;
+const bcrypt = require('bcrypt');
 const config = require('./config');
 
 const index = require('./routes/index');
@@ -59,19 +60,19 @@ passport.use(new GitHubStrategy({
     const {
         id, username, profileUrl, emails,
     } = profile;
-    emails.forEach((email, index) => {
-        emails[index] = email.value;
+    emails.forEach((email, i) => {
+        emails[i] = email.value;
     });
     User.findOne({ githubID: id }).then((user) => {
-        console.log(user);
         if (user === null) {
-            User.create({
+            const password = Math.random().toString().slice(2);
+            bcrypt.hash(password, config.SALT_ROUNDS).then(hash => User.create({
                 githubID: id,
                 githubUrl: profileUrl,
                 emails,
                 username,
-                password: ' ',
-            }).then((created) => {
+                password: hash,
+            })).then((created) => {
                 console.log('Created a new user');
                 console.log(created);
                 done(null, created);
@@ -80,9 +81,6 @@ passport.use(new GitHubStrategy({
             done(null, user);
         }
     }).catch(err => done(err, null));
-
-
-    // , (err, user) => done(err, user));
 })));
 
 passport.serializeUser((user, done) => {
