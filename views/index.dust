@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>{title}</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='../public/stylesheets/style.sass' />
   </head>
   <body>
     <h1>{title}</h1>
@@ -19,6 +19,6 @@
 
     </textarea>
 
-    <iframe id="iframe" src="index.dust" height="200" width="300"></iframe>
+    <iframe id="iframe" src="preview.html" height="200" width="300"></iframe>
   </body>
 </html>
