@@ -20,5 +20,7 @@
     </textarea>
 
     <iframe id="iframe" src="preview.html" height="200" width="300"></iframe>
+    <script src="scripts/fetch.js" charset="utf-8"></script>
+    <script src="scripts/main.js" charset="utf-8"></script>
   </body>
 </html>
