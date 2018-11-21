@@ -9,7 +9,8 @@ const kleiDust = require('klei-dust');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
-const routers = require('./routes/routers');
+const index = require('./routes/index');
+const preview = require('./routes/preview');
 
 const app = express();
 
@@ -36,7 +37,8 @@ mongoose.connect('mongodb://localhost/final-project', { useNewUrlParser: true })
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routers.root);
+app.use('/', index);
+app.use('/preview', preview);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
