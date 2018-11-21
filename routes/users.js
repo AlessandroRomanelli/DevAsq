@@ -12,7 +12,7 @@ router.post('/login', (req, res) => {
     res.redirect('back');
 });
 
-router.get('/login/github', passport.authenticate('github2', { scope: ['user:email'] }));
+router.get('/login/github', passport.authenticate('github', { scope: ['user:email'] }));
 
 router.get('/login/github/callback',
     passport.authenticate('github', { failureRedirect: '/login' }),

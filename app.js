@@ -36,9 +36,19 @@ app.use(sassMiddleware({
     sourceMap: true,
 }));
 
+app.use(session({
+    secret: 'dreamteam',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+}));
+
 mongoose.connect(config.MONGODB_URL + config.MONGODB_DBNAME, { useNewUrlParser: true });
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+const { User } = require('./models');
 
 passport.use(new GitHubStrategy({
     clientID: config.GIT_CLIENT_ID,
@@ -46,7 +56,7 @@ passport.use(new GitHubStrategy({
     callbackURL: 'http://localhost:3000/users/login/github/callback',
 },
 ((accessToken, refreshToken, profile, done) => {
-    User.findOrCreate({ githubId: profile.id }, (err, user) => done(err, user));
+    User.findOrCreate({ githubID: profile.id }, (err, user) => done(err, user));
 })));
 
 passport.serializeUser((user, done) => {
@@ -57,6 +67,8 @@ passport.deserializeUser((obj, done) => {
     done(null, obj);
 });
 
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', index);
 app.use('/users', users);
