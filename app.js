@@ -56,7 +56,33 @@ passport.use(new GitHubStrategy({
     callbackURL: 'http://localhost:3000/users/login/github/callback',
 },
 ((accessToken, refreshToken, profile, done) => {
-    User.findOrCreate({ githubID: profile.id }, (err, user) => done(err, user));
+    const {
+        id, username, profileUrl, emails,
+    } = profile;
+    emails.forEach((email, index) => {
+        emails[index] = email.value;
+    });
+    User.findOne({ githubID: id }).then((user) => {
+        console.log(user);
+        if (user === null) {
+            User.create({
+                githubID: id,
+                githubUrl: profileUrl,
+                emails,
+                username,
+                password: ' ',
+            }).then((created) => {
+                console.log('Created a new user');
+                console.log(created);
+                done(null, created);
+            });
+        } else {
+            done(null, user);
+        }
+    }).catch(err => done(err, null));
+
+
+    // , (err, user) => done(err, user));
 })));
 
 passport.serializeUser((user, done) => {

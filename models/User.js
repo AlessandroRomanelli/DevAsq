@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    githubID: { type: String, required: false },
+    githubID: { type: String },
+    emails: [{ type: String }],
+    githubUrl: { type: String },
     username: { type: String, required: true },
     password: { type: String, required: true },
     registratedAt: { type: Date, default: new Date() },
