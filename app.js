@@ -17,6 +17,8 @@ const preview = require('./routes/preview');
 
 const app = express();
 
+require('./models');
+
 // view engine setup
 kleiDust.setOptions({ useHelpers: true });
 app.set('views', `${__dirname}/views`);
