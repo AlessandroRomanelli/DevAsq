@@ -2,10 +2,8 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const UserSchema = require('./User').schema;
-
 const PenSchema = new Schema({
-    user: { type: UserSchema, required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     html: { type: String, default: '', required: true },
     css: { type: String, default: '', required: true },
     js: { type: String, default: '', required: true },
@@ -13,6 +11,6 @@ const PenSchema = new Schema({
     dateCreated: { type: Date, default: new Date() },
 });
 
-mongoose.model('Pens', PenSchema);
+mongoose.model('Pen', PenSchema);
 
 module.exports = PenSchema;

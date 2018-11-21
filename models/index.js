@@ -3,6 +3,6 @@ require('./Pen');
 require('./User');
 
 module.exports = {
-    Pens: mongoose.model('Pens'),
-    Users: mongoose.model('Users'),
+    Pen: mongoose.model('Pen'),
+    User: mongoose.model('User'),
 };
