@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{title}</title>
+    <link rel='stylesheet' href='../public/stylesheets/style.sass' />
+  </head>
+  <body>
+    <h1>{title}</h1>
+    <p>Sign up to {title}</p>
+    <form>
+        <input type="text" name="username" value="username">
+        <input type="password" name="password" value="password">
+        <input type="submit" name="signup">
+    </form>
+  </body>
+</html>
