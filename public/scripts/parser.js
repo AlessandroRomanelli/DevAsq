@@ -1,7 +1,7 @@
 function startParsing() {
     const htmlPen = document.getElementById("htmlPen");
     const cssPen = document.getElementById("cssPen");
-    const javascriptPen = document.getElementById("javascriptPen");
+    const jsPen = document.getElementById("jsPen");
     const iframe = document.getElementById("iframe");
 
     let indentations = {htmlPen: 0, cssPen: 0, javascriptPen: 0};
@@ -10,23 +10,21 @@ function startParsing() {
         doJSONRequest("PUT", "/preview", {}, {
             html: htmlPen.value,
             css: cssPen.value,
-            javascript: javascriptPen.value
-        }).then((response) => {
-            if (response.status === 202) {
-                iframe.src = "/preview";
-            }
+            js: jsPen.value
+        }).then(() => {
+            iframe.src = "/preview";
         })
     }
 
-    const timerListener = createTimer(renderIframe, 1000, indentations);
+    const timerListener = createTimer(renderIframe, 2500, indentations);
 
     htmlPen.addEventListener("keydown", timerListener);
     cssPen.addEventListener("keydown", timerListener);
-    javascriptPen.addEventListener("keydown", timerListener);
+    jsPen.addEventListener("keydown", timerListener);
 
     htmlPen.addEventListener("blur", renderIframe);
     cssPen.addEventListener("blur", renderIframe);
-    javascriptPen.addEventListener("blur", renderIframe);
+    jsPen.addEventListener("blur", renderIframe);
 }
 
 function createTimer(callback, delay, indentations) {
