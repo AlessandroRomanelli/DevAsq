@@ -10,6 +10,8 @@ function startParsing() {
     cssAce.session.setMode("ace/mode/css");
     jsAce.session.setMode("ace/mode/javascript");
 
+    setAceOptions([htmlAce, cssAce, jsAce]);
+
     htmlPen.onblur = renderIFrame;
     cssPen.onblur = renderIFrame;
     jsPen.onblur = renderIFrame;
@@ -20,6 +22,16 @@ function startParsing() {
     cssPen.onkeypress = timer;
     jsPen.onkeypress = timer;
 
+}
+
+function setAceOptions(aces) {
+    aces.forEach((ace) => {
+        ace.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: true
+        });
+    })
 }
 
 function createTimer(delay) {
