@@ -8,12 +8,13 @@
         <h1>{title}</h1>
         <p>Welcome to {title}</p>
 
-        <textarea id="htmlPen" rows = "10" cols = "50"></textarea>
-        <textarea id="cssPen" rows = "10" cols = "50"></textarea>
-        <textarea id="jsPen" rows = "10" cols = "50"></textarea>
+        <div id="htmlPen" contenteditable="true" style="display: inline-block; width: 33%; height: 300px; border: 1px solid black"></div>
+        <div id="cssPen" contenteditable="true" style="display: inline-block; width: 33%; height: 300px; border: 1px solid black"></div>
+        <div id="jsPen" contenteditable="true" style="display: inline-block; width: 33%; height: 300px; border: 1px solid black"></div>
 
-        <iframe id="iframe" src="preview.html" height="200" width="300"></iframe>
+        <iframe id="iFrame" src="preview.html" height="200" width="300"></iframe>
 
+        <script src="/scripts/ace/ace.js" charset="utf-8"></script>
         <script src="/scripts/fetch.js" charset="utf-8"></script>
         <script src="/scripts/main.js" charset="utf-8"></script>
         <script src="/scripts/parser.js" charset="utf-8"></script>
