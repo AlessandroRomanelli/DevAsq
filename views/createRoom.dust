@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{title}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body onload='init()'>
+    <h1>{title}</h1>
+    <p>Create a room</p>
+    <form id='createRoom' method="POST">
+        <input type="text" name="roomId" placeholder="Room ID">
+        <input type="submit" value="Create">
+    </form>
+    <script src="/scripts/fetch.js" charset="utf-8"></script>
+    <script>
+    function init() {
+        const form = document.getElementById('createRoom');
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const roomId = event.target[0].value;
+            doFetchRequest('POST', '/room/create', {
+                'Content-Type': 'application/json',
+            }, JSON.stringify({
+                roomId,
+            })).then((res) => {
+                if (res.status === 403) {
+                    alert('Not logged in');
+                } else {
+                    alert('Room created');
+                }
+            });
+        });
+    }
+    </script>
+  </body>
+</html>
