@@ -34,9 +34,11 @@ passport.use(new GitHubStrategy({
         id, username, profileUrl, emails,
     } = profile;
     // Transform emails into array of strings
-    emails.forEach((email, i) => {
-        emails[i] = email.value;
-    });
+    if (emails) {
+        emails.forEach((email, i) => {
+            emails[i] = email.value;
+        });
+    }
     // Look for a user in the database with the provided GitHubID
     User.findOne({ githubID: id }).then((user) => {
         // If it doesn't exist an entry
