@@ -10,6 +10,10 @@ function startParsing() {
     cssAce.session.setMode("ace/mode/css");
     jsAce.session.setMode("ace/mode/javascript");
 
+    htmlAce.setTheme("ace/theme/monokai");
+    cssAce.setTheme("ace/theme/monokai");
+    jsAce.setTheme("ace/theme/monokai");
+
     setAceOptions([htmlAce, cssAce, jsAce]);
 
     htmlPen.onblur = renderIFrame;
