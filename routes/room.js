@@ -32,13 +32,16 @@ router.post('/create', (req, res) => {
 
 router.get('/join/:roomid', (req, res) => {
     const roomId = req.params.roomid;
-    if (req.params.roomid in rooms) {
-        res.status(400).end();
+    if (!req.user) return res.status(403).end();
+    if (!(req.params.roomid in rooms)) {
+        return res.status(400).end();
     }
+    const room = rooms[roomId];
+    if (room.users.indexOf(req.user._id) !== -1) room.users.push(req.user._id);
     if (req.accepts('application/json')) {
-        res.json(rooms[roomId]);
+        return res.json(room);
     }
-    res.end();
+    return res.end();
 });
 
 module.exports = router;
