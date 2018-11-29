@@ -32,4 +32,6 @@ npm-debug.log
 package-lock.json
 yarn.lock
 
+.idea
+
 public/stylesheets/style.css*
