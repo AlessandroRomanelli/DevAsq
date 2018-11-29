@@ -1,12 +1,28 @@
-$font-stack:    Inconsolata, monospace
+@import url('https://fonts.googleapis.com/css?family=Inconsolata|Montserrat')
+
+
+
+
+
+$font-stack-editor:    Inconsolata, monospace
+$font-stack: Montserrat, sans-serif
 $primary-color: #333333
 $color-background: #333333
 
 
 body
+  color: white
   padding: 50px
   font: 100% $font-stack
+  background-color: $color-background
+
+iframe
+  height: 100%
+  width: 99%
 
 
-a
-    color: #00B7FF
+.codePane
+  display: inline-block
+  width: 33%
+  height: 300px
+  border: 1px solid black
