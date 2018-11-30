@@ -38,10 +38,10 @@ router.get('/join/:roomid', (req, res) => {
     }
     const room = rooms[roomId];
     if (room.users.indexOf(req.user._id) !== -1) room.users.push(req.user._id);
-    if (req.accepts('application/json')) {
-        return res.json(room);
+    if (req.accepts('text/html')) {
+        return res.render('pen', { user: null });
     }
-    return res.render('pen', { user: null });
+    return res.json(room);
 });
 
 module.exports = router;
