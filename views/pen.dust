@@ -5,9 +5,20 @@
         <link rel='stylesheet' href='/stylesheets/style.css' />
     </head>
     <body onload="init()">
-        <div id="htmlPen" class="codePane" contenteditable="true"></div>
-        <div id="cssPen" class="codePane" contenteditable="true"></div>
-        <div id="jsPen" class="codePane" contenteditable="true"></div>
+      <div class="container">
+        <div class="codePane">
+          <h1> HTML Pen </h1>
+          <div id="htmlPen" contenteditable="true"></div>
+        </div>
+        <div class="codePane">
+          <h1> CSS Pen </h1>
+          <div id="cssPen" contenteditable="true"></div>
+        </div>
+        <div class="codePane">
+          <h1> JS Pen </h1>
+          <div id="jsPen" contenteditable="true"></div>
+        </div>
+      <div>
 
         <iframe id="iFrame" src="preview.html"></iframe>
 
