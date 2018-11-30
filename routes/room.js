@@ -41,7 +41,7 @@ router.get('/join/:roomid', (req, res) => {
     if (req.accepts('application/json')) {
         return res.json(room);
     }
-    return res.end();
+    return res.render('pen', { user: null });
 });
 
 module.exports = router;
