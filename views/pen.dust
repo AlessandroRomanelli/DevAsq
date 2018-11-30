@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{title}</title>
+        <link rel='stylesheet' href='/stylesheets/style.css' />
+    </head>
+    <body onload="init()">
+        <div id="htmlPen" class="codePane" contenteditable="true"></div>
+        <div id="cssPen" class="codePane" contenteditable="true"></div>
+        <div id="jsPen" class="codePane" contenteditable="true"></div>
+
+        <iframe id="iFrame" src="preview.html"></iframe>
+
+        <div id="menu">
+          <!-- content of the menu (like "raise your hand button" and login) -->
+          <div id="loggedUser">
+            {> "partials/loggedUser" /}
+          </div>
+        </div>
+
+        <!-- tabs go here programmatically -->
+
+        <script src="/scripts/ace/ace.js" charset="utf-8"></script>
+        <script src="/scripts/ace/ext-language_tools.js" charset="utf-8"></script>
+        <script src="/scripts/fetch.js" charset="utf-8"></script>
+        <script src="/scripts/main.js" charset="utf-8"></script>
+        <script src="/scripts/parser.js" charset="utf-8"></script>
+    </body>
+</html>
