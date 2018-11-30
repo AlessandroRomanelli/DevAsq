@@ -30,18 +30,9 @@ router.post('/create', (req, res) => {
     return res.status(201).end();
 });
 
-router.get('/join/:roomid', (req, res) => {
-    const roomId = req.params.roomid;
-    if (!req.user) return res.status(403).end();
-    if (!(req.params.roomid in rooms)) {
-        return res.status(400).end();
-    }
-    const room = rooms[roomId];
-    if (room.users.indexOf(req.user._id) !== -1) room.users.push(req.user._id);
-    if (req.accepts('text/html')) {
-        return res.render('pen', { user: null });
-    }
-    return res.json(room);
-});
+router.get('/join/:roomid', (req, res) => res.render('pen', { user: null }),
+    // }
+    // return res.json(room);
+);
 
 module.exports = router;
