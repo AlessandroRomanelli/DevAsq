@@ -5,22 +5,26 @@
         <link rel='stylesheet' href='/stylesheets/style.css' />
     </head>
     <body onload="init()">
-      <div class="container">
-        <div class="codePane">
-          <h1> HTML Pen </h1>
-          <div id="htmlPen" contenteditable="true"></div>
+      <div id="pens" class="container">
+        <div class="controls">
+          <div class="tab">
+            <h1>HTML</h1>
+            <div id="htmlPen" class="pen codePane" contenteditable="true"></div>
+          </div>
+          <div class="tab">
+            <h1>CSS</h1>
+            <div id="cssPen" class="pen codePane" contenteditable="true"></div>
+          </div>
+          <div class="tab">
+            <h1>JS</h1>
+            <div id="jsPen" class="pen codePane" contenteditable="true"></div>
+          </div>
         </div>
-        <div class="codePane">
-          <h1> CSS Pen </h1>
-          <div id="cssPen" contenteditable="true"></div>
+        <div class="preview">
+          <iframe id="iFrame" src="preview.html"></iframe>
         </div>
-        <div class="codePane">
-          <h1> JS Pen </h1>
-          <div id="jsPen" contenteditable="true"></div>
-        </div>
-      <div>
+      </div>
 
-        <iframe id="iFrame" src="preview.html"></iframe>
 
         <div id="menu">
           <!-- content of the menu (like "raise your hand button" and login) -->
