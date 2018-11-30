@@ -9,20 +9,62 @@ $font-stack: Montserrat, sans-serif
 $primary-color: #333333
 $color-background: #333333
 
+*
+  box-sizing: border-box
 
 body
+  margin: 0
+  padding: 0
   color: white
-  padding: 50px
   font: 100% $font-stack
   background-color: $color-background
 
-iframe
-  height: 100%
-  width: 99%
+// PEN STYLE
 
+#pens.container
+  position: relative
+  width: 100%
+  display: grid
+  grid-template-areas: "controls" "preview"
+  grid-template-columns: 1fr
+  color: inherit
 
-.codePane
-  display: inline-block
-  width: 33%
+.controls
+  padding: 1em
+  grid-area: controls
+  width: 100%
+  display: grid
+  background: darken($color-background, 5%)
+  grid-template-areas: "html css js"
+  grid-template-columns: 1fr 1fr 1fr
+
+.tab
   height: 300px
+  overflow: hidden
+
+.tab h1
+  margin: 0
+
+#htmlPen
+  grid-area: html
+
+#cssPen
+  grid-area: css
+
+#jsPen
+  grid-area: js
+
+.preview
+  grid-area: preview
+  height: calc(100vh - 300px)
+
+#iFrame
+  width: 100%
+  height: 100%
+  grid-area: pre
+  border: none
+  overflow: hidden
+
+.pen
+  height: 100%
   border: 1px solid black
