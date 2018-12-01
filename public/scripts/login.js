@@ -13,7 +13,7 @@ function init() {
             if (res.status === 401) {
                 alert('Invalid Login');
             } else if (res.status === 200) {
-                alert('Authorised');
+                window.location.pathname = '/';
             }
         });
     });

@@ -1,8 +1,82 @@
-body {
-  padding: 50px;
-  font: 100% Inconsolata, monospace; }
+@import url("https://fonts.googleapis.com/css?family=Inconsolata|Montserrat");
+* {
+  box-sizing: border-box; }
 
-a {
-  color: #00B7FF; }
+body {
+  margin: 0;
+  padding: 10px;
+  color: white;
+  font: 100% Montserrat, sans-serif;
+  background-color: #333333; }
+
+.menu {
+  background-color: #2d2d2d;
+  overflow: hidden; }
+
+.menu a {
+  float: right;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 18px; }
+
+.menu a:hover {
+  background-color: #ddd;
+  color: black; }
+
+.menu a:active {
+  background-color: #ffffff;
+  color: black; }
+
+#home.container {
+  text-align: center; }
+
+#pens.container {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-areas: "controls" "preview";
+  grid-template-columns: 1fr;
+  color: inherit; }
+
+.controls {
+  padding: 1em;
+  grid-area: controls;
+  width: 100%;
+  display: grid;
+  background: #262626;
+  grid-template-areas: "html css js";
+  grid-template-columns: 1fr 1fr 1fr; }
+
+.tab {
+  height: 300px;
+  overflow: hidden; }
+  .tab h1 {
+    margin: 0; }
+
+#htmlPen {
+  grid-area: html; }
+
+#cssPen {
+  grid-area: css; }
+
+#jsPen {
+  grid-area: js; }
+
+.preview {
+  grid-area: preview;
+  height: calc(100vh - 300px); }
+
+#iFrame {
+  width: 100%;
+  height: 100%;
+  grid-area: pre;
+  border: none;
+  overflow: hidden; }
+
+.pen {
+  height: 100%;
+  border: 1px solid black; }
 
 /*# sourceMappingURL=style.css.map */
