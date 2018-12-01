@@ -10,7 +10,7 @@ function init() {
             alert('Password not strong enough');
             throw new Error('Password not strong enough');
         }
-        doFetchRequest('POST', '/users/signup', {
+        doFetchRequest('POST', '/signup', {
             'Content-Type': 'application/json',
         }, JSON.stringify({
             username,

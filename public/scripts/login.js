@@ -4,7 +4,7 @@ function init() {
         event.preventDefault();
         const username = event.target[0].value;
         const password = event.target[1].value;
-        doFetchRequest('POST', '/users/login', {
+        doFetchRequest('POST', '/login', {
             'Content-Type': 'application/json',
         }, JSON.stringify({
             username,

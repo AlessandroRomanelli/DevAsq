@@ -11,11 +11,6 @@ require('../models');
 
 const User = mongoose.model('User');
 
-/* GET users listing. */
-router.get('/', (req, res, next) => {
-    res.send('respond with a resource');
-});
-
 router.get('/login', (req, res) => {
     res.render('login');
 });
