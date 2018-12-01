@@ -28,8 +28,11 @@
                 } else if (res.status === 400) {
                     alert('Room already exists')
                 } else {
-                    alert('Room created');
+                    return res.json()
                 }
+            }).then(data => {
+              console.log(data);
+              if (data.roomId) window.location.pathname = `/room/join/${data.roomId}`
             });
         });
     }

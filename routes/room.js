@@ -27,7 +27,11 @@ router.post('/create', (req, res) => {
     const room = new Room(roomId, _id, roomName);
     rooms[roomId] = room;
     console.log(rooms);
-    return res.status(201).end();
+    return res.status(201).send(JSON.stringify({
+        statusCode: res.statusCode,
+        roomId,
+        roomName,
+    }));
 });
 
 router.get('/join/:roomid', (req, res) => res.render('pen', { title: 'DevAsq++', loggedUser: req.user }));
