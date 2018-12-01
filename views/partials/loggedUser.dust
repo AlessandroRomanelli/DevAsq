@@ -1,0 +1,5 @@
+{#loggedUser}
+<p> Hello, {username}!</p>
+{:else}
+<p> You're not logged in </p>
+{/loggedUser}

@@ -26,7 +26,7 @@ passport.use(new LocalStrategy(
 passport.use(new GitHubStrategy({
     clientID: config.GIT_CLIENT_ID,
     clientSecret: config.GIT_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3000/users/login/github/callback',
+    callbackURL: 'http://localhost:3000/login/github/callback',
 },
 ((accessToken, refreshToken, profile, done) => {
     // Get the information out of profile object

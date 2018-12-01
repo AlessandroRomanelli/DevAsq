@@ -17,7 +17,7 @@ function init() {
             password,
         })).then((res) => {
             if (res.status === 201) {
-                alert('New user created');
+                window.location.pathname = '/login';
             } else {
                 alert('There was an issue with the creation of a new user');
             }
