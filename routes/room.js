@@ -30,9 +30,6 @@ router.post('/create', (req, res) => {
     return res.status(201).end();
 });
 
-router.get('/join/:roomid', (req, res) => res.render('pen', { user: null }),
-    // }
-    // return res.json(room);
-);
+router.get('/join/:roomid', (req, res) => res.render('pen', { title: 'DevAsq++', loggedUser: req.user }));
 
 module.exports = router;
