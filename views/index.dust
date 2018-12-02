@@ -5,27 +5,35 @@
         <link rel='stylesheet' href='/stylesheets/style.css' />
     </head>
     <body onload="init()">
-        <div id="htmlPen"></div>
-        <div id="cssPen"></div>
-        <div id="jsPen"></div>
-
-        <div class="menu">
+        <nav class="menu">
           <!-- content of the menu (like "raise your hand button" and login) -->
-            <a href="/login">Login</a>
-            <a href="/signup">Sign up</a>
-          <div id="loggedUser">
-            {> "partials/loggedUser" /}
+          <a class="logo" href="/">
+            <img src="/images/logo.png" alt="DevAsq++ Logo">
+          </a>
+          <div class="profile">
+            {?loggedUser}
+              <div id="loggedUser">
+                {> "partials/loggedUser" /}
+              </div>
+            {:else}
+              <a href="/login">Login</a>
+              <a href="/signup">Sign up</a>
+            {/loggedUser}
           </div>
-        </div>
+        </nav>
 
         <div id="home" class="container">
-          <h1 id="title"> Welcome to DevAsq++ !</h1>
-          <p id="description"> Description </p>
+          <div class="header">
+            <div class="title">
+              <img src="/images/logo.png" alt="DevAsq++ Logo">
+              <p class="subtitle"> Do together. Learn Together. </p>
+            </div>
+          </div>
+          <script src="/scripts/fetch.js" charset="utf-8"></script>
+          <div class="manage-rooms">
+            {> "partials/rooms" /}
+          </div>
         </div>
-
-        <script src="/scripts/fetch.js" charset="utf-8"></script>
-        {> "partials/rooms" /}
-
 
 
         <script src="/scripts/ace/ace.js" charset="utf-8"></script>
