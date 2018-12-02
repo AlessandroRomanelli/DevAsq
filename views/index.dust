@@ -12,9 +12,7 @@
           </a>
           <div class="profile">
             {?loggedUser}
-              <div id="loggedUser">
-                {> "partials/loggedUser" /}
-              </div>
+              {> "partials/loggedUser" /}
             {:else}
               <a href="/login">Login</a>
             {/loggedUser}
@@ -25,7 +23,7 @@
           <div class="header">
             <div class="title">
               <img src="/images/logo.png" alt="DevAsq++ Logo">
-              <p class="subtitle"> Do together. Learn Together. </p>
+              <p class="subtitle"> Do together. Learn together. </p>
             </div>
           </div>
           <script src="/scripts/fetch.js" charset="utf-8"></script>
