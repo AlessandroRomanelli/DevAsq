@@ -8,16 +8,16 @@
     <h1>{title}</h1>
     <div class="login">
       <p>Login</p>
-      <form id='login' method="POST">
+      <form id="login" method="POST">
           <input type="text" name="username" value="username">
           <input type="password" name="password" value="password">
           <input type="submit" value="Login">
       </form>
+      <p> <a href="/login/github"> Login with GitHub </a> </p>
       <p> You don't have an account yet? <a id="signup" href="/signup">Sign up</a> now!</p>
-      <!-- <a id="signup"href="/signup">Sign up</a> -->
-      <script src="/scripts/fetch.js" charset="utf-8"></script>
-      {! <script src="scripts/main.js" charset="utf-8"></script> !}
-      <script src="/scripts/login.js" charset="utf-8"></script>
     </div>
+    <script src="/scripts/fetch.js" charset="utf-8"></script>
+    {! <script src="scripts/main.js" charset="utf-8"></script> !}
+    <script src="/scripts/login.js" charset="utf-8"></script>
   </body>
 </html>
