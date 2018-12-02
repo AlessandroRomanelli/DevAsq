@@ -1,18 +1,30 @@
 <div class="form-container">
   <h1>New Room</h1>
   <form id='createRoom' method="POST">
+    <fieldset>
       <input type="text" name="roomName" placeholder="Room Name">
-      <input type="password" name="password" placeholder="Optional">
+    </fieldset>
+    <fieldset>
+      <input type="password" name="password" placeholder="Password">
+    </fieldset>
+    <fieldset class="submit">
       <input type="submit" value="Create">
+    </fieldset>
   </form>
 </div>
 <div class="separator"></div>
 <div class="form-container">
   <h1>Join Room</h1>
   <form id='joinRoom' method="POST">
+    <fieldset>
       <input type="text" name="roomName" placeholder="Room ID">
-      <input type="password" name="password" placeholder="Optional">
+    </fieldset>
+    <fieldset>
+      <input type="password" name="password" placeholder="Password">
+    </fieldset>
+    <fieldset class="submit">
       <input type="submit" value="Join">
+    </fieldset>
   </form>
 </div>
 <script>
