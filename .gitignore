@@ -34,4 +34,6 @@ yarn.lock
 
 .idea
 
+**/.DS_Store
+
 public/stylesheets/style.css*
