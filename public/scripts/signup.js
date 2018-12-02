@@ -4,7 +4,7 @@ function init() {
         event.preventDefault();
         const username = event.target[0].value;
         const password = event.target[1].value;
-        const strongPassword = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})');
+        const strongPassword = new RegExp('^(?=.*[A-z])(?=.*[0-9])(?=.{8,})');
         const validPassword = strongPassword.test(password);
         if (!validPassword) {
             alert('Password not strong enough');
