@@ -11,7 +11,7 @@ router.get('/', (req, res, next) => {
             console.log('Error reading from the database');
             console.log(err);
         } else {
-            console.log(preview);
+            // console.log(preview);
             const element = preview[preview.length-1];
             const html = `
             <html>
