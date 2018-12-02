@@ -6,7 +6,7 @@
 
 $font-stack-editor:    Inconsolata, monospace
 $font-stack: Montserrat, sans-serif
-$primary-color: #333333
+$primary-color: #DE6C2F
 $color-background: #333333
 $dark: #2d2d2d
 
@@ -39,14 +39,13 @@ nav.menu
     padding: 0.5em 1em
     text-decoration: none
     font-size: 18px
-
-  a:not(.logo):hover
-    background-color: #ddd
-    color: black
-
-  a:active
-    background-color: #ffffff
-    color: black
+    &:not(.logo)
+      &:hover
+        background-color: #ddd
+        color: black
+      &:active
+        background-color: #ffffff
+        color: black
 
 #home.container
     display: grid
@@ -82,8 +81,28 @@ nav.menu
             margin-top: 0
 
     .manage-rooms
+      margin-top: 2em
+      display: flex
+      justify-content: space-around
       grid-area: content
       position: relative
+      & > div:not(.separator)
+        min-width: 300px
+      & > .separator
+        border-radius: 2px
+        width: 4px
+        background: $primary-color
+      h1
+        margin-bottom: 0
+      form
+        input
+          padding: 1em
+          background: transparent
+          border: none
+          margin: 1em 0
+          height: 3em
+          width: 100%
+          display: block
 
 
 
@@ -98,42 +117,41 @@ nav.menu
   grid-template-columns: 1fr
   color: inherit
 
-.controls
-  padding: 1em
-  grid-area: controls
-  width: 100%
-  display: grid
-  background: darken($color-background, 5%)
-  grid-template-areas: "html css js"
-  grid-template-columns: 1fr 1fr 1fr
+  .controls
+    padding: 1em
+    grid-area: controls
+    width: 100%
+    display: grid
+    background: darken($color-background, 5%)
+    grid-template-areas: "html css js"
+    grid-template-columns: 1fr 1fr 1fr
 
-.tab
-  height: 300px
-  overflow: hidden
+  .tab
+    height: 300px
+    overflow: hidden
+    h1
+      margin: 0
 
-  h1
-    margin: 0
+  #htmlPen
+    grid-area: html
 
-#htmlPen
-  grid-area: html
+  #cssPen
+    grid-area: css
 
-#cssPen
-  grid-area: css
+  #jsPen
+    grid-area: js
 
-#jsPen
-  grid-area: js
+  .preview
+    grid-area: preview
+    height: calc(100vh - 300px)
 
-.preview
-  grid-area: preview
-  height: calc(100vh - 300px)
+  #iFrame
+    width: 100%
+    height: 100%
+    grid-area: pre
+    border: none
+    overflow: hidden
 
-#iFrame
-  width: 100%
-  height: 100%
-  grid-area: pre
-  border: none
-  overflow: hidden
-
-.pen
-  height: 100%
-  border: 1px solid black
+  .pen
+    height: 100%
+    border: 1px solid black
