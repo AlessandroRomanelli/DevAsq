@@ -11,5 +11,5 @@ Array.prototype.last = function () {
 };
 
 function init() {
-    handleRoomForms();
+    startParsing();
 }
