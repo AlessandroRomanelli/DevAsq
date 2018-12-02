@@ -1,15 +1,32 @@
-<p>Create a room</p>
-<form id='createRoom' method="POST">
-    <input type="text" name="roomName" placeholder="Room Name">
-    <input type="password" name="password" placeholder="Optional">
-    <input type="submit" value="Create">
-</form>
-<p>Join a room</p>
-<form id='joinRoom' method="POST">
-    <input type="text" name="roomName" placeholder="Room ID">
-    <input type="password" name="password" placeholder="Optional">
-    <input type="submit" value="Join">
-</form>
+<div class="form-container">
+  <h1>New Room</h1>
+  <form id='createRoom' method="POST">
+    <fieldset>
+      <input type="text" name="roomName" placeholder="Room Name">
+    </fieldset>
+    <fieldset>
+      <input type="password" name="password" placeholder="Password">
+    </fieldset>
+    <fieldset class="submit">
+      <input type="submit" value="Create">
+    </fieldset>
+  </form>
+</div>
+<div class="separator"></div>
+<div class="form-container">
+  <h1>Join Room</h1>
+  <form id='joinRoom' method="POST">
+    <fieldset>
+      <input type="text" name="roomName" placeholder="Room ID">
+    </fieldset>
+    <fieldset>
+      <input type="password" name="password" placeholder="Password">
+    </fieldset>
+    <fieldset class="submit">
+      <input type="submit" value="Join">
+    </fieldset>
+  </form>
+</div>
 <script>
 function handleRoomForms() {
     const createRoom = document.getElementById('createRoom');
