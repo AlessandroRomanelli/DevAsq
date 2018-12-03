@@ -18,7 +18,6 @@ router.get('/:roomName', (req, res) => {
     resHtml = resHtml.split('</body>');
     resHtml[0] += `<script>${js}</script>`;
     resHtml = resHtml.join('</body>');
-    console.log(resHtml);
     res.send(resHtml);
 });
 
