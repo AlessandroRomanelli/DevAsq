@@ -5,6 +5,7 @@
         <link rel='stylesheet' href='/stylesheets/style.css' />
     </head>
     <body onload="init()">
+      {> "partials/menu" /}
       <div id="pens" class="container">
         <div class="controls">
           <div class="tab">
