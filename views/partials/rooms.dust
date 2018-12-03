@@ -5,7 +5,7 @@
       <input type="text" name="roomName" placeholder="Room Name">
     </fieldset>
     <fieldset>
-      <input type="password" name="password" placeholder="Password">
+      <input type="password" name="password" placeholder="Password (Optional)">
     </fieldset>
     <fieldset class="submit">
       <input type="submit" value="Create">
@@ -17,10 +17,10 @@
   <h1>Join Room</h1>
   <form id='joinRoom' method="POST">
     <fieldset>
-      <input type="text" name="roomName" placeholder="Room ID">
+      <input type="text" name="roomName" placeholder="Room Name">
     </fieldset>
     <fieldset>
-      <input type="password" name="password" placeholder="Password">
+      <input type="password" name="password" placeholder="Password (Optional)">
     </fieldset>
     <fieldset class="submit">
       <input type="submit" value="Join">

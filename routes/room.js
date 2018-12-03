@@ -11,9 +11,8 @@ router.use('/', (req, res, next) => {
     next();
 });
 
-function Room(id, userId, name, password) {
-    this.id = id;
-    this.name = name;
+function Room(roomName, userId) {
+    this.name = roomName;
     this.creator = userId;
     this.users = [userId];
     this.publicPen = null;
@@ -22,20 +21,15 @@ function Room(id, userId, name, password) {
 }
 
 router.post('/create', (req, res) => {
-    console.log(req.body);
-    let roomId = Math.random().toString().slice(2);
     const { roomName, password } = req.body;
-    while (roomId in rooms) {
-        roomId = Math.random().toString().slice(2);
-    }
     const { _id } = req.user;
-    const room = new Room(roomId, _id, roomName);
+    if (roomName in rooms) return res.status(400).end();
+    const room = new Room(roomName, _id);
     if (password) {
         return bcrypt.hash(password, config.SALT_ROUNDS).then((hash) => {
             room.password = hash;
             room.isPassworded = true;
-            rooms[roomId] = room;
-            console.log('Within promise');
+            rooms[roomName] = room;
             console.log(rooms);
             res.status(201).send(JSON.stringify({
                 statusCode: res.statusCode,
@@ -43,19 +37,18 @@ router.post('/create', (req, res) => {
             }));
         });
     }
-    rooms[roomId] = room;
+    rooms[roomName] = room;
     console.log(rooms);
     return res.status(201).send(JSON.stringify({
-        statusCode: res.statusCode,
         room,
     }));
 });
 
 router.post('/join', (req, res) => {
     console.log(req.body);
-    const { roomId, password } = req.body;
-    if (!(roomId in rooms)) return res.status(404).end();
-    const roomData = rooms[roomId];
+    const { roomName, password } = req.body;
+    if (!(roomName in rooms)) return res.status(404).end();
+    const roomData = rooms[roomName];
     if (roomData.isPassworded) {
         if (!password) return res.status(403).end();
         return bcrypt.compare(password, roomData.password).then((validPassword) => {
@@ -71,9 +64,9 @@ router.post('/join', (req, res) => {
     return res.status(200).end();
 });
 
-router.get('/:roomId', (req, res) => {
-    if (!(req.params.roomId in rooms)) return res.status(404).end();
-    const room = rooms[req.params.roomId];
+router.get('/:roomName', (req, res) => {
+    if (!(req.params.roomName in rooms)) return res.status(404).end();
+    const room = rooms[req.params.roomName];
     if (!(room.users.includes(req.user._id))) return res.status(403).end();
     return res.render('pen', { title: 'DevAsq++', loggedUser: req.user, room });
 });
