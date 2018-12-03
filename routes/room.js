@@ -52,6 +52,7 @@ router.post('/create', (req, res) => {
 });
 
 router.post('/join', (req, res) => {
+    console.log(req.body);
     const { roomId, password } = req.body;
     if (!(roomId in rooms)) return res.status(404).end();
     const roomData = rooms[roomId];
