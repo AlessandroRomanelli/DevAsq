@@ -6,6 +6,7 @@
   </head>
   <body onload='init()'>
     <h1>{title}</h1>
+    {> "partials/menu" /}
     <div class="login">
       <p>Sign up</p>
       <form id="signup" method="POST">
