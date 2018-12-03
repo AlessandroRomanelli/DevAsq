@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.use('/', (req, res, next) => {
     if (!req.user) return res.status(403).end();
+    delete req.user.password;
     next();
 });
 
@@ -29,6 +30,7 @@ router.post('/join', (req, res) => {
     const { roomName, password } = req.body;
     if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[roomName];
+    console.log(room);
     if (room.isPassworded) {
         if (!password) return res.status(403).end();
         room.authorize(password, (validPassword) => {
@@ -39,6 +41,7 @@ router.post('/join', (req, res) => {
             return res.status(201).json(room);
         });
     }
+    console.log(req.user);
     room.join(req.user._id);
     console.log(room);
     return res.status(200).json(room);
@@ -48,8 +51,9 @@ router.get('/:roomName', (req, res) => {
     const { roomName } = req.params;
     if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[req.params.roomName];
+    console.log(room);
     if (!(room.hasUser(req.user._id))) return res.status(403).end();
-    return res.render('pen', { title: 'DevAsq++', loggedUser: req.user, room });
+    return res.render('pen', { title: 'DevAsq++', loggedUser: req.user, room: JSON.stringify(room) });
 });
 
 module.exports = router;

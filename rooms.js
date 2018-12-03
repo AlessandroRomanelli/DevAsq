@@ -6,22 +6,19 @@ require('./models');
 
 const Pen = mongoose.model('Pen');
 
-function UserPen(userId) {
-    this.id = userId;
-    this.pens = [new Pen({
-        user: userId,
-        title: 'private',
-    })];
-}
-
-
 class Room {
-    constructor(name, creator) {
+    constructor(name, creatorId) {
         this.name = name;
-        this.creator = creator;
-        this.users = [new UserPen(creator)];
+        this.creator = creatorId;
+        this.users = {};
+        this.users[creatorId] = [
+            new Pen({
+                user: creatorId,
+                title: 'private',
+            }),
+        ];
         this.publicPen = new Pen({
-            user: creator,
+            user: creatorId,
             title: 'public',
         });
         this.checkers = [];
@@ -48,29 +45,60 @@ class Room {
     }
 
     hasUser(userId) {
-        for (let i = 0; i < this.users.length; i += 1) {
-            if (this.users[i].id === userId) return true;
-        }
-        return false;
+        return userId in this.users;
     }
 
-    addPen(userId, pen) {
-        this.users.forEach((user) => {
-            if (user.id === userId) {
-                user.pens.push(pen);
+    upsertPen(userId, pen) {
+        if (this.hasUser(userId)) {
+            this.users[userId] = pen;
+        }
+    }
+
+    removePen(userId, penName) {
+        if (this.hasUser(userId)) {
+            const pens = this.users[userId];
+            let idx = -1;
+            for (let i = 0; i < pens.length; i += 1) {
+                if (pens[i].name === penName) {
+                    idx = i;
+                }
             }
-        });
+            if (idx !== -1) pens.splice(idx, 1);
+        }
     }
 
     join(userId) {
-        if (this.users.indexOf(userId) === -1) {
-            this.users.push(new UserPen(userId));
+        const users = Object.keys(this.users);
+        const pen = new Pen({
+            user: userId,
+            title: 'private',
+        });
+        for (let i = 0; i < users.length; i += 1) {
+            if (users[i] === userId) return;
         }
+        this.users[userId] = [pen];
     }
 
-    leave(userId) {
-        const index = this.users.indexOf(userId);
-        if (index > 0) this.users.splice(index, 1);
+    remove(userId) {
+        delete this.users[userId];
+    }
+
+    getUserPen(userId, title) {
+        if (this.hasUser(userId)) {
+            const pens = this.users[userId];
+            for (let i = 0; i < pens.length; i += 1) {
+                if (pens[i].title === title) return pens[i];
+            }
+            return new Pen({
+                user: userId,
+                title: 'New Pen',
+            });
+        }
+        throw new Error('Attempting to get pen of a user not in the room');
+    }
+
+    get population() {
+        return Object.keys(this.users).length;
     }
 }
 

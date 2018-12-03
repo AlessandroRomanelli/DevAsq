@@ -49,18 +49,19 @@ function createTimer(delay) {
 }
 
 function renderIFrame() {
-    const htmlText = document.querySelector('#htmlPen .ace_scroller').innerText;
-    const cssText = document.querySelector('#cssPen .ace_scroller').innerText;
-    const jsText = document.querySelector('#jsPen .ace_scroller').innerText;
+    const html = ace.edit('htmlPen').getValue();
+    const css = ace.edit('cssPen').getValue();
+    const js = ace.edit('jsPen').getValue();
     const iFrame = document.getElementById('iFrame');
     let roomName = window.location.pathname.split('/');
     roomName = roomName[roomName.length - 1];
     doJSONRequest('POST', `/preview/${roomName}`, {}, {
         name: 'public',
-        html: htmlText,
-        css: cssText,
-        js: jsText,
+        html,
+        css,
+        js,
     }).then(() => {
+        // TODO: Add a query to the get request to fetch the currently selected pen
         iFrame.src = `/preview/${roomName}`;
     });
 }

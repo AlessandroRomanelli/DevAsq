@@ -32,5 +32,13 @@
         <script src="/scripts/fetch.js" charset="utf-8"></script>
         <script src="/scripts/parser.js" charset="utf-8"></script>
         <script src="/scripts/pen.js" charset="utf-8"></script>
+        {?room}
+        <script type="text/javascript">
+          let room = {room|s};
+          ace.edit('htmlPen').setValue(room.publicPen.html);
+          ace.edit('cssPen').setValue(room.publicPen.css);
+          ace.edit('jsPen').setValue(room.publicPen.js);
+        </script>
+        {/room}
     </body>
 </html>

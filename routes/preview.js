@@ -8,10 +8,12 @@ const { roomStorage } = require('../rooms');
 const Pen = mongoose.model('Pen');
 
 router.get('/:roomName', (req, res) => {
-    if (!req.user) return res.statu(403).end();
+    if (!req.user) return res.status(403).end();
+    const { title } = req.query;
     const { roomName } = req.params;
     const room = roomStorage[roomName];
-    const { html, css, js } = room.publicPen;
+    console.log(room);
+    const { html, css, js } = (title) ? room.getUserPen(req.user._id, title) : room.publicPen;
     let resHtml = html.split('</head>');
     resHtml[0] += `<style>${css}</style>`;
     resHtml = resHtml.join('</head>');
