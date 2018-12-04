@@ -6,17 +6,26 @@
     </head>
     <body onload="init()">
       {> "partials/menu" /}
+      <div id="tabs" class="container">
+        <div id="privateTab" class="switchTab">
+          Private
+        </div>
+        <div id="publicTab" class="switchTab">
+          Public
+        </div>
+        {> "partials/tab" /}
+      </div>
       <div id="pens" class="container">
         <div class="controls">
-          <div class="tab">
+          <div class="pen">
             <h1>HTML</h1>
             <div id="htmlPen" class="pen codePane" contenteditable="true"></div>
           </div>
-          <div class="tab">
+          <div class="pen">
             <h1>CSS</h1>
             <div id="cssPen" class="pen codePane" contenteditable="true"></div>
           </div>
-          <div class="tab">
+          <div class="pen">
             <h1>JS</h1>
             <div id="jsPen" class="pen codePane" contenteditable="true"></div>
           </div>
