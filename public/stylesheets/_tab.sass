@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css?family=Inconsolata|Montserrat')
+
+$font-stack-editor:    Inconsolata, monospace
+$font-stack: Montserrat, sans-serif
+$primary-color: #DE6C2F
+$color-background: #333333
+$dark: #2d2d2d
+$default-margin: 30px
+
+*
+  box-sizing: border-box
+
+body
+  margin: 0
+  padding: 0
+  color: white
+  font: 100% $font-stack
+  background-color: $color-background
+
+#pens.container
+  position: relative
+  width: 100%
+  display: grid
+  grid-template-areas: "controls" "preview"
+  grid-template-columns: 1fr
+  color: inherit
+
+  .controls
+    padding: 1em
+    grid-area: controls
+    width: 100%
+    display: grid
+    background: darken($color-background, 5%)
+    grid-template-areas: "html css js"
+    grid-template-columns: 1fr 1fr 1fr
+
+  .pen
+    height: 300px
+    overflow: hidden
+    h1
+      margin: 0
+
+  #htmlPen
+    grid-area: html
+
+  #cssPen
+    grid-area: css
+
+  #jsPen
+    grid-area: js
+
+  .preview
+    grid-area: preview
+    background: white
+    height: calc(100vh - 300px)
+
+  #iFrame
+    width: 100%
+    height: 100%
+    grid-area: pre
+    border: none
+    overflow: hidden
+
+  // .pen
+  //   height: 100%
+  //   border: 1px solid black

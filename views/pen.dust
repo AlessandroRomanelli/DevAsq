@@ -13,6 +13,9 @@
         <div id="publicTab" class="switchTab">
           Public
         </div>
+        <div id="addTab" class="switchTab">
+          +
+        </div>
         {> "partials/tab" /}
       </div>
       <div id="pens" class="container">
