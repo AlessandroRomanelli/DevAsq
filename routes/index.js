@@ -5,10 +5,15 @@ const router = express.Router();
 
 function mapToArray(map) {
     let result = [];
-    for (key in map) {
-        result.push(map[key]);
-        if (result[result.length - 1].users) {
-            result[result.length - 1].users = Object.keys(map[key].users).length;
+
+    if (Object.keys(map).length > 0) {
+        for (key in map) {
+            const room = {
+                name: map[key].name,
+                users: Object.keys(map[key].users).length,
+                isPassworded: map[key].isPassworded
+            }
+            result.push(room);
         }
     }
     return result;

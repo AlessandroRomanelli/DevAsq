@@ -1,8 +1,4 @@
 <td> {name} </td>
-{?users}
-    <td> {users} </td>
-{:else}
-    <td> 0 </td>
-{/users}
+<td> {users} </td>
 <td> <input type="password"> </td>
 <td> <a href=""> Join </a> </td>
