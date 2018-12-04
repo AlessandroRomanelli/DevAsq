@@ -105,7 +105,7 @@ class App {
             tabs[i].addEventListener('click', (event) => {
                 event.preventDefault();
                 this.switchPen(i);
-                iFrame.src = `/preview/${this.room.name}?penID=${this.pens[i].id}`;
+                iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
             });
         }
     }
