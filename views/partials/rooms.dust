@@ -1,6 +1,6 @@
 <div class="form-container">
   <h1>New Room</h1>
-  <form id='createRoom' method="POST">
+  <form id='createRoom' method="POST" autocomplete="off">
     <fieldset>
       <input type="text" name="roomName" placeholder="Room Name">
     </fieldset>
@@ -15,7 +15,7 @@
 <div class="separator"></div>
 <div class="form-container">
   <h1>Join Room</h1>
-  <form id='joinRoom' method="POST">
+  <form id='joinRoom' method="POST" autocomplete="off">
     <fieldset>
       <input type="text" name="roomName" placeholder="Room Name">
     </fieldset>
