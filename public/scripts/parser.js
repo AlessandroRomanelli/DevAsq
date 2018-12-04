@@ -1,4 +1,4 @@
-function startParsing() {
+function startParsing(app) {
     const htmlAce = ace.edit('htmlPen');
     const cssAce = ace.edit('cssPen');
     const jsAce = ace.edit('jsPen');
@@ -16,15 +16,24 @@ function startParsing() {
 
     setAceOptions([htmlAce, cssAce, jsAce]);
 
-    htmlPen.onblur = renderIFrame;
-    cssPen.onblur = renderIFrame;
-    jsPen.onblur = renderIFrame;
+    htmlPen.onblur = renderIFrame(app);
+    cssPen.onblur = renderIFrame(app);
+    jsPen.onblur = renderIFrame(app);
 
-    const timer = createTimer(1000);
+    const timer = createTimer(app, 1000);
 
-    htmlPen.onkeypress = timer;
-    cssPen.onkeypress = timer;
-    jsPen.onkeypress = timer;
+    htmlPen.onkeyup = handleKey(app, htmlAce, timer);
+    cssPen.onkeyup = handleKey(app, cssAce, timer);
+    jsPen.onkeyup = handleKey(app, jsAce, timer);
+}
+
+function handleKey(app, ace, timer) {
+    return function () {
+        timer();
+        const mode = ace.session.getMode().$id.split('/').last();
+        const value = ace.getValue();
+        app.updatePen(mode, value);
+    };
 }
 
 function setAceOptions(aces) {
@@ -37,31 +46,34 @@ function setAceOptions(aces) {
     });
 }
 
-function createTimer(delay) {
+function createTimer(app, delay) {
     let timer;
 
     return function () {
         if (timer) {
             timer = clearTimeout(timer);
         }
-        timer = setTimeout(renderIFrame, delay);
+        timer = setTimeout(renderIFrame(app), delay);
     };
 }
 
-function renderIFrame() {
-    const html = ace.edit('htmlPen').getValue();
-    const css = ace.edit('cssPen').getValue();
-    const js = ace.edit('jsPen').getValue();
-    const iFrame = document.getElementById('iFrame');
-    let roomName = window.location.pathname.split('/');
-    roomName = roomName[roomName.length - 1];
-    doJSONRequest('POST', `/preview/${roomName}`, {}, {
-        name: 'public',
-        html,
-        css,
-        js,
-    }).then(() => {
-        // TODO: Add a query to the get request to fetch the currently selected pen
-        iFrame.src = `/preview/${roomName}`;
-    });
+function renderIFrame(app) {
+    return function () {
+        const html = ace.edit('htmlPen').getValue();
+        const css = ace.edit('cssPen').getValue();
+        const js = ace.edit('jsPen').getValue();
+        const iFrame = document.getElementById('iFrame');
+        let roomName = window.location.pathname.split('/');
+        roomName = roomName[roomName.length - 1];
+        doJSONRequest('POST', `/preview/${roomName}`, {}, {
+            name: app.getCurrentPen().title,
+            penID: app.getCurrentPen().id,
+            html,
+            css,
+            js,
+        }).then(() => {
+            // TODO: Add a query to the get request to fetch the currently selected pen
+            iFrame.src = `/preview/${roomName}?penID=${app.getCurrentPen().id}`;
+        });
+    };
 }

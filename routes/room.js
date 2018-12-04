@@ -1,7 +1,18 @@
 const express = require('express');
-const { Room, roomStorage } = require('../rooms');
+const {
+    Room, Pen, roomStorage, UIDs,
+} = require('../rooms');
 
 const router = express.Router();
+
+function generateID() {
+    const id = Math.random().toString(36).substring(2, 16);
+    if (UIDs.includes(id)) {
+        return generateID();
+    }
+    UIDs.push(id);
+    return id;
+}
 
 router.use('/', (req, res, next) => {
     if (!req.user) return res.status(403).end();
@@ -30,7 +41,6 @@ router.post('/join', (req, res) => {
     const { roomName, password } = req.body;
     if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[roomName];
-    console.log(room);
     if (room.isPassworded) {
         if (!password) return res.status(403).end();
         room.authorize(password, (validPassword) => {
@@ -41,9 +51,7 @@ router.post('/join', (req, res) => {
             return res.status(201).json(room);
         });
     }
-    console.log(req.user);
     room.join(req.user._id);
-    console.log(room);
     return res.status(200).json(room);
 });
 
@@ -51,9 +59,55 @@ router.get('/:roomName', (req, res) => {
     const { roomName } = req.params;
     if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[req.params.roomName];
-    console.log(room);
     if (!(room.hasUser(req.user._id))) return res.status(403).end();
-    return res.render('pen', { title: 'DevAsq++', loggedUser: req.user, room });
+    return res.render('pen', {
+        title: 'DevAsq++', loggedUser: req.user, user: JSON.stringify(req.user), room: JSON.stringify(room),
+    });
+});
+
+router.post('/:roomName/pen', (req, res) => {
+    const { roomName } = req.params;
+    if (!(roomName in roomStorage)) return res.status(404).end();
+    const room = roomStorage[roomName];
+    if (!((req.user._id) in room.users)) return res.status(404).end();
+    const newPen = new Pen('New Pen', generateID(), req.user._id);
+    room.users[req.user._id].push(newPen);
+    return res.status(201).json(newPen);
+});
+
+router.delete('/:roomName/pen/:penId', (req, res) => {
+    const { roomName, penId } = req.params;
+    if (!(roomName in roomStorage)) return res.status(404).end();
+    const room = roomStorage[roomName];
+    if (!(req.user._id in room.users)) return res.status(404).end();
+    const pens = room.users[req.user._id];
+    let idx = -1;
+    for (let i = 0; i < pens.length; i += 1) {
+        if (pens[i].id === penId) {
+            idx = i;
+            break;
+        }
+    }
+    const pen = pens.splice(idx, 1);
+    res.status(204).json(pen);
+});
+
+router.put('/:roomName/pen/:penId', (req, res) => {
+    const { roomName, penId } = req.params;
+    const { name } = req.body;
+    if (!(roomName in roomStorage)) return res.status(404).end();
+    const room = roomStorage[roomName];
+    if (!(req.user._id in room.users)) return res.status(404).end();
+    const pens = room.users[req.user._id];
+    let pen;
+    for (let i = 0; i < pens.length; i += 1) {
+        if (pens[i].id === penId) {
+            pens[i].title = name;
+            pen = pens[i];
+            break;
+        }
+    }
+    res.status(200).json(pen);
 });
 
 module.exports = router;
