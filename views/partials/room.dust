@@ -1,0 +1,8 @@
+<td> {name} </td>
+{?users}
+    <td> {users} </td>
+{:else}
+    <td> 0 </td>
+{/users}
+<td> yes/no </td>
+<td> <a href="#"> Join </a> </td>
