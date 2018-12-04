@@ -18,9 +18,9 @@ function handleRoomForms() {
             } else {
                 return res.json();
             }
-        }).then((data) => {
-            console.log(data);
-            if (data.room.name) window.location.pathname = `/room/${data.room.name}`;
+        }).then((room) => {
+            console.log(room);
+            if (room.name) window.location.pathname = `/room/${room.name}`;
         });
     });
     const joinRoom = document.getElementById('joinRoom');
@@ -40,6 +40,8 @@ function handleRoomForms() {
                 alert('Room does not exist');
             } else if (res.status === 200 && roomName !== '') {
                 window.location.pathname = `/room/${roomName}`;
+            } else {
+                alert(`Something went wrong: ${res.status}`);
             }
         });
     });

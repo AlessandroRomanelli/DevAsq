@@ -1,18 +1,18 @@
 function startParsing() {
-    const htmlAce = ace.edit("htmlPen");
-    const cssAce = ace.edit("cssPen");
-    const jsAce = ace.edit("jsPen");
-    const htmlPen = document.querySelector("#htmlPen .ace_text-input");
-    const cssPen = document.querySelector("#cssPen .ace_text-input");
-    const jsPen = document.querySelector("#jsPen .ace_text-input");
+    const htmlAce = ace.edit('htmlPen');
+    const cssAce = ace.edit('cssPen');
+    const jsAce = ace.edit('jsPen');
+    const htmlPen = document.querySelector('#htmlPen .ace_text-input');
+    const cssPen = document.querySelector('#cssPen .ace_text-input');
+    const jsPen = document.querySelector('#jsPen .ace_text-input');
 
-    htmlAce.session.setMode("ace/mode/html");
-    cssAce.session.setMode("ace/mode/css");
-    jsAce.session.setMode("ace/mode/javascript");
+    htmlAce.session.setMode('ace/mode/html');
+    cssAce.session.setMode('ace/mode/css');
+    jsAce.session.setMode('ace/mode/javascript');
 
-    htmlAce.setTheme("ace/theme/monokai");
-    cssAce.setTheme("ace/theme/monokai");
-    jsAce.setTheme("ace/theme/monokai");
+    htmlAce.setTheme('ace/theme/monokai');
+    cssAce.setTheme('ace/theme/monokai');
+    jsAce.setTheme('ace/theme/monokai');
 
     setAceOptions([htmlAce, cssAce, jsAce]);
 
@@ -25,7 +25,6 @@ function startParsing() {
     htmlPen.onkeypress = timer;
     cssPen.onkeypress = timer;
     jsPen.onkeypress = timer;
-
 }
 
 function setAceOptions(aces) {
@@ -33,9 +32,9 @@ function setAceOptions(aces) {
         ace.setOptions({
             enableBasicAutocompletion: true,
             enableSnippets: true,
-            enableLiveAutocompletion: true
+            enableLiveAutocompletion: true,
         });
-    })
+    });
 }
 
 function createTimer(delay) {
@@ -46,20 +45,23 @@ function createTimer(delay) {
             timer = clearTimeout(timer);
         }
         timer = setTimeout(renderIFrame, delay);
-    }
+    };
 }
 
 function renderIFrame() {
-    const htmlText = document.querySelector("#htmlPen .ace_scroller").innerText;
-    const cssText = document.querySelector("#cssPen .ace_scroller").innerText;
-    const jsText= document.querySelector("#jsPen .ace_scroller").innerText;
-    const iFrame = document.getElementById("iFrame");
-
-    doJSONRequest("PUT", "/preview", {}, {
-        html: htmlText,
-        css: cssText,
-        js: jsText
+    const html = ace.edit('htmlPen').getValue();
+    const css = ace.edit('cssPen').getValue();
+    const js = ace.edit('jsPen').getValue();
+    const iFrame = document.getElementById('iFrame');
+    let roomName = window.location.pathname.split('/');
+    roomName = roomName[roomName.length - 1];
+    doJSONRequest('POST', `/preview/${roomName}`, {}, {
+        name: 'public',
+        html,
+        css,
+        js,
     }).then(() => {
-        iFrame.src = "/preview";
-    })
+        // TODO: Add a query to the get request to fetch the currently selected pen
+        iFrame.src = `/preview/${roomName}`;
+    });
 }
