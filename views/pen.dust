@@ -6,31 +6,31 @@
     </head>
     <body onload="init()">
       {> "partials/menu" /}
-      <div id="tabs" class="container">
-        <div id="privateTab" class="switchTab">
+      <ul id="tabs" class="container">
+        <li id="privateTab" class="switchTab">
           Private
-        </div>
-        <div id="publicTab" class="switchTab">
+        </li>
+        <li id="publicTab" class="switchTab">
           Public
-        </div>
-        <div id="addTab" class="switchTab">
+        </li>
+        <li id="addTab" class="switchTab">
           +
-        </div>
+        </li>
         {> "partials/tab" /}
-      </div>
+      </ul>
       <div id="pens" class="container">
         <div class="controls">
           <div class="pen">
             <h1>HTML</h1>
-            <div id="htmlPen" class="pen codePane" contenteditable="true"></div>
+            <div id="htmlPen" class="codePane" contenteditable="true"></div>
           </div>
           <div class="pen">
             <h1>CSS</h1>
-            <div id="cssPen" class="pen codePane" contenteditable="true"></div>
+            <div id="cssPen" class="codePane" contenteditable="true"></div>
           </div>
           <div class="pen">
             <h1>JS</h1>
-            <div id="jsPen" class="pen codePane" contenteditable="true"></div>
+            <div id="jsPen" class="codePane" contenteditable="true"></div>
           </div>
         </div>
         <div class="preview">
