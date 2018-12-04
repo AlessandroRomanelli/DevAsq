@@ -4,5 +4,5 @@
 {:else}
     <td> 0 </td>
 {/users}
-<td> yes/no </td>
+<td> <input type="password"> </td>
 <td> <a href=""> Join </a> </td>

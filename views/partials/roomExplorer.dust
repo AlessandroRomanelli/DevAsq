@@ -4,38 +4,44 @@
     <tr>
         <th> Name </th>
         <th> Population </th>
-        <th> Passworded </th>
+        <th> Password </th>
         <th> Link </th>
     </tr>
     {#activeRooms}
         <tr data-name="{name}">
-            {>"partials/room" /}
+            {> "partials/room" /}
         </tr>
     {/activeRooms}
 </table>
 
 <script>
     let links = document.querySelectorAll("#roomTable a");
-    console.log(links);
-    links.forEach((link) => {
-        link.addEventListener('click', (event) => {
-            event.preventDefault();
-            const roomId = link.parentNode.parentNode.dataset.name;
-            const password = '';
-            doFetchRequest('POST', '/room/join', {
-                'Content-Type': 'application/json',
-            }, JSON.stringify({
-                roomId,
-                password
-            })).then((res) => {
-                if (res.status === 403) {
-                    alert('Unauthorised');
-                } else if (res.status === 404) {
-                    alert('Room does not exist')
-                } else {
-                    window.location.pathname = "/room/"+roomId
-                }
+    if (links.length > 0) {
+        console.log(links);
+        links.forEach((link) => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const roomName = link.parentNode.parentNode.dataset.name;
+                const password = link.parentNode.parentNode.querySelector("input").value;
+                doFetchRequest('POST', '/room/join', {
+                    'Content-Type': 'application/json',
+                }, JSON.stringify({
+                    roomName,
+                    password,
+                }))
+                .then((res) => {
+                    console.log(res);
+                    if (res.status === 403) {
+                        alert('Unauthorised');
+                    } else if (res.status === 404) {
+                        alert('Room does not exist');
+                    } else if (res.status === 200 && roomName !== '') {
+                        window.location.pathname = '/room/' + roomName;
+                    } else {
+                        alert('Something went wrong: ' + res.status);
+                    }
+                });
             });
         });
-    });
+    }
 </script>
