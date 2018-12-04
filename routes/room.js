@@ -53,7 +53,7 @@ router.get('/:roomName', (req, res) => {
     const room = roomStorage[req.params.roomName];
     console.log(room);
     if (!(room.hasUser(req.user._id))) return res.status(403).end();
-    return res.render('pen', { title: 'DevAsq++', loggedUser: req.user, room: JSON.stringify(room) });
+    return res.render('pen', { title: 'DevAsq++', loggedUser: req.user, room });
 });
 
 module.exports = router;
