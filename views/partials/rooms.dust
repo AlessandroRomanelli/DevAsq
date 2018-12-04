@@ -1,6 +1,7 @@
 <div class="form-container">
   <h1>New Room</h1>
   <form id='createRoom' method="POST" autocomplete="off">
+    <input autocomplete="false" name="hidden" type="text" style="display:none;">
     <fieldset>
       <input type="text" name="roomName" placeholder="Room Name">
     </fieldset>
@@ -16,6 +17,7 @@
 <div class="form-container">
   <h1>Join Room</h1>
   <form id='joinRoom' method="POST" autocomplete="off">
+    <input autocomplete="false" name="hidden" type="text" style="display:none;">
     <fieldset>
       <input type="text" name="roomName" placeholder="Room Name">
     </fieldset>
