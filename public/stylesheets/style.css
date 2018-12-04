@@ -188,6 +188,7 @@ nav.menu {
     grid-area: js; }
   #pens.container .preview {
     grid-area: preview;
+    background: white;
     height: calc(100vh - 300px); }
   #pens.container #iFrame {
     width: 100%;

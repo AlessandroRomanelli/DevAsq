@@ -4,7 +4,9 @@ const { Room, roomStorage } = require('../rooms');
 const router = express.Router();
 
 router.use('/', (req, res, next) => {
-    if (!req.user) return res.status(403).end();
+    if (!req.user) {
+        return res.status(403).end();
+    }
     delete req.user.password;
     next();
 });
@@ -12,7 +14,9 @@ router.use('/', (req, res, next) => {
 router.post('/create', (req, res) => {
     const { roomName, password } = req.body;
     const { _id } = req.user;
-    if (roomName in roomStorage) return res.status(400).end();
+    if (roomName in roomStorage) {
+        return res.status(400).end();
+    }
     const room = new Room(roomName, _id);
     if (password) {
         room.lock(password, () => {
@@ -49,10 +53,14 @@ router.post('/join', (req, res) => {
 
 router.get('/:roomName', (req, res) => {
     const { roomName } = req.params;
-    if (!(roomName in roomStorage)) return res.status(404).end();
+    if (!(roomName in roomStorage)) {
+        return res.status(404).end();
+    }
     const room = roomStorage[req.params.roomName];
     console.log(room);
-    if (!(room.hasUser(req.user._id))) return res.status(403).end();
+    if (!(room.hasUser(req.user._id))) {
+        return res.status(403).end();
+    }
     return res.render('pen', { title: 'DevAsq++', loggedUser: req.user, room: JSON.stringify(room) });
 });
 

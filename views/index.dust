@@ -18,6 +18,7 @@
           <div class="manage-rooms">
             {> "partials/rooms" /}
           </div>
+          {> "partials/roomExplorer" /}
         </div>
 
 
