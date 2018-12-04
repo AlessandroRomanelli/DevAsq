@@ -9,6 +9,7 @@ router.get('/:roomName', (req, res) => {
     if (!req.user) return res.status(403).end();
     const { penID } = req.query;
     const { roomName } = req.params;
+    if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[roomName];
     const pen = room.getUserPen(req.user._id, penID);
     console.log(pen);
