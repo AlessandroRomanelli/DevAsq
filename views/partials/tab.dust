@@ -1,4 +1,4 @@
 <li id="{pen.id}" class="switchTab">
-  <span contenteditable="true">{pen.name}</span>
+  <span>{pen.title}</span>
   <button class="closeButton">x</button>
 </li>
