@@ -3,17 +3,17 @@ const mongoose = require('mongoose');
 
 const router = express.Router();
 
-const { roomStorage } = require('../rooms');
-
-const Pen = mongoose.model('Pen');
+const { roomStorage, Pen } = require('../rooms');
 
 router.get('/:roomName', (req, res) => {
     if (!req.user) return res.status(403).end();
-    const { title } = req.query;
+    const { penID } = req.query;
     const { roomName } = req.params;
+    if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[roomName];
-    console.log(room);
-    const { html, css, js } = (title) ? room.getUserPen(req.user._id, title) : room.publicPen;
+    const pen = room.getUserPen(req.user._id, penID);
+    console.log(pen);
+    const { html, css, js } = (penID) ? pen : room.publicPen;
     let resHtml = html.split('</head>');
     resHtml[0] += `<style>${css}</style>`;
     resHtml = resHtml.join('</head>');
@@ -30,17 +30,23 @@ router.post('/:roomName', (req, res) => {
     if (!req.user) return res.status(403).end();
     const room = roomStorage[roomName];
     const {
-        name, html, css, js,
+        penID, name, html, css, js,
     } = req.body;
-    const pen = new Pen({
-        html,
-        css,
-        js,
-        name,
+    const pens = room.users[req.user._id].slice(0);
+    pens.push(room.publicPen);
+    let foundPen;
+    console.log(pens);
+    pens.forEach((pen) => {
+        if (pen.id === penID) {
+            pen.name = name;
+            pen.html = html;
+            pen.css = css;
+            pen.js = js;
+            foundPen = pen;
+        }
     });
-    room.publicPen = pen;
-
-    res.status(201).json(pen);
+    console.log(foundPen);
+    res.status(201).json(foundPen);
 });
 
 module.exports = router;

@@ -39,21 +39,23 @@
         <div class="preview">
           <iframe id="iFrame" src="/preview.html"></iframe>
         </div>
-      </div>
 
         <!-- tabs go here programmatically -->
         <script src="/scripts/ace/ace.js" charset="utf-8"></script>
         <script src="/scripts/ace/ext-language_tools.js" charset="utf-8"></script>
+        <script src="/socket.io/socket.io.js"></script>
         <script src="/scripts/fetch.js" charset="utf-8"></script>
         <script src="/scripts/parser.js" charset="utf-8"></script>
-        <script src="/scripts/pen.js" charset="utf-8"></script>
         {?room}
         <script type="text/javascript">
-          let room = {room|s};
-          ace.edit('htmlPen').setValue(room.publicPen.html);
-          ace.edit('cssPen').setValue(room.publicPen.css);
-          ace.edit('jsPen').setValue(room.publicPen.js);
+            const room = {room|s};
+            const user = {user|s};
+            // localStorage.room = JSON.stringify(r); // eliminate ?
+            // localStorage.user = JSON.stringify(u); // eliminate ?
         </script>
         {/room}
+        <script src="/scripts/app.js" charset="utf-8"></script>
+        <script src="/scripts/pen.js" charset="utf-8"></script>
+
     </body>
 </html>
