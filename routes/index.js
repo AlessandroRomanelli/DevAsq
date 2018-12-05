@@ -11,7 +11,7 @@ function mapToArray(map) {
             const room = {
                 name: map[key].name,
                 users: Object.keys(map[key].users).length,
-                isPassworded: map[key].isPassworded
+                isPassworded: map[key].isPassworded?"true":"false"
             }
             result.push(room);
         }
