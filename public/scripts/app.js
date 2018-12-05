@@ -31,8 +31,8 @@ class App {
 
     switchPen(index) {
         const tabs = document.getElementById("tabs").childNodes;
-        tabs[this.currentPen].className = "switchTab";
-        tabs[index].className = "active switchTab";
+        tabs[this.currentPen].className = tabs[this.currentPen].className.replace("active", "").trim();
+        tabs[index].className = `active ${tabs[index].className}`;
         this.currentPen = index;
         const html = ace.edit('htmlPen');
         const css = ace.edit('cssPen');
@@ -57,20 +57,28 @@ class App {
             li.outerHTML = out;
             if (pen.title === "Public") {
                 li = nodes.childNodes[nodes.childNodes.length - 2];
+                li.className = `${li.className} locked`;
                 li.removeChild(li.lastChild);
             }
         });
     }
 
     createPen() {
-        doJSONRequest('POST', `/room/${this.room.name}/pen`, {}, {})
-        .then((res) => {
-            const pen = new Pen(res.title, res.id);
-            this.pens.push(pen);
-            this.createTabForPen(res);
-            this.setupTabsHandlers();
-            this.switchPen(this.pens.length - 1);
-        });
+        const tabs = document.getElementById("tabs");
+        const activeTabs = tabs.childNodes.length;
+        if (activeTabs < 6) {
+            doJSONRequest('POST', `/room/${this.room.name}/pen`, {}, {})
+            .then((res) => {
+                const pen = new Pen(res.title, res.id);
+                this.pens.push(pen);
+                this.createTabForPen(res);
+                this.setupTabsHandlers();
+                this.switchPen(this.pens.length - 1);
+            });
+        }
+        if (activeTabs === 5) {
+            tabs.lastChild.className = "switchTab hidden";
+        }
     }
 
     updatePen(mode, value) {
@@ -117,6 +125,7 @@ class App {
             }
             const tabs = document.getElementById("tabs");
             tabs.removeChild(tabs.childNodes[index]);
+            tabs.lastChild.className = "switchTab";
             this.setupTabsHandlers();
         });
     }
@@ -139,6 +148,13 @@ class App {
                 span.ondblclick = ((event) => {
                     event.target.contentEditable = true;
                     event.target.focus();
+                });
+
+                span.onkeydown = ((event) => {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        event.target.blur();
+                    }
                 });
 
                 span.onblur = ((event) => {
