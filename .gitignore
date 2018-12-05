@@ -37,4 +37,4 @@ yarn.lock
 **/.DS_Store
 
 public/stylesheets/style.css
-public/stylesheets/style.map.css
+public/stylesheets/style.css.map
