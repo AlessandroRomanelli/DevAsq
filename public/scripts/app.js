@@ -31,8 +31,8 @@ class App {
 
     switchPen(index) {
         const tabs = document.getElementById("tabs").childNodes;
-        tabs[this.currentPen].className = tabs[this.currentPen].className.replace("active", "").trim();
-        tabs[index].className = `active ${tabs[index].className}`;
+        tabs[this.currentPen].classList.toggle("active");
+        tabs[index].classList.toggle("active");
         this.currentPen = index;
         const html = ace.edit('htmlPen');
         const css = ace.edit('cssPen');
@@ -57,7 +57,8 @@ class App {
             li.outerHTML = out;
             if (pen.title === "Public") {
                 li = nodes.childNodes[nodes.childNodes.length - 2];
-                li.className = `${li.className} locked`;
+                li.classList.toggle("active");
+                li.classList.toggle("locked");
                 li.removeChild(li.lastChild);
             }
         });
@@ -66,7 +67,7 @@ class App {
     createPen() {
         const tabs = document.getElementById("tabs");
         const activeTabs = tabs.childNodes.length;
-        if (activeTabs < 6) {
+        if (activeTabs < 7) {
             doJSONRequest('POST', `/room/${this.room.name}/pen`, {}, {})
             .then((res) => {
                 const pen = new Pen(res.title, res.id);
@@ -76,7 +77,7 @@ class App {
                 this.switchPen(this.pens.length - 1);
             });
         }
-        if (activeTabs === 5) {
+        if (activeTabs === 6) {
             tabs.lastChild.className = "switchTab hidden";
         }
     }
@@ -159,6 +160,9 @@ class App {
 
                 span.onblur = ((event) => {
                     event.target.contentEditable = false;
+                    if (event.target.innerHTML === "Public") {
+                        event.target.innerHTML = "MyPublic";
+                    }
                     this.changePenName(event.target.innerHTML, i);
                 });
 
