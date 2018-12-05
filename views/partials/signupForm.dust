@@ -1,0 +1,15 @@
+<form id="signupForm" class='profile-form'>
+    <fieldset>
+      <input type="text" name="username" placeholder="Username">
+    </fieldset>
+    <fieldset>
+      <input type="password" name="password" placeholder="Password">
+    </fieldset>
+    <fieldset>
+      <input type="password" name="confirmPassword" placeholder="Confirm Password">
+    </fieldset>
+    <fieldset class='submit'>
+      <input type="submit" value="Signup">
+    </fieldset>
+</form>
+<p>Back to <a id="loginButton" href="/login">Login</a> now!</p>
