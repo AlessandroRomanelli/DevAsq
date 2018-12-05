@@ -5,7 +5,12 @@
   width: 100vw
   background: $color-background
   z-index: 1000
-
+  transition: 0.5s all ease-in-out
+  &.hidden
+    display: block
+    transform: translateY(100%)
+    .toggler::after
+      content: '⇪'
   .toggler
     padding: 0.25em 0.5em
     border-radius: 40% 40% 0 0
@@ -14,13 +19,15 @@
     left: 50%
     top: 0
     transform: translate(-50%,-100%)
-    font-size: 2em
-    display: inline-block
+    font-size: 1.25em
+    display: block
     z-index: 500
+    transition: 0.2s ease-in-out
+    &:hover
+      color: $primary-color
     &::after
-      content: '⇪'
-    &.open::after
       content: '⇩'
+
 
   h1
     font-size: 2em

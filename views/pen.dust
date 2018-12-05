@@ -30,7 +30,7 @@
           <iframe id="iFrame" src="/preview.html"></iframe>
         </div>
       </div>
-      <div id="room-settings">
+      <div id="room-settings" class='hidden'>
         {> "partials/creator" /}
       </div>
       <script src="/scripts/ace/ace.js" charset="utf-8"></script>
