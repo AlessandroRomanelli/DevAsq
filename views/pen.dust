@@ -8,12 +8,15 @@
       {> "partials/menu" /}
       <ul id="tabs" class="container">
         <li id="privateTab" class="switchTab">
-          Private
+          <button class="closeButton">x</button>
+          private
         </li>
         <li id="publicTab" class="switchTab">
-          Public
+          <button class="closeButton">x</button>
+          public
         </li>
         <li id="addTab" class="switchTab">
+          <button class="closeButton">x</button>
           +
         </li>
         {> "partials/tab" /}
