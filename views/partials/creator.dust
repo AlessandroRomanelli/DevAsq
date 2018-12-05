@@ -1,0 +1,65 @@
+<div class="toggler"></div>
+<h1>Room Management</h1>
+<hr>
+<div id="users">
+  <div class="user">
+    <img class='user-icon' src="/images/user.png">
+    <p class='user-name'>A. Lorem</p>
+    <div>Active Pen: <span class='user-current-pen'>Private</span></div>
+    <button class="pen-loader" type="button" name="button">Load Pen</button>
+    <div class="signal"></div>
+  </div>
+  <div class="user">
+    <img class='user-icon' src="/images/user.png">
+    <p class='user-name'>B. Lorem</p>
+    <div>Active Pen: <span class='user-current-pen'>Private</span></div>
+    <button class="pen-loader" type="button" name="button">Load Pen</button>
+    <div class="signal"></div>
+  </div>
+  <div class="user">
+    <img class='user-icon' src="/images/user.png">
+    <p class='user-name'>C. Lorem</p>
+    <div>Active Pen: <span class='user-current-pen'>Private</span></div>
+    <button class="pen-loader" type="button" name="button">Load Pen</button>
+    <div class="signal"></div>
+  </div>
+  <div class="user">
+    <img class='user-icon' src="/images/user.png">
+    <p class='user-name'>D. Lorem</p>
+    <div>Active Pen: <span class='user-current-pen'>Private</span></div>
+    <button class="pen-loader" type="button" name="button">Load Pen</button>
+    <div class="signal"></div>
+  </div>
+  <div class="user">
+    <img class='user-icon' src="/images/user.png">
+    <p class='user-name'>A. Lorem</p>
+    <div>Active Pen: <span class='user-current-pen'>Private</span></div>
+    <button class="pen-loader" type="button" name="button">Load Pen</button>
+    <div class="signal"></div>
+  </div>
+  <div class="user">
+    <img class='user-icon' src="/images/user.png">
+    <p class='user-name'>B. Lorem</p>
+    <div>Active Pen: <span class='user-current-pen'>Private</span></div>
+    <button class="pen-loader" type="button" name="button">Load Pen</button>
+    <div class="signal"></div>
+  </div>
+  <div class="user">
+    <img class='user-icon' src="/images/user.png">
+    <p class='user-name'>C. Lorem</p>
+    <div>Active Pen: <span class='user-current-pen'>Private</span></div>
+    <button class="pen-loader" type="button" name="button">Load Pen</button>
+    <div class="signal"></div>
+  </div>
+  <div class="user">
+    <img class='user-icon' src="/images/user.png">
+    <p class='user-name'>D. Lorem</p>
+    <div>Active Pen: <span class='user-current-pen'>Private</span></div>
+    <button class="pen-loader" type="button" name="button">Load Pen</button>
+    <div class="signal"></div>
+  </div>
+</div>
+
+{! {#users}
+  {> "partials/user" /}
+{/users} !}

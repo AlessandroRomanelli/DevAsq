@@ -61,6 +61,7 @@
   padding-right: 1em
   border-bottom: 1px solid lighten($color-background, 20%)
   li
+    outline: 0
     height: 30px
     overflow: hidden
     min-width: 120px
@@ -77,6 +78,8 @@
     color: gray
     letter-spacing: 1px
     transition: 0.2s all ease-in-out
+    &.locked
+      content: 'LOCK'
     span
       padding: 0 0 0 1em
     .closeButton
@@ -115,33 +118,3 @@
 
     &:last-of-type
       min-width: 50px
-
-    // &:active
-    //   background-color: #333333
-    //   z-index: 2
-    //   border-bottom-color: $dark
-    //   color: white
-    //   &::before
-    //     box-shadow: 2px 2px 0 $color-background
-    //   &::after
-    //     box-shadow: -2px 2px 0 $color-background
-    // &::before
-    //   &::after
-    //     position: absolute
-    //     bottom: -1px
-    //     width: 6px
-    //     height: 6px
-    //     content: " "
-    //   left: -6px
-    //   border: 1px solid $dark
-    //   border-bottom-right-radius: 6px
-    //   border-width: 0 1px 1px 0
-    //   box-shadow: 2px 2px 0 red
-    //   box-shadow: 2px 2px 0 $dark
-    // &::after
-    //   right: -6px
-    //   border: 1px solid $dark
-    //   border-bottom-left-radius: 6px
-    //   border-width: 0 0 1px 1px
-    //   box-shadow: -2px 2px 0 red
-    //   box-shadow: -2px 2px 0 $dark
