@@ -7,13 +7,6 @@
     <body onload="init()">
       {> "partials/menu" /}
       <ul id="tabs" class="container">
-        <li class="active switchTab">
-          <span>Public</span>
-        </li>
-        <li class="switchTab">
-          <span>Private</span>
-          <button class="closeButton">x</button>
-        </li>
         <li class="switchTab">
           +
         </li>

@@ -19,8 +19,10 @@ class App {
         this.currentPen = 0;
         this.publicPen = Pen.createFromPen(room.publicPen);
         this.pens = [this.publicPen];
+        this.createTabForPen(this.publicPen);
         for (let i = 0; i < room.users[id].length; i++) {
             const pen = room.users[id][i];
+            this.createTabForPen(pen);
             this.pens.push(Pen.createFromPen(pen));
         }
         this.setupTabsHandlers();
@@ -28,6 +30,7 @@ class App {
     }
 
     switchPen(index) {
+        console.log("Switching from " + this.currentPen + " to " + index);
         const tabs = document.getElementById("tabs").childNodes;
         tabs[this.currentPen].className = "switchTab";
         tabs[index].className = "active switchTab";
@@ -45,15 +48,28 @@ class App {
         return this.pens[this.currentPen];
     }
 
+    createTabForPen(pen) {
+        dust.render("partials/tab", {pen}, function (err, out) {
+            let li = document.createElement("li");
+            const nodes = document.getElementById("tabs");
+            nodes.insertBefore(li, nodes.childNodes[nodes.childNodes.length - 1]);
+            li.outerHTML = out;
+            if (pen.title === "Public") {
+                li = nodes.childNodes[nodes.childNodes.length - 2];
+                li.removeChild(li.lastChild);
+            }
+        });
+    }
+
     createPen() {
         doJSONRequest('POST', `/room/${this.room.name}/pen`, {}, {})
         .then((res) => {
             const pen = new Pen(res.title, res.id);
             this.pens.push(pen);
-            dust.render("partials/tab", res, function (err, out) {
-                console.log(out);
-            });
+            console.log(res);
+            this.createTabForPen(res);
             this.switchPen(this.pens.length - 1);
+            this.setupTabsHandlers();
         });
     }
 
@@ -82,9 +98,9 @@ class App {
 
         const penID = this.pens[index].id;
         doJSONRequest('PUT', `/room/${this.room.name}/pen/${penID}`, {}, { name })
-            .then((res) => {
-                this.pens[index] = new Pen(res.title, res.id, res.html, res.css, res.js);
-            });
+        .then((res) => {
+            this.pens[index] = new Pen(res.title, res.id, res.html, res.css, res.js);
+        });
     }
 
     deletePen(index) {
@@ -94,12 +110,14 @@ class App {
 
         const penID = this.pens[index].id;
         doFetchRequest('DELETE', `/room/${this.room.name}/pen/${penID}`, {}, {})
-            .then((res) => {
-                this.pens.splice(index, 1);
-                if (index === this.currentPen) {
-                    this.switchPen(index - 1);
-                }
-            });
+        .then((res) => {
+            this.pens.splice(index, 1);
+            if (index === this.currentPen) {
+                this.switchPen(index - 1);
+            }
+            const tabs = document.getElementById("tabs");
+            tabs.removeChild(tabs.childNodes[index]);
+        });
     }
 
     setupTabsHandlers() {
@@ -109,22 +127,29 @@ class App {
         const iFrame = document.getElementById("iFrame");
 
         for (let i = 0; i < tabs.length - 1; i++) {
-            tabs[i].onclick = (event) => {
+            tabs[i].onclick = ((event) => {
                 event.preventDefault();
                 this.switchPen(i);
                 iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
-            };
+            });
 
             if (i !== 0) {
                 const span = tabs[i].querySelector("span");
+                const deleteBtn = tabs[i].querySelector("button");
 
-                span.ondblclick = (event) => {
+                span.ondblclick = ((event) => {
                     event.target.contentEditable = true;
                     event.target.focus();
-                };
-                span.onblur = (event) => {
+                });
+
+                span.onblur = ((event) => {
                     event.target.contentEditable = false;
-                }
+                });
+
+                deleteBtn.onclick = ((event) => {
+                    event.preventDefault();
+                    this.deletePen(i);
+                })
             }
         }
 
