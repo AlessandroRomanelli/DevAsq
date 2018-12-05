@@ -32,9 +32,9 @@ class Room {
         this.creator = creatorId;
         this.users = {};
         this.users[creatorId] = [
-            new Pen('private', creatorId),
+            new Pen('Private', creatorId),
         ];
-        this.publicPen = new Pen('public', creatorId);
+        this.publicPen = new Pen('Public', creatorId);
         this.checkers = [];
         this.isPassworded = false;
     }
@@ -83,7 +83,7 @@ class Room {
 
     join(userId) {
         const users = Object.keys(this.users);
-        const pen = new Pen('private', userId);
+        const pen = new Pen('Private', userId);
         for (let i = 0; i < users.length; i += 1) {
             if (users[i] === userId) return;
         }
