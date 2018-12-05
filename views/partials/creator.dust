@@ -1,0 +1,8 @@
+<div class="toggler"></div>
+<h1>Room Partecipants</h1>
+<hr>
+<div id="users">
+  {#users}
+    {> "partials/user" /}
+  {/users}
+</div>
