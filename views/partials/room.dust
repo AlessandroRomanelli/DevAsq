@@ -1,6 +1,5 @@
 <td> {name} </td>
 <td> {users} </td>
-{isPassworded}
 {@eq key=isPassworded value="true"}
     <td> <input type="password" class="passworded"> </td>
 {:else}
