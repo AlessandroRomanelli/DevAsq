@@ -41,4 +41,12 @@ function addTogglerListener() {
     toggler.onclick = ((event) => {
         roomSettings.classList.toggle("hidden");
     });
+
+    toggler.onmouseenter = ((event) => {
+        document.body.style.cursor = "pointer";
+    });
+
+    toggler.onmouseleave = ((event) => {
+        document.body.style.cursor = "default";
+    })
 }
