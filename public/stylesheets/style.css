@@ -1,0 +1,335 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Inconsolata|Open+Sans");
+* {
+  box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  color: white;
+  font: 100% OpenSans, sans-serif;
+  background-color: #333333; }
+
+form fieldset:not(.submit) {
+  position: relative;
+  margin: 1em 0;
+  border: none;
+  padding: 0; }
+  form fieldset:not(.submit)::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    border-radius: 2px;
+    background: #DE6C2F;
+    transform: translate(0, -8px);
+    transition: 0.2s all ease-in-out; }
+  form fieldset:not(.submit):hover::before {
+    width: 100%; }
+
+nav.menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #262626;
+  padding: 0 1em;
+  border-bottom: 1px solid #404040;
+  z-index: 10; }
+  nav.menu img {
+    max-height: 20px;
+    display: inline-block; }
+  nav.menu .profile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    z-index: 5; }
+    nav.menu .profile > a {
+      font-size: 1.2em;
+      margin-left: 1em;
+      color: white;
+      text-align: center;
+      padding: 0.5em 1em;
+      text-decoration: none; }
+      nav.menu .profile > a:not(.logo):hover {
+        background-color: #ddd;
+        color: black; }
+      nav.menu .profile > a:not(.logo):active {
+        background-color: #ffffff;
+        color: black; }
+
+#home.container {
+  display: grid;
+  grid-template-rows: 50vh 1fr;
+  grid-template-areas: "header" "content";
+  text-align: center; }
+  #home.container .header {
+    position: relative;
+    grid-area: header; }
+    #home.container .header:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("/images/background-homepage.jpg") no-repeat center;
+      background-size: cover;
+      filter: blur(2px);
+      z-index: -1;
+      opacity: 0.6; }
+    #home.container .header .title {
+      position: absolute;
+      max-width: 500px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); }
+      #home.container .header .title img {
+        margin: 0;
+        width: 100%; }
+      #home.container .header .title p {
+        text-align: right;
+        margin-top: 0; }
+
+.profile #logout {
+  text-align: right; }
+
+.login {
+  margin: 30px; }
+  .login a {
+    text-decoration: none;
+    color: white; }
+  .login a:hover {
+    background-color: #ddd;
+    color: black; }
+
+.form-container {
+  padding: 1em 0; }
+
+.manage-rooms {
+  margin: 2em 0;
+  display: flex;
+  justify-content: space-around;
+  grid-area: content;
+  position: relative; }
+  .manage-rooms > div:not(.separator) {
+    min-width: 300px; }
+  .manage-rooms > .separator {
+    border-radius: 2px;
+    width: 4px;
+    background: #DE6C2F; }
+  .manage-rooms h1 {
+    margin-bottom: 0; }
+  .manage-rooms form fieldset:not(.submit) {
+    position: relative;
+    margin: 1em 0;
+    border: none;
+    padding: 0; }
+    .manage-rooms form fieldset:not(.submit)::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 3px;
+      border-radius: 2px;
+      background: #DE6C2F;
+      transform: translate(0, -8px);
+      transition: 0.2s all ease-in-out; }
+    .manage-rooms form fieldset:not(.submit):hover::before {
+      width: 100%; }
+  .manage-rooms form input {
+    color: #cccccc;
+    height: 1.5em;
+    outline: none;
+    background: transparent;
+    border: none;
+    height: 3em;
+    width: 100%;
+    display: block;
+    font-size: 1em;
+    transition: 0.2s ease-in-out; }
+    .manage-rooms form input:focus {
+      color: white; }
+    .manage-rooms form input:hover {
+      cursor: pointer; }
+  .manage-rooms form .submit {
+    position: relative;
+    display: inline-block;
+    padding: 0;
+    border: none; }
+    .manage-rooms form .submit input {
+      color: white;
+      text-transform: uppercase;
+      width: auto;
+      border-radius: 1em;
+      margin: 0 auto;
+      display: inline; }
+    .manage-rooms form .submit::after {
+      font-size: 1.5em;
+      position: relative;
+      right: 10px;
+      bottom: -2px;
+      color: #DE6C2F;
+      display: inline;
+      content: '▸';
+      padding: 0.5em 0;
+      opacity: 0;
+      transition: 0.2s ease-in-out; }
+    .manage-rooms form .submit:hover::after {
+      right: 0;
+      opacity: 1; }
+
+.login {
+  padding: 1em;
+  width: 200%;
+  border-radius: 0 0 10px 10px;
+  border-bottom: 1px solid #404040;
+  background: #262626;
+  position: absolute;
+  top: 43px;
+  right: 0;
+  z-index: 1;
+  transition: 0.5s ease-in-out; }
+  .login.hidden {
+    right: -250%; }
+  .login p {
+    text-align: center;
+    font-size: 0.66em; }
+  .login a {
+    text-decoration: none;
+    color: #ecaa87;
+    transition: 0.2s ease-in-out; }
+    .login a:hover {
+      font-weight: bold;
+      color: #DE6C2F; }
+  .login .profile-form fieldset {
+    border: none; }
+  .login .profile-form fieldset:not(.submit) {
+    width: 100%;
+    margin: 0;
+    padding: 0; }
+    .login .profile-form fieldset:not(.submit)::before {
+      height: 2px;
+      bottom: -2px; }
+  .login .profile-form input {
+    color: white;
+    display: block;
+    outline: 0;
+    height: 3em;
+    width: 100%;
+    border: none;
+    background: none; }
+    .login .profile-form input[type='submit'] {
+      display: inline;
+      text-transform: uppercase;
+      border-radius: 5px;
+      transition: 0.2s ease-in-out; }
+      .login .profile-form input[type='submit']:hover {
+        cursor: pointer;
+        background: #DE6C2F; }
+
+#pens.container {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-areas: "controls" "preview";
+  grid-template-columns: 1fr;
+  color: inherit; }
+  #pens.container .controls {
+    padding: 1em;
+    grid-area: controls;
+    width: 100%;
+    display: grid;
+    background: #262626;
+    grid-template-areas: "html css js";
+    grid-template-columns: 1fr 1fr 1fr; }
+  #pens.container .pen {
+    height: 300px;
+    overflow: hidden; }
+    #pens.container .pen h1 {
+      margin: 0; }
+  #pens.container #htmlPen {
+    grid-area: html; }
+  #pens.container #cssPen {
+    grid-area: css; }
+  #pens.container #jsPen {
+    grid-area: js; }
+  #pens.container .preview {
+    grid-area: preview;
+    background: white;
+    height: calc(100vh - 300px); }
+  #pens.container #iFrame {
+    width: 100%;
+    height: 100%;
+    grid-area: pre;
+    border: none;
+    overflow: hidden; }
+  #pens.container .codePane {
+    height: 100%;
+    border: 1px solid black; }
+
+#tabs {
+  display: flex;
+  justify-content: flex-end;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  line-height: 1.75em;
+  text-align: center;
+  background-color: #333333;
+  margin-top: 1em;
+  padding-right: 1em;
+  border-bottom: 1px solid #666666; }
+  #tabs li {
+    height: 30px;
+    overflow: hidden;
+    min-width: 120px;
+    position: relative;
+    bottom: -2px;
+    border: 1px solid #666666;
+    border-top-left-radius: 0.25em;
+    border-top-right-radius: 0.25em;
+    background: #333333;
+    font-size: 1em;
+    font-family: OpenSans, sans-serif;
+    color: white;
+    z-index: 0;
+    color: gray;
+    letter-spacing: 1px;
+    transition: 0.2s all ease-in-out; }
+    #tabs li span {
+      padding: 0 0 0 1em; }
+    #tabs li .closeButton {
+      padding: 0 1em 0 0.25em;
+      font-weight: lighter;
+      font-size: 1em;
+      color: white;
+      border: none;
+      background: none;
+      opacity: 0;
+      outline: none;
+      font-family: OpenSans, sans-serif;
+      transition: 0.2s ease-in-out; }
+    #tabs li:hover .closeButton {
+      opacity: 0.85;
+      cursor: pointer; }
+    #tabs li.active {
+      color: white;
+      background: #262626;
+      border-bottom: 0; }
+      #tabs li.active .closeButton {
+        opacity: 1; }
+    #tabs li:hover {
+      cursor: pointer; }
+    #tabs li:not(.active):hover {
+      background: linear-gradient(to top, #262626 25%, #404040 100%);
+      border-bottom-color: transparent;
+      box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 #333333;
+      color: white;
+      transition: 0.2s all ease-in-out; }
+    #tabs li:last-of-type {
+      min-width: 50px; }
+
+/*# sourceMappingURL=style.css.map */

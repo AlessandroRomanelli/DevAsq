@@ -7,19 +7,16 @@
     <body onload="init()">
       {> "partials/menu" /}
       <ul id="tabs" class="container">
-        <li id="privateTab" class="switchTab">
-          <button class="closeButton">x</button>
-          private
+        <li class="active switchTab">
+          <span>Public</span>
         </li>
-        <li id="publicTab" class="switchTab">
+        <li class="switchTab">
+          <span contenteditable="true">Private</span>
           <button class="closeButton">x</button>
-          public
         </li>
-        <li id="addTab" class="switchTab">
-          <button class="closeButton">x</button>
+        <li class="switchTab">
           +
         </li>
-        {> "partials/tab" /}
       </ul>
       <div id="pens" class="container">
         <div class="controls">

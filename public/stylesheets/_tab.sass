@@ -1,23 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Inconsolata|Open+Sans')
-
-$font-stack-editor:    Inconsolata, monospace
-$font-stack: Open+Sans, sans-serif
-$primary-color: #DE6C2F
-$color-background: #333333
-$dark: #2d2d2d
-$default-margin: 30px
-
-*
-  box-sizing: border-box
-
-body
-  margin: 0
-  padding: 0
-  color: white
-  font: 100% $font-stack
-  background-color: $color-background
-
-
 #pens.container
   position: relative
   width: 100%
@@ -31,7 +11,7 @@ body
     grid-area: controls
     width: 100%
     display: grid
-    background: darken($color-background, 5%)
+    background: $dark
     grid-template-areas: "html css js"
     grid-template-columns: 1fr 1fr 1fr
 
@@ -69,94 +49,99 @@ body
 //top - bar with panes to switch
 
 #tabs
+  display: flex
+  justify-content: flex-end
   list-style: none
   margin: 0
   padding: 0
-  line-height: 24px
+  line-height: 1.75em
   text-align: center
-  background-color: #4d4d4d
-  padding-right: 15px
-  position: relative
-  &::after
-    position: absolute
-    content: ""
-    width: 100%
-    bottom: 0
-    left: 0
-    border-bottom: 1px solid #333333
-    z-index: 1
-  &::before
-    z-index: 1
+  background-color: $color-background
+  margin-top: 1em
+  padding-right: 1em
+  border-bottom: 1px solid lighten($color-background, 20%)
   li
-    background-color: inherit
-    display: inline-block
-    float: right
-    border: 1px solid $dark
-    border-top-left-radius: 6px
-    border-top-right-radius: 10px
-    padding: 2px 50px
-    font-size: 15px
+    height: 30px
+    overflow: hidden
+    min-width: 120px
+    position: relative
+    bottom: -2px
+    border: 1px solid lighten($color-background, 20%)
+    border-top-left-radius: 0.25em
+    border-top-right-radius: 0.25em
+    background: $color-background
+    font-size: 1em
     font-family: $font-stack
     color: white
-    position: relative
     z-index: 0
-    margin: 0 -5px
     color: gray
     letter-spacing: 1px
+    transition: 0.2s all ease-in-out
+    span
+      padding: 0 0 0 1em
     .closeButton
-      display: none
+      padding: 0 1em 0 0.25em
+      font-weight: lighter
+      font-size: 1em
+      color: white
+      border: none
+      background: none
+      opacity: 0
+      outline: none
+      font-family: $font-stack
+      transition: 0.2s ease-in-out
+    &:hover .closeButton
+      opacity: 0.85
+      cursor: pointer
 
+    &.active
+      color: white
+      background: $dark
+      border-bottom: 0
+      .closeButton
+        opacity: 1
 
     &:hover
-      background: linear-gradient(to bottom, $dark 30%, #3f3e3e 100%)
+      cursor: pointer
+
+    &:not(.active):hover
+      background: linear-gradient(to top, $dark 25%, lighten($dark, 10%) 100%)
+      border-bottom-color: transparent
       box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 $color-background
-      text-shadow: 0 1px $color-background
+      // text-shadow: 0 1px $color-background
       color: white
-      transition: 1s
-      .closeButton
-        display: inline-block
-        transition: 1s
-        color: gray
-        background-color: transparent
-        position: absolute
-        right: 0px
-        top: 1px
-        border: none
-        outline: none
-        font-family: $font-stack
-        font-size: 14px
-        &:hover
-          color: white
+      transition: 0.2s all ease-in-out
 
 
+    &:last-of-type
+      min-width: 50px
 
-
-    &:active
-      background-color: #333333
-      z-index: 2
-      border-bottom-color: $dark
-      color: white
-      &::before
-        box-shadow: 2px 2px 0 $color-background
-      &::after
-        box-shadow: -2px 2px 0 $color-background
-    &::before
-      &::after
-        position: absolute
-        bottom: -1px
-        width: 6px
-        height: 6px
-        content: " "
-      left: -6px
-      border: 1px solid $dark
-      border-bottom-right-radius: 6px
-      border-width: 0 1px 1px 0
-      box-shadow: 2px 2px 0 red
-      box-shadow: 2px 2px 0 $dark
-    &::after
-      right: -6px
-      border: 1px solid $dark
-      border-bottom-left-radius: 6px
-      border-width: 0 0 1px 1px
-      box-shadow: -2px 2px 0 red
-      box-shadow: -2px 2px 0 $dark
+    // &:active
+    //   background-color: #333333
+    //   z-index: 2
+    //   border-bottom-color: $dark
+    //   color: white
+    //   &::before
+    //     box-shadow: 2px 2px 0 $color-background
+    //   &::after
+    //     box-shadow: -2px 2px 0 $color-background
+    // &::before
+    //   &::after
+    //     position: absolute
+    //     bottom: -1px
+    //     width: 6px
+    //     height: 6px
+    //     content: " "
+    //   left: -6px
+    //   border: 1px solid $dark
+    //   border-bottom-right-radius: 6px
+    //   border-width: 0 1px 1px 0
+    //   box-shadow: 2px 2px 0 red
+    //   box-shadow: 2px 2px 0 $dark
+    // &::after
+    //   right: -6px
+    //   border: 1px solid $dark
+    //   border-bottom-left-radius: 6px
+    //   border-width: 0 0 1px 1px
+    //   box-shadow: -2px 2px 0 red
+    //   box-shadow: -2px 2px 0 $dark
