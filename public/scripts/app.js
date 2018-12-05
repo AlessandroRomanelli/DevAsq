@@ -30,7 +30,6 @@ class App {
     }
 
     switchPen(index) {
-        console.log("Switching from " + this.currentPen + " to " + index);
         const tabs = document.getElementById("tabs").childNodes;
         tabs[this.currentPen].className = "switchTab";
         tabs[index].className = "active switchTab";
@@ -42,7 +41,6 @@ class App {
         html.setValue(pen.html);
         css.setValue(pen.css);
         js.setValue(pen.js);
-        console.log(pen);
         const iFrame = document.getElementById("iFrame");
         iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
     }
@@ -69,7 +67,6 @@ class App {
         .then((res) => {
             const pen = new Pen(res.title, res.id);
             this.pens.push(pen);
-            console.log(res);
             this.createTabForPen(res);
             this.setupTabsHandlers();
             this.switchPen(this.pens.length - 1);
