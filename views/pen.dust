@@ -11,7 +11,7 @@
           <span>Public</span>
         </li>
         <li class="switchTab">
-          <span contenteditable="true">Private</span>
+          <span>Private</span>
           <button class="closeButton">x</button>
         </li>
         <li class="switchTab">
@@ -22,22 +22,21 @@
         <div class="controls">
           <div class="pen">
             <h1>HTML</h1>
-            <div id="htmlPen" class="codePane" contenteditable="true"></div>
+            <div id="htmlPen" class="codePane"></div>
           </div>
           <div class="pen">
             <h1>CSS</h1>
-            <div id="cssPen" class="codePane" contenteditable="true"></div>
+            <div id="cssPen" class="codePane"></div>
           </div>
           <div class="pen">
             <h1>JS</h1>
-            <div id="jsPen" class="codePane" contenteditable="true"></div>
+            <div id="jsPen" class="codePane"></div>
           </div>
         </div>
         <div class="preview">
           <iframe id="iFrame" src="/preview.html"></iframe>
         </div>
 
-        <!-- tabs go here programmatically -->
         <script src="/scripts/ace/ace.js" charset="utf-8"></script>
         <script src="/scripts/ace/ext-language_tools.js" charset="utf-8"></script>
         <script src="/socket.io/socket.io.js"></script>

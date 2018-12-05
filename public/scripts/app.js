@@ -28,6 +28,9 @@ class App {
     }
 
     switchPen(index) {
+        const tabs = document.getElementById("tabs").childNodes;
+        tabs[this.currentPen].className = "switchTab";
+        tabs[index].className = "active switchTab";
         this.currentPen = index;
         const html = ace.edit('htmlPen');
         const css = ace.edit('cssPen');
@@ -36,7 +39,6 @@ class App {
         html.setValue(pen.html);
         css.setValue(pen.css);
         js.setValue(pen.js);
-        console.log(pen);
     }
 
     getCurrentPen() {
@@ -45,11 +47,14 @@ class App {
 
     createPen() {
         doJSONRequest('POST', `/room/${this.room.name}/pen`, {}, {})
-            .then((res) => {
-                const pen = new Pen(res.title, res.id);
-                this.pens.push(pen);
-                this.switchPen(this.pens.length - 1);
+        .then((res) => {
+            const pen = new Pen(res.title, res.id);
+            this.pens.push(pen);
+            dust.render("partials/tab", res, function (err, out) {
+                console.log(out);
             });
+            this.switchPen(this.pens.length - 1);
+        });
     }
 
     updatePen(mode, value) {
@@ -67,7 +72,6 @@ class App {
         default:
             break;
         }
-        // socket.emit('pen.change', { pen });
     }
 
 
@@ -99,14 +103,31 @@ class App {
     }
 
     setupTabsHandlers() {
-        const tabs = document.getElementById('tabs').childNodes;
+        const tabBar = document.getElementById('tabs');
+        const tabs = tabBar.childNodes;
+        const plusTab = tabBar.lastChild;
         const iFrame = document.getElementById("iFrame");
-        for (let i = 0; i < tabs.length; i++) {
-            tabs[i].addEventListener('click', (event) => {
+
+        for (let i = 0; i < tabs.length - 1; i++) {
+            tabs[i].onclick = (event) => {
                 event.preventDefault();
                 this.switchPen(i);
                 iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
-            });
+            };
+
+            if (i !== 0) {
+                const span = tabs[i].querySelector("span");
+
+                span.ondblclick = (event) => {
+                    event.target.contentEditable = true;
+                    event.target.focus();
+                };
+                span.onblur = (event) => {
+                    event.target.contentEditable = false;
+                }
+            }
         }
+
+        plusTab.onclick = this.createPen.bind(this);
     }
 }
