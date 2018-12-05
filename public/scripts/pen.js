@@ -12,6 +12,8 @@ Array.prototype.last = function () {
 
 
 function init() {
+    handleLoginForm();
+    handleLogout();
     const app = new App(room, user._id);
 
 
@@ -20,11 +22,11 @@ function init() {
     const socket = io();
 
     socket.on('connect', () => {
-        socket.emit('settings.bindID', {id: user._id});
+        socket.emit('settings.bindID', { id: user._id });
     });
 
     socket.on('reconnect', (attemptNumber) => {
-        console.log("Socket reconnected!", "ok");
+        console.log('Socket reconnected!', 'ok');
     });
 
     socket.on('disconnect', (reason) => {
