@@ -10,66 +10,38 @@ const { roomStorage, Pen } = require('../rooms');
 
 const loops = ["ForStatement", "WhileStatement", "DoWhileStatement"];
 
+function random(used) {
+    const random = Math.random()
+        .toString(36)
+        .substring(2, 16);
+    if (used && used.includes(random)) {
+        return random(used);
+    } else {
+        used.push(random);
+        return random;
+    }
+}
 
 function traverseTree(tree, used) {
-    function random() {
-        const random = Math.random().toString(36).substring(2, 16);
-        if (used && used.includes(random)) {
-            return random();
-        } else {
-            used.push(random);
-            return random;
-        }
-    }
-
     if (!tree) {
         return;
     }
-    if (!used) {
-        used = [];
-    }
+    used = used || [];
 
-    if (tree.body) {
-        for (let i = 0; i < tree.body.length; i++) {
-            if (loops.includes(tree.body[i].type)) {
-                const name = `esprimaCounter${random()}`;
-                tree.body.splice(i, 0, esprima.parse(`let ${name} = 0`).body[0]);
-                i++;
-                console.log("Label", tree.body[i]);
-                tree.body[i].body.body.push(esprima.parse(`${name} += 1`).body[0]);
-                tree.body[i].body.body.push(esprima.parse(`if (${name} >= 10) {throw new Error('loop')}`).body[0]);
-                // console.log(tree.body[i].body.body[1]);
-                // console.log(esprima.parse("break"));
-                // console.log(esprima.parse("throw new Error('loop')"));
-                // tree.body[i].body.body[1].consequent.body.push(esprima.parse(`break`));
-                // tree.body[i].body.body.unshift(esprima.parse(`if (${name} >= 10) { break }`))
-            }
-            traverseTree(tree.body[i], used);
+    let array = (tree.consequent && tree.consequent.body) || [];
+    array = (tree.body && tree.body.body || tree.body) || array;
+    for (let i = 0; i < array.length; i++) {
+        if (loops.includes(array[i].type)) {
+            const name = `esprimaCounter${random(used)}`;
+            array.splice(i++, 0, esprima.parse(`let ${name} = 0`).body[0]);
+            const body = array[i].body.body;
+            const incrementer = `${name} += 1`;
+            const loopBreaker = `if (${name} >= 4096) {throw new Error('Infinite loop detected')}`;
+            body.unshift(esprima.parse(incrementer).body[0]);
+            body.unshift(esprima.parse(loopBreaker).body[0]);
         }
+        traverseTree(array[i], used);
     }
-
-    // const array = tree.body || tree.consequent.body || [];
-    // for (let i = 0; i < array.length; i++) {
-    //     if (loops.includes(array[i].type)) {
-    //         const id = "esprimaCounter" + random();
-    //         const declaration = esprima.parseScript(`let ${id} = 0;`);
-    //         const breaker = esprima.parseScript(`${id}++; if (${id} >= 32768) return; `);
-    //         array.splice(i, 0, declaration);
-    //         i++;
-    //         array[i].body.splice(0, 0, breaker);
-    //     }
-    //     traverseTree(array[i], used);
-    // }
-
-
-    // if (loops.includes(tree.type)) {
-    //     console.log(tree)
-    // } else {
-    //     const array = tree.body || tree.consequent.body || [];
-    //     for (let i = 0; i < array.length; i++) {
-    //         traverseTree(array[i]);
-    //     }
-    // }
 }
 
 
@@ -84,10 +56,7 @@ router.get('/:roomName', (req, res) => {
 
     const tree = esprima.parseScript(js);
     traverseTree(tree);
-    console.log(tree);
     const finalJs = escodegen.generate(tree);
-
-    console.log("FINAL", finalJs);
 
     let resHtml = html.split('</head>');
     resHtml[0] += `<style>${css}</style>`;
