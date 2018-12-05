@@ -42,6 +42,9 @@ class App {
         html.setValue(pen.html);
         css.setValue(pen.css);
         js.setValue(pen.js);
+        console.log(pen);
+        const iFrame = document.getElementById("iFrame");
+        iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
     }
 
     getCurrentPen() {
@@ -68,8 +71,8 @@ class App {
             this.pens.push(pen);
             console.log(res);
             this.createTabForPen(res);
-            this.switchPen(this.pens.length - 1);
             this.setupTabsHandlers();
+            this.switchPen(this.pens.length - 1);
         });
     }
 
@@ -117,6 +120,7 @@ class App {
             }
             const tabs = document.getElementById("tabs");
             tabs.removeChild(tabs.childNodes[index]);
+            this.setupTabsHandlers();
         });
     }
 
@@ -124,13 +128,11 @@ class App {
         const tabBar = document.getElementById('tabs');
         const tabs = tabBar.childNodes;
         const plusTab = tabBar.lastChild;
-        const iFrame = document.getElementById("iFrame");
 
         for (let i = 0; i < tabs.length - 1; i++) {
             tabs[i].onclick = ((event) => {
                 event.preventDefault();
                 this.switchPen(i);
-                iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
             });
 
             if (i !== 0) {
@@ -144,6 +146,7 @@ class App {
 
                 span.onblur = ((event) => {
                     event.target.contentEditable = false;
+                    this.changePenName(event.target.innerHTML, i);
                 });
 
                 deleteBtn.onclick = ((event) => {
