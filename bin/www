@@ -222,7 +222,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('pen.preview', (data) => {
-        let destination = data.roomName || userToSocket.get(data.userID) || userToSocket.get(data.pen.user);
+        console.log(data.pen);
+        let destination = data.roomName || userToSocket.get(data.userID) || userToSocket.get(data.pen.link.userID);
         socket.to(destination).emit('pen.updatePreview', data.pen);
     });
 });

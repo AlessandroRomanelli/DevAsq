@@ -55,10 +55,14 @@ function init() {
         console.log(pen);
         console.log(app.currentPen);
         console.log(app.indexOfPen(pen));
-        console.log(app.indexOfLinkedPen(pen));
+        console.log(app.indexOfPenInLinked(pen));
+        console.log(app.indexOfLinkedInPens(pen));
         console.log(app.pens);
-        if (app.indexOfPen(pen) === app.currentPen || app.indexOfLinkedPen(pen) === app.currentPen) {
-            console.log("SI");
+        if (app.indexOfPen(pen) === app.currentPen) {
+            app.changeAcesContent();
+        } else if (app.indexOfPenInLinked(pen) === app.currentPen) {
+            app.changeAcesContent();
+        } else if (app.indexOfLinkedInPens(pen) === app.currentPen) {
             app.changeAcesContent();
         }
     });

@@ -268,10 +268,24 @@ class App {
         return index;
     }
 
-    indexOfLinkedPen(pen) {
+    indexOfPenInLinked(pen) {
         let index = -1;
         for (let i = 0; i < this.pens.length; i++) {
             if (this.pens[i].link && this.pens[i].link.penID === pen.id) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
+    indexOfLinkedInPens(pen) {
+        if (!pen.link) {
+            return -1;
+        }
+        let index = -1;
+        for (let i = 0; i < this.pens.length; i++) {
+            if (pen.link.penID === this.pens[i].id) {
                 index = i;
                 break;
             }

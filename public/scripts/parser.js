@@ -76,9 +76,10 @@ function renderIFrame(app) {
             if (app.room.creator === app.userID && app.currentPen === 0) {
                 socket.emit('pen.preview', { pen: app.publicPen, roomName });
             } else if (app.room.creator === app.userID) {
-                socket.emit('pen.preview', { pen: app.pens[app.currentPen] });
+                console.log(app.getCurrentPen());
+                socket.emit('pen.preview', { pen: app.getCurrentPen() });
             } else {
-                socket.emit('pen.preview', { pen: app.pens[app.currentPen], userID: app.room.creator });
+                socket.emit('pen.preview', { pen: app.getCurrentPen(), userID: app.room.creator });
             }
         });
     };
