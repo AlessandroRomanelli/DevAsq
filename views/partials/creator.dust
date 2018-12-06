@@ -1,5 +1,5 @@
 <div class="toggler"><img src="/images/chevron.png" alt=""><span></span><img src="/images/chevron.png" alt=""></div>
-<h1>Room Partecipants</h1>
+<h1>Room Participants</h1>
 <hr>
 <div id="users">
   {#users}

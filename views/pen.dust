@@ -6,6 +6,11 @@
     </head>
     <body onload="init()">
       {> "partials/menu" /}
+      <div id="room-info">
+        <span>Name: <span id="room-name" class="info"></span></span>
+        <span id="raise-hand" class="info">Ask for help</span>
+        <span>Participants: <span id="participants" class="info"></span></span>
+      </div>
       <ul id="tabs" class="container">
         <li class="switchTab">
           +
