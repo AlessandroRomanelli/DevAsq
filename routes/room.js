@@ -107,6 +107,20 @@ router.put('/:roomName/pen/:penId', (req, res) => {
             break;
         }
     }
+
+    if (!pen) {
+        res.status(404).end();
+        return;
+    }
+
+    const creatorPens = room.users[room.creator];
+    for (let i = 0; i < creatorPens.length; i++) {
+        if (creatorPens[i].link && creatorPens[i].link.penID === pen.id) {
+            creatorPens[i].title = `${req.user.username} - ${name}`;
+        }
+    }
+
+
     res.status(200).json(pen);
 });
 

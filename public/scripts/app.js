@@ -306,9 +306,14 @@ class CreatorApp extends App {
         for (let i = 0; i < this.pens.length; i++) {
             const storedPen = this.pens[i];
             if (storedPen.link && storedPen.link.penID === pen.id) {
+                storedPen.title = `${this.users[userID].user.username} - ${pen.title}`;
                 storedPen.html = pen.html;
                 storedPen.css = pen.css;
                 storedPen.js = pen.js;
+
+                const tab = document.getElementById(storedPen.id).querySelector("span");
+                tab.innerText = storedPen.title;
+
                 if (this.currentPen === i) {
                     this.changeViewContent();
                 }
