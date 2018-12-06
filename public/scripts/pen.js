@@ -45,11 +45,6 @@ function init() {
         console.log(reason);
     });
 
-    socket.on('pen.update', (pen) => {
-        console.log(pen);
-        app.updatePen(pen);
-    });
-
     socket.on('pen.updatePreview', (pen) => {
         console.log('updating the preview');
         if (app.indexOfPen(pen) === app.currentPen) {
@@ -95,6 +90,18 @@ function init() {
         if (app instanceof CreatorApp) {
             app.signalHelp(id);
         }
+    });
+
+    socket.on('creator.userExit', (userID) => {
+        if (app instanceof CreatorApp) {
+            console.log('Deleting the user from local storage')
+            console.log(app);
+            delete app.room.users[userID];
+        }
+    });
+
+    socket.on('room.delete', () => {
+        window.location.pathname = '/';
     });
 }
 

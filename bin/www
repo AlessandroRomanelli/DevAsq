@@ -110,6 +110,29 @@ io.on('connection', (socket) => {
         console.log('client disconnected');
     });
 
+    socket.on('disconnecting', (reason) => {
+        console.log('Deleting user from the server storage and notify all users');
+        let userID = socketToUser.get(socket.id);
+        if (Object.keys(socket.rooms).length > 1) {
+            let roomName = Object.keys(socket.rooms)[1];
+            console.log(socket.rooms);
+            console.log(roomName);
+            let room = roomStorage[roomName];
+            console.log(room);
+            if (room) {
+                if (Object.keys(room.users).length === 0 || userID === room.creator) {
+                    if (userID === room.creator) {
+                        socket.to(roomName).emit('room.delete', roomName);
+                    }
+                    delete roomStorage[roomName];
+                } else {
+                    delete room.users[userID];
+                    socket.to(userToSocket.get(room.creator)).emit('creator.userExit');
+                }
+            }
+        }
+    });
+
     socket.on('settings.bindID', (user) => {
         console.log(user);
         socketToUser.put(socket.id, user.id);
@@ -156,15 +179,15 @@ io.on('connection', (socket) => {
         socket.to(creatorSocket).emit('creator.deletedPen', { id, pen });
     });
 
-    socket.on('pen.change', (o) => {
+    socket.on('pen.change', (data) => {
         console.log('update the pen');
-        console.log(o);
+        console.log(data);
         const userID = socketToUser.get(socket.id);
-        const room = roomStorage[o.roomName];
-        if (room.creator === userID && o.pen.title === 'Public') {
-            room.publicPen = o.pen;
+        const room = roomStorage[data.roomName];
+        if (room.creator === userID && data.pen.title === 'Public') {
+            room.publicPen = data.pen;
             // let socketID = userToSocket.get(userID);
-            socket.to(room.name).emit('pen.update', o.pen);
+            socket.to(room.name).emit('pen.update', data.pen);
             return;
         }
         const pens = room.users[userID];
@@ -172,8 +195,8 @@ io.on('connection', (socket) => {
         console.log(pens);
         for (let i = 0; i < pens.length; i++) {
             const pen = pens[i];
-            if (pen.id === o.pen.id) {
-                pens[i] = o.pen;
+            if (pen.id === data.pen.id) {
+                pens[i] = data.pen;
                 if (pen.title !== 'Public') {
                     socket.to(creatorSocket).emit('creator.updatePens', { id: userID, pen: pens[i] });
                 }
@@ -181,9 +204,9 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('pen.preview', (o) => {
-        let destination = o.roomName || o.userID || userToSocket.get(o.pen.user);
-        socket.to(destination).emit('pen.updatePreview', o.pen);
+    socket.on('pen.preview', (data) => {
+        let destination = data.roomName || data.userID || userToSocket.get(data.pen.user);
+        socket.to(destination).emit('pen.updatePreview', data.pen);
     });
 });
 
