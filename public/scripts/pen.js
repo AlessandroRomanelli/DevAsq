@@ -65,6 +65,14 @@ function init() {
         app.updatePen(pen);
     });
 
+    socket.on("pen.sharedCreated", (penID) => {
+        document.getElementById(penID).classList.add("shared");
+    });
+
+    socket.on("pen.sharedDeleted", (penID) => {
+        document.getElementById(penID).classList.remove("shared");
+    });
+
     socket.on('settings.userJoined', (user) => {
         if (app instanceof CreatorApp) {
             app.userConnected(user);

@@ -194,6 +194,22 @@ class App {
                     id: this.userID,
                     pen: this.pens[index]
                 });
+
+                if (this.pens[index].link) {
+                    let count = 0;
+                    for (let i = 0; i < this.pens.length; i++) {
+                        if (!this.pens[i].link || i === index) {
+                            continue;
+                        }
+                        if (this.pens[i].link.penID === this.pens[index].link.penID) {
+                            count++;
+                        }
+                    }
+                    if (count === 0) {
+                        socket.emit("pen.sharedDeleted", this.pens[index].link);
+                    }
+                }
+
                 this.pens.splice(index, 1);
                 if (index === this.currentPen) {
                     this.switchPen(index - 1);
@@ -454,7 +470,11 @@ class CreatorApp extends App {
                 this.changePenName(newTitle, this.currentPen, (() => {
                     const tabs = document.getElementById("tabs");
                     const newTab = tabs.childNodes[tabs.childNodes.length - 2];
+                    newTab.classList.toggle("shared");
                     newTab.querySelector("span").innerHTML = newTitle;
+
+                    socket.emit("pen.sharedCreated", { userID, penID: pen.id });
+
                     penToModify = this.getCurrentPen();
                     penToModify.link = { userID, penID: pen.id };
                     this.setupTabsHandlers();

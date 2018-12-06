@@ -230,6 +230,18 @@ io.on('connection', (socket) => {
         }
         socket.to(destination).emit('pen.updatePreview', data.pen);
     });
+
+    socket.on("pen.sharedCreated", (data) => {
+        const { userID, penID } = data;
+        const destination = userToSocket.get(userID);
+        socket.to(destination).emit("pen.sharedCreated", penID);
+    });
+
+    socket.on("pen.sharedDeleted", (data) => {
+        const { userID, penID } = data;
+        const destination = userToSocket.get(userID);
+        socket.to(destination).emit("pen.sharedDeleted", penID);
+    });
 });
 
 eventBus.on('event', (event) => {
