@@ -277,6 +277,7 @@ class CreatorApp extends App {
             user,
             currentPen: this.publicPen,
             pens: [],
+            ping: false
         };
         this.updateUI();
     }
@@ -318,6 +319,7 @@ class CreatorApp extends App {
     }
 
     signalHelp(id) {
+        this.users[id].ping = !this.users[id].ping;
         document.getElementById(id).classList.toggle("help-needed");
     }
 
@@ -327,7 +329,32 @@ class CreatorApp extends App {
         dust.render('partials/creator', { users: Object.values(this.users) }, ((err, out) => {
             roomSettings.innerHTML = out;
             this.addTogglerListener();
+            this.addUsersPing();
+            this.addUsersListener();
         }));
+    }
+
+    addUsersPing() {
+        for (let user in this.users) {
+            if (this.users[user].ping) {
+                this.signalHelp(user)
+            }
+        }
+    }
+
+    addUsersListener() {
+        const users = document.getElementById("users").childNodes;
+        users.forEach((user) => {
+            const image = user.querySelector("img.user-icon");
+            const signal = user.querySelector(".signal");
+            const id = user.id;
+            image.onclick = ((event) => {
+                this.signalHelp(id);
+            });
+            signal.onclick = ((event) => {
+                this.signalHelp(id);
+            });
+        })
     }
 
     addTogglerListener() {
