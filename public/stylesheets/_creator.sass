@@ -1,4 +1,5 @@
 #room-settings
+  border-top: 3px solid $primary-color
   position: fixed
   bottom: 0
   height: 75vh
@@ -6,27 +7,44 @@
   background: $color-background
   z-index: 1000
   transition: 0.5s all ease-in-out
-  &.hidden
-    display: block
-    transform: translateY(100%)
-    .toggler::after
-      content: '⇪'
+
   .toggler
+    display: flex
+    align-items: center
+    width: 150px
+    text-align: center
     padding: 0.25em 0.5em
-    border-radius: 40% 40% 0 0
+    border-radius: 1em 1em 0 0
     background: $color-background
     position: absolute
     left: 50%
-    top: 0
+    top: 1px
     transform: translate(-50%,-100%)
-    font-size: 1.25em
-    display: block
+    font-size: 0.75em
+    text-transform: uppercase
+    font-weight: bold
     z-index: 500
     transition: 0.2s ease-in-out
+    img
+      width: 20px
+      display: inline
+      margin: 0 auto
+      transition: 0.5s ease-in-out
+      &:first-child
+        transform: rotate(180deg)
+      &:last-child
+        transform: rotate(-180deg)
+    span::after
+      content: 'See Less'
     &:hover
       color: $primary-color
-    &::after
-      content: '⇩'
+  &.hidden
+    display: block
+    transform: translateY(100%)
+    .toggler img
+      transform: rotate(0)
+    .toggler span::after
+      content: 'See More'
 
 
   h1
