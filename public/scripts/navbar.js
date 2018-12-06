@@ -20,6 +20,7 @@ function handleLogout() {
 }
 
 function handleSignupForm() {
+    const modal = document.getElementById('login-signup-modal');
     const signupForm = document.getElementById('signupForm');
     signupForm.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -52,6 +53,7 @@ function handleSignupForm() {
                     dust.render('partials/loggedUser', { loggedUser: user }, (err, output) => {
                         const profileNav = document.querySelector('.profile');
                         profileNav.innerHTML = output;
+                        modal.classList.add('hidden');
                         handleLogout();
                     });
                 }
@@ -72,12 +74,14 @@ function handleSignupForm() {
 }
 
 function handleLoginForm() {
+    const modal = document.getElementById('login-signup-modal');
     const loginButton = document.getElementById('login');
     if (!loginButton) return;
-    loginButton.addEventListener('click', (event) => {
+    loginButton.onclick = (event) => {
         event.preventDefault();
-        event.target.nextSibling.classList.toggle('hidden');
-    });
+        event.target.classList.toggle('active');
+        modal.classList.toggle('hidden');
+    };
     const githubLogin = document.getElementById('githubLogin');
     githubLogin.addEventListener('click', (event) => {
         event.preventDefault();
@@ -104,6 +108,7 @@ function handleLoginForm() {
                 dust.render('partials/loggedUser', { loggedUser: user }, (err, output) => {
                     const profileNav = document.querySelector('.profile');
                     profileNav.innerHTML = output;
+                    modal.classList.add('hidden');
                     handleLogout();
                 });
             }

@@ -1,9 +1,6 @@
 {#loggedUser}
-<p> Hello, {username}!</p>
+<p> Hello, <span class='user-name'>{username}</span>!</p>
 <a id='logout' href="/logout"> Logout </a>
 {:else}
 <a id='login' href="/login">Login</a>
-<div class="login hidden">
-  {> "partials/loginForm" /}
-</div>
 {/loggedUser}
