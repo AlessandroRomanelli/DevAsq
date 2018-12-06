@@ -101,7 +101,7 @@ class App {
                     this.createTabForPen(res);
                     this.setupTabsHandlers();
                     this.switchPen(this.pens.length - 1);
-                    if (callback) {
+                    if (callback && typeof callback === "function") {
                         callback();
                     }
                 });
@@ -227,25 +227,30 @@ class App {
                 const span = tabs[i].querySelector('span');
                 const deleteBtn = tabs[i].querySelector('button');
 
-                span.ondblclick = ((event) => {
-                    event.target.contentEditable = true;
-                    event.target.focus();
-                });
+                span.ondblclick = null;
+                span.onkeydown = null;
+                span.onblur = null;
+                if (!(this instanceof CreatorApp) || !(this.pens[i].link)) {
+                    span.ondblclick = ((event) => {
+                        event.target.contentEditable = true;
+                        event.target.focus();
+                    });
 
-                span.onkeydown = ((event) => {
-                    if (event.key === 'Enter') {
-                        event.preventDefault();
-                        event.target.blur();
-                    }
-                });
+                    span.onkeydown = ((event) => {
+                        if (event.key === 'Enter') {
+                            event.preventDefault();
+                            event.target.blur();
+                        }
+                    });
 
-                span.onblur = ((event) => {
-                    event.target.contentEditable = false;
-                    if (event.target.innerHTML === 'Public') {
-                        event.target.innerHTML = 'MyPublic';
-                    }
-                    this.changePenName(event.target.innerHTML, i);
-                });
+                    span.onblur = ((event) => {
+                        event.target.contentEditable = false;
+                        if (event.target.innerHTML === 'Public') {
+                            event.target.innerHTML = 'MyPublic';
+                        }
+                        this.changePenName(event.target.innerHTML, i);
+                    });
+                }
 
                 deleteBtn.onclick = ((event) => {
                     event.preventDefault();
@@ -409,7 +414,6 @@ class CreatorApp extends App {
                 event.preventDefault();
                 const currentPenID = this.users[id].currentPen.id;
                 const { pens } = this.users[id];
-                console.log("===================================")
                 let index = -1;
                 for (let i = 0; i < pens.length; i++) {
                     if (pens[i].id === currentPenID) {
@@ -441,6 +445,7 @@ class CreatorApp extends App {
                     newTab.querySelector("span").innerHTML = newTitle;
                     penToModify = this.getCurrentPen();
                     penToModify.link = { userID, penID: pen.id };
+                    this.setupTabsHandlers();
                     done(false);
                 }));
             })
@@ -455,9 +460,7 @@ class CreatorApp extends App {
             penToModify.js = pen.js;
             socket.emit("pen.change", { pen: penToModify, roomName });
             socket.emit("pen.preview", { pen: penToModify, roomName });
-            setTimeout(() => {
-                iFrame.src = `/preview/${roomName}?penID=${penToModify.id}`;
-            }, 0);
+            setTimeout(() => {iFrame.src = `/preview/${roomName}?penID=${penToModify.id}`}, 0);
         }
     }
 
