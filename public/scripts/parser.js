@@ -32,7 +32,7 @@ function handleKey(app, ace, timer) {
         timer();
         const mode = ace.session.getMode().$id.split('/').last();
         const value = ace.getValue();
-        app.updatePen(mode, value);
+        app.updateCurrentEditor(mode, value);
     };
 }
 
@@ -74,6 +74,13 @@ function renderIFrame(app) {
         }).then(() => {
             // TODO: Add a query to the get request to fetch the currently selected pen
             iFrame.src = `/preview/${roomName}?penID=${app.getCurrentPen().id}`;
+            if (app.room.creator === app.userID && app.currentPen === 0) {
+                socket.emit('pen.preview', { pen: app.publicPen, roomName });
+            } else if (app.room.creator === app.userID) {
+                socket.emit('pen.preview', { pen: app.pens[app.currentPen] });
+            } else {
+                socket.emit('pen.preview', { pen: app.pens[app.currentPen], userID: app.room.creator });
+            }
         });
     };
 }

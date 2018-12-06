@@ -11,6 +11,9 @@ Array.prototype.last = function () {
 };
 
 
+let socket;
+
+
 function init() {
     handleLoginForm();
     handleLogout();
@@ -19,18 +22,30 @@ function init() {
     addTogglerListener();
     startParsing(app);
 
-    const socket = io();
-
     socket.on('connect', () => {
         socket.emit('settings.bindID', { id: user._id });
+        socket.emit('settings.joinRoom', { roomName: app.room.name})
     });
 
     socket.on('reconnect', (attemptNumber) => {
         console.log('Socket reconnected!', 'ok');
+        socket.emit('settings.bindID', { id: user._id });
     });
 
     socket.on('disconnect', (reason) => {
         console.log(reason);
+    });
+
+    socket.on('pen.update', (pen) => {
+        console.log(pen);
+        app.updatePen(pen);
+    });
+
+    socket.on('pen.updatePreview', (pen) => {
+        console.log('updating the preview');
+        if (app.indexOfPen(pen) === app.currentPen) {
+            app.changeAcesContent();
+        }
     });
 }
 

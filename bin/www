@@ -8,7 +8,7 @@ const debug = require('debug')('final-project:server');
 const http = require('http');
 const app = require('../app');
 const eventBus = require('../pubsub');
-
+const { socketToUser, userToSocket , roomStorage} = require('../rooms');
 /**
  * Get port from environment and store in Express.
  */
@@ -97,9 +97,48 @@ const io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
     console.log('client connected');
-
     socket.on('disconnect', () => {
         console.log('client disconnected');
+    });
+
+    socket.on('settings.bindID', (user) => {
+        console.log(user);
+        socketToUser.put(socket.id, user.id);
+        userToSocket.put(user.id, socket.id);
+    });
+
+    socket.on('settings.joinRoom', (data) => {
+        console.log(data.roomName);
+        socket.join(data.roomName);
+    });
+
+    socket.on('pen.change', (o) => {
+        console.log('update the pen');
+        console.log(o);
+        let userID = socketToUser.get(socket.id);
+        const room = roomStorage[o.roomName];
+        console.log(room);
+        if (room.creator === userID && o.pen.title === 'Public') {
+            room.publicPen = o.pen;
+            socket.to(room.name).emit('pen.update', o.pen);
+        } else {
+            let pens = room.users[userID];
+            console.log(pens);
+            for (pen in pens) {
+                if (pens[pen].title === o.pen.title) {
+                    pens[pen] = o.pen;
+                    if (pen.title !== 'Public' && room.creator !== userID){
+                        socket.to(userToSocket.get(room.creator)).emit('pen.update', o.pen);
+                    }
+                    break;
+                }
+            }
+        }
+    });
+
+    socket.on('pen.preview', (o) => {
+        let destination = o.roomName || o.userID || userToSocket.get(o.pen.user);
+        socket.to(destination).emit('pen.updatePreview', o.pen);
     });
 });
 

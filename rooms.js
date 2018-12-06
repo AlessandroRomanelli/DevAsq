@@ -6,6 +6,38 @@ require('./models');
 
 // const Pen = mongoose.model('Pen');
 
+class Map {
+    constructor() {
+        this.data = {};
+    }
+
+    get(idKey) {
+        return this.data[idKey];
+    }
+
+    put(idKey, idValue) {
+        const keys = Object.keys(this.data);
+        for (let i = 0; i < keys.length; i += 1) {
+            if (idValue === this.data[keys[i]]) {
+                delete this.data[keys[i]];
+            }
+        }
+        this.data[idKey] = idValue;
+    }
+
+    containsKey(idKey) {
+        return Object.keys(this.data).includes(idKey);
+    }
+
+    containsValue(idValue) {
+        return Object.values(this.data).includes(idValue);
+    }
+}
+
+const userToSocket = new Map();
+
+const socketToUser = new Map();
+
 const UIDs = [];
 
 function generateID() {
@@ -118,4 +150,6 @@ module.exports = {
     Pen,
     roomStorage,
     UIDs,
+    userToSocket,
+    socketToUser,
 };
