@@ -168,7 +168,7 @@ io.on('connection', (socket) => {
         console.log(data);
         const userID = socketToUser.get(socket.id);
         const room = roomStorage[data.roomName];
-        if (room.creator === userID && data.pen.title === 'Public') {
+        if (room && room.creator === userID && data.pen.title === 'Public') {
             room.publicPen = data.pen;
             // let socketID = userToSocket.get(userID);
             socket.to(room.name).emit('pen.update', data.pen);
