@@ -347,6 +347,7 @@ class CreatorApp extends App {
         users.forEach((user) => {
             const image = user.querySelector("img.user-icon");
             const signal = user.querySelector(".signal");
+            const loadPen = user.querySelector("button.pen-loader");
             const id = user.id;
             image.onclick = ((event) => {
                 this.signalHelp(id);
@@ -354,7 +355,37 @@ class CreatorApp extends App {
             signal.onclick = ((event) => {
                 this.signalHelp(id);
             });
+            loadPen.onclick = ((event) => {
+                event.preventDefault();
+                const currentPenID = this.users[id].currentPen.id;
+                const { pens } = this.users[id];
+                console.log("===================================")
+                let index = -1;
+                for (let i = 0; i < pens.length; i++) {
+                    if (pens[i].id === currentPenID) {
+                        index = i;
+                        break;
+                    }
+                }
+                if (index === -1) {
+                    return;
+                }
+                this.loadRemotePen(pens[index]);
+            })
         })
+    }
+
+    loadRemotePen(pen) {
+        if (this.currentPen === 0) {
+            this.publicPen.html = pen.html;
+            this.publicPen.css = pen.css;
+            this.publicPen.js = pen.js;
+            ace.edit('htmlPen').setValue(pen.html);
+            ace.edit('cssPen').setValue(pen.css);
+            ace.edit('jsPen').setValue(pen.js);
+            socket.emit('pen.change', { pen: this.publicPen, roomName: this.room.name });
+            socket.emit("pen.preview", { pen: this.publicPen, roomName: this.room.name });
+        }
     }
 
     addTogglerListener() {
