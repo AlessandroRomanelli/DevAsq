@@ -156,7 +156,14 @@ io.on('connection', (socket) => {
         socket.to(creatorSocket).emit('creator.deletedPen', { id, pen });
     });
 
-    socket.on('pen.change', (data) => {
+    socket.on('pen.resolveHelp', (data) => {
+        const { id } = data;
+        const userSocket = userToSocket.get(id);
+        if (!userSocket) return;
+        socket.to(userSocket).emit('pen.resolveHelp');
+    });
+
+    socket.on('pen.change', (o) => {
         console.log('update the pen');
         console.log(data);
         const userID = socketToUser.get(socket.id);
