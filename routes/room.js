@@ -88,7 +88,23 @@ router.delete('/:roomName/pen/:penId', (req, res) => {
             break;
         }
     }
+    if (idx === -1) {
+        res.status(404).end();
+        return;
+    }
+
     const pen = pens.splice(idx, 1);
+
+    if (req.user._id !== room.creator) {
+        const creatorPens = room.users[room.creator];
+        for (let i = 0; i < creatorPens.length; i++) {
+            if (creatorPens[i].link && creatorPens[i].link.penID === penId) {
+                creatorPens.splice(i--, 1);
+            }
+        }
+
+    }
+
     res.status(204).json(pen);
 });
 
