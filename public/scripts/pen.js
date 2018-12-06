@@ -54,16 +54,26 @@ function init() {
         console.log('updating the preview');
         if (app.indexOfPen(pen) === app.currentPen) {
             app.changeAcesContent();
+        } else if (app.indexOfPenInLinked(pen) === app.currentPen) {
+            app.changeAcesContent();
+        } else if (app.indexOfLinkedInPens(pen) === app.currentPen) {
+            app.changeAcesContent();
         }
     });
 
     socket.on('pen.update', (pen) => {
-        console.log(pen);
         app.updatePen(pen);
     });
 
+    socket.on("pen.sharedCreated", (penID) => {
+        document.getElementById(penID).classList.add("shared");
+    });
+
+    socket.on("pen.sharedDeleted", (penID) => {
+        document.getElementById(penID).classList.remove("shared");
+    });
+
     socket.on('settings.userJoined', (user) => {
-        console.log(user);
         if (app instanceof CreatorApp) {
             app.userConnected(user);
         }
