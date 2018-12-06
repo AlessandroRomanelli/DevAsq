@@ -5,28 +5,23 @@ const router = express.Router();
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const eventBus = require('../pubsub');
+const { socketToUser, userToSocket } = require('../rooms');
+
 const config = require('../config');
 
 require('../models');
 
 const User = mongoose.model('User');
 
-router.get('/login', (req, res) => {
-    res.render('login');
-});
-
-router.get('/logout', (req, res) => {
+router.post('/logout', (req, res) => {
     req.logout();
-    res.redirect('/');
-});
-
-router.get('/signup', (req, res) => {
-    res.render('signup');
+    res.status(200).end();
 });
 
 router.post('/login', passport.authenticate('local'), (req, res) => {
     if (req.user) {
-        res.status(200).end();
+        res.status(200).json(req.user);
     } else {
         res.status(401).end();
     }

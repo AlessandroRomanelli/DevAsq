@@ -1,10 +1,62 @@
 const bcrypt = require('bcrypt');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const config = require('./config');
 
 require('./models');
 
-const Pen = mongoose.model('Pen');
+// const Pen = mongoose.model('Pen');
+
+class Map {
+    constructor() {
+        this.data = {};
+    }
+
+    get(idKey) {
+        return this.data[idKey];
+    }
+
+    put(idKey, idValue) {
+        const keys = Object.keys(this.data);
+        for (let i = 0; i < keys.length; i += 1) {
+            if (idValue === this.data[keys[i]]) {
+                delete this.data[keys[i]];
+            }
+        }
+        this.data[idKey] = idValue;
+    }
+
+    containsKey(idKey) {
+        return Object.keys(this.data).includes(idKey);
+    }
+
+    containsValue(idValue) {
+        return Object.values(this.data).includes(idValue);
+    }
+}
+
+const userToSocket = new Map();
+
+const socketToUser = new Map();
+
+const UIDs = [];
+
+function generateID() {
+    const id = Math.random().toString(36).substring(2, 16);
+    if (UIDs.includes(id)) {
+        return generateID();
+    }
+    UIDs.push(id);
+    return id;
+}
+
+function Pen(title, userId) {
+    this.id = generateID();
+    this.html = '';
+    this.css = '';
+    this.js = '';
+    this.title = title;
+    this.user = userId;
+}
 
 class Room {
     constructor(name, creatorId) {
@@ -12,15 +64,9 @@ class Room {
         this.creator = creatorId;
         this.users = {};
         this.users[creatorId] = [
-            new Pen({
-                user: creatorId,
-                title: 'private',
-            }),
+            new Pen('Private', creatorId),
         ];
-        this.publicPen = new Pen({
-            user: creatorId,
-            title: 'public',
-        });
+        this.publicPen = new Pen('Public', creatorId);
         this.checkers = [];
         this.isPassworded = false;
     }
@@ -69,10 +115,7 @@ class Room {
 
     join(userId) {
         const users = Object.keys(this.users);
-        const pen = new Pen({
-            user: userId,
-            title: 'private',
-        });
+        const pen = new Pen('Private', userId);
         for (let i = 0; i < users.length; i += 1) {
             if (users[i] === userId) return;
         }
@@ -83,16 +126,14 @@ class Room {
         delete this.users[userId];
     }
 
-    getUserPen(userId, title) {
+    getUserPen(userId, penID) {
         if (this.hasUser(userId)) {
-            const pens = this.users[userId];
+            const pens = this.users[userId].slice(0);
+            pens.push(this.publicPen);
             for (let i = 0; i < pens.length; i += 1) {
-                if (pens[i].title === title) return pens[i];
+                if (pens[i].id === penID) return pens[i];
             }
-            return new Pen({
-                user: userId,
-                title: 'New Pen',
-            });
+            return new Pen('New Pen', userId);
         }
         throw new Error('Attempting to get pen of a user not in the room');
     }
@@ -106,5 +147,9 @@ const roomStorage = {};
 
 module.exports = {
     Room,
+    Pen,
     roomStorage,
+    UIDs,
+    userToSocket,
+    socketToUser,
 };

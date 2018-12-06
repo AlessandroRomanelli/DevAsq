@@ -1,24 +1,68 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const esprima = require('esprima');
+const escodegen = require('escodegen');
+
 
 const router = express.Router();
 
-const { roomStorage } = require('../rooms');
+const { roomStorage, Pen } = require('../rooms');
 
-const Pen = mongoose.model('Pen');
+const loops = ["ForStatement", "WhileStatement", "DoWhileStatement"];
+
+function random(used) {
+    const random = Math.random()
+        .toString(36)
+        .substring(2, 16);
+    if (used && used.includes(random)) {
+        return random(used);
+    } else {
+        used.push(random);
+        return random;
+    }
+}
+
+function traverseTree(tree, used) {
+    if (!tree) {
+        return;
+    }
+    used = used || [];
+
+    let array = (tree.consequent && tree.consequent.body) || [];
+    array = (tree.body && tree.body.body || tree.body) || array;
+    for (let i = 0; i < array.length; i++) {
+        if (loops.includes(array[i].type)) {
+            const name = `esprimaCounter${random(used)}`;
+            array.splice(i++, 0, esprima.parse(`let ${name} = 0`).body[0]);
+            const body = array[i].body.body;
+            const incrementer = `${name} += 1`;
+            const loopBreaker = `if (${name} >= 4096) {throw new Error('Infinite loop detected')}`;
+            body.unshift(esprima.parse(incrementer).body[0]);
+            body.unshift(esprima.parse(loopBreaker).body[0]);
+        }
+        traverseTree(array[i], used);
+    }
+}
+
 
 router.get('/:roomName', (req, res) => {
     if (!req.user) return res.status(403).end();
-    const { title } = req.query;
+    const { penID } = req.query;
     const { roomName } = req.params;
+    if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[roomName];
-    console.log(room);
-    const { html, css, js } = (title) ? room.getUserPen(req.user._id, title) : room.publicPen;
+    const pen = room.getUserPen(req.user._id, penID);
+    const { html, css, js } = (penID) ? pen : room.publicPen;
+
+    const tree = esprima.parseScript(js);
+    traverseTree(tree);
+    const finalJs = escodegen.generate(tree);
+
     let resHtml = html.split('</head>');
     resHtml[0] += `<style>${css}</style>`;
     resHtml = resHtml.join('</head>');
     resHtml = resHtml.split('</body>');
-    resHtml[0] += `<script>${js}</script>`;
+    resHtml[0] += `<script>${finalJs}</script>`;
     resHtml = resHtml.join('</body>');
     res.send(resHtml);
 });
@@ -30,17 +74,23 @@ router.post('/:roomName', (req, res) => {
     if (!req.user) return res.status(403).end();
     const room = roomStorage[roomName];
     const {
-        name, html, css, js,
+        penID, name, html, css, js,
     } = req.body;
-    const pen = new Pen({
-        html,
-        css,
-        js,
-        name,
+    const pens = room.users[req.user._id].slice(0);
+    pens.push(room.publicPen);
+    let foundPen;
+    console.log(pens);
+    pens.forEach((pen) => {
+        if (pen.id === penID) {
+            pen.name = name;
+            pen.html = html;
+            pen.css = css;
+            pen.js = js;
+            foundPen = pen;
+        }
     });
-    room.publicPen = pen;
-
-    res.status(201).json(pen);
+    console.log(foundPen);
+    res.status(201).json(foundPen);
 });
 
 module.exports = router;

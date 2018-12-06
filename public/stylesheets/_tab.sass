@@ -1,0 +1,120 @@
+#pens.container
+  position: relative
+  width: 100%
+  display: grid
+  grid-template-areas: "controls" "preview"
+  grid-template-columns: 1fr
+  color: inherit
+
+  .controls
+    padding: 1em
+    grid-area: controls
+    width: 100%
+    display: grid
+    background: $dark
+    grid-template-areas: "html css js"
+    grid-template-columns: 1fr 1fr 1fr
+
+  .pen
+    height: 300px
+    overflow: hidden
+    h1
+      margin: 0
+
+  #htmlPen
+    grid-area: html
+
+  #cssPen
+    grid-area: css
+
+  #jsPen
+    grid-area: js
+
+  .preview
+    grid-area: preview
+    background: white
+    height: calc(100vh - 300px)
+
+  #iFrame
+    width: 100%
+    height: 100%
+    grid-area: pre
+    border: none
+    overflow: hidden
+
+  .codePane
+    height: 100%
+    border: 1px solid black
+
+//top - bar with panes to switch
+
+#tabs
+  display: flex
+  justify-content: flex-end
+  list-style: none
+  margin: 0
+  padding: 0
+  line-height: 1.75em
+  text-align: center
+  background-color: $color-background
+  margin-top: 1em
+  padding-right: 1em
+  border-bottom: 1px solid lighten($color-background, 20%)
+  li
+    outline: 0
+    height: 30px
+    overflow: hidden
+    min-width: 120px
+    position: relative
+    bottom: -2px
+    border: 1px solid lighten($color-background, 20%)
+    border-top-left-radius: 0.25em
+    border-top-right-radius: 0.25em
+    background: $color-background
+    font-size: 1em
+    font-family: $font-stack
+    color: white
+    z-index: 0
+    color: gray
+    letter-spacing: 1px
+    transition: 0.2s all ease-in-out
+    &.locked
+      content: 'LOCK'
+    span
+      padding: 0 0 0 1em
+    .closeButton
+      padding: 0 1em 0 0.25em
+      font-weight: lighter
+      font-size: 1em
+      color: white
+      border: none
+      background: none
+      opacity: 0
+      outline: none
+      font-family: $font-stack
+      transition: 0.2s ease-in-out
+    &:hover .closeButton
+      opacity: 0.85
+      cursor: pointer
+
+    &.active
+      color: white
+      background: $dark
+      border-bottom: 0
+      .closeButton
+        opacity: 1
+
+    &:hover
+      cursor: pointer
+
+    &:not(.active):hover
+      background: linear-gradient(to top, $dark 25%, lighten($dark, 10%) 100%)
+      border-bottom-color: transparent
+      box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 $color-background
+      // text-shadow: 0 1px $color-background
+      color: white
+      transition: 0.2s all ease-in-out
+
+
+    &:last-of-type
+      min-width: 50px

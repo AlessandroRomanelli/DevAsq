@@ -1,0 +1,14 @@
+<form id="loginForm" class='profile-form'>
+    <fieldset>
+      <input type="text" name="username" placeholder="Username">
+    </fieldset>
+    <fieldset>
+      <input type="password" name="password" placeholder="Password">
+    </fieldset>
+    <fieldset class='submit'>
+      <input type="submit" value="Login">
+      <hr>
+      <input id='githubLogin' type="submit" value="Login with GitHub">
+    </fieldset>
+</form>
+<p>You don't have an account yet?<br><a id="signup" href="/signup">Sign up</a> now!</p>

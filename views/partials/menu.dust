@@ -4,10 +4,6 @@
     <img src="/images/logo.png" alt="DevAsq++ Logo">
   </a>
   <div class="profile">
-    {?loggedUser}
-      {> "partials/loggedUser" /}
-    {:else}
-      <a href="/login">Login</a>
-    {/loggedUser}
+    {> "partials/loggedUser" /}
   </div>
 </nav>

@@ -12,22 +12,6 @@ Array.prototype.last = function () {
 
 function init() {
     handleRoomForms();
-    const socket = io();
-
-    socket.on('connect', () => {
-        console.log("connected to the server");
-    });
-
-    socket.on('event', (data) => {
-        socket.emit('event', data);
-    })
-
-    socket.on('reconnect', (attemptNumber) => {
-        console.log("Socket reconnected!", "ok");
-    });
-
-    socket.on('disconnect', (reason) => {
-        console.log(reason);
-    });
-
+    handleLoginForm();
+    handleLogout();
 }

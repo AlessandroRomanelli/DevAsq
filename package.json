@@ -3,7 +3,8 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "start": "nodemon ./bin/www"
+        "start": "nodemon ./bin/www",
+        "dustc": "cd ./views; dustc *.dust partials/*.dust -o ../public/scripts/views.js"
     },
     "dependencies": {
         "adaro": "~1.0.4",
@@ -12,6 +13,8 @@
         "cookie-parser": "~1.4.3",
         "debug": "~2.6.9",
         "express": "~4.15.5",
+        "esprima": "^4.0.1",
+        "escodegen": "^1.11.0",
         "express-session": "^1.15.6",
         "install": "^0.12.2",
         "klei-dust": "^1.0.0",

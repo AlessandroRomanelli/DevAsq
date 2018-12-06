@@ -17,6 +17,8 @@ const room = require('./routes/room');
 const preview = require('./routes/preview');
 const pen = require('./routes/pen');
 
+const { userToSocket, socketToUser } = require('./rooms');
+
 const app = express();
 
 require('./models');
@@ -56,6 +58,12 @@ require('./passport');
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use('/', (req, res, next) => {
+    console.log(userToSocket);
+    console.log(socketToUser);
+    next();
+});
 
 app.use('/', index);
 app.use('/', users);
