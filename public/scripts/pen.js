@@ -49,43 +49,53 @@ function init() {
         console.log('updating the preview');
         if (app.indexOfPen(pen) === app.currentPen) {
             app.changeAcesContent();
+        } else if (app.indexOfPenInLinked(pen) === app.currentPen) {
+            app.changeAcesContent();
+        } else if (app.indexOfLinkedInPens(pen) === app.currentPen) {
+            app.changeAcesContent();
         }
     });
 
     socket.on('pen.update', (pen) => {
-        console.log(pen);
         app.updatePen(pen);
     });
 
+    socket.on("pen.sharedCreated", (penID) => {
+        document.getElementById(penID).classList.add("shared");
+    });
+
+    socket.on("pen.sharedDeleted", (penID) => {
+        document.getElementById(penID).classList.remove("shared");
+    });
+
     socket.on('settings.userJoined', (user) => {
-        console.log(user);
         if (app instanceof CreatorApp) {
             app.userConnected(user);
         }
     });
 
-    socket.on("creator.updatePens", (data) => {
-        const {id, pen} = data;
+    socket.on('creator.updatePens', (data) => {
+        const { id, pen } = data;
         if (app instanceof CreatorApp) {
             app.updateUsers(id, pen);
         }
     });
 
-    socket.on("creator.switchPen", (data) => {
-        const {id, newPen} = data;
+    socket.on('creator.switchPen', (data) => {
+        const { id, newPen } = data;
         if (app instanceof CreatorApp) {
             app.updateUserCurrentPen(id, newPen);
         }
     });
 
-    socket.on("creator.deletedPen", (data) => {
-        const {id, pen} = data;
+    socket.on('creator.deletedPen', (data) => {
+        const { id, pen } = data;
         if (app instanceof CreatorApp) {
             app.removeUserPen(id, pen);
         }
     });
 
-    socket.on("creator.helpNeeded", (id) => {
+    socket.on('creator.helpNeeded', (id) => {
         console.log(id);
         if (app instanceof CreatorApp) {
             app.signalHelp(id);
@@ -102,6 +112,11 @@ function init() {
 
     socket.on('room.delete', () => {
         window.location.pathname = '/';
+    });
+
+    socket.on('pen.resolveHelp', () => {
+        console.log('Creator resolved help');
+        app.resolveHelp();
     });
 }
 
