@@ -56,6 +56,7 @@ function Pen(title, userId) {
     this.js = '';
     this.title = title;
     this.user = userId;
+    this.link = null;
 }
 
 class Room {

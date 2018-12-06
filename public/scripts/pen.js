@@ -52,7 +52,13 @@ function init() {
 
     socket.on('pen.updatePreview', (pen) => {
         console.log('updating the preview');
-        if (app.indexOfPen(pen) === app.currentPen) {
+        console.log(pen);
+        console.log(app.currentPen);
+        console.log(app.indexOfPen(pen));
+        console.log(app.indexOfLinkedPen(pen));
+        console.log(app.pens);
+        if (app.indexOfPen(pen) === app.currentPen || app.indexOfLinkedPen(pen) === app.currentPen) {
+            console.log("SI");
             app.changeAcesContent();
         }
     });

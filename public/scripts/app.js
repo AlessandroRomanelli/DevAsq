@@ -1,14 +1,15 @@
 class Pen {
-    constructor(title, id, html, css, js) {
+    constructor(title, id, html, css, js, link) {
         this.id = id;
         this.title = title;
         this.html = html || '';
         this.css = css || '';
         this.js = js || '';
+        this.link = link || null;
     }
 
     static createFromPen(pen) {
-        return new Pen(pen.title, pen.id, pen.html, pen.css, pen.js);
+        return new Pen(pen.title, pen.id, pen.html, pen.css, pen.js, pen.link);
     }
 }
 
@@ -266,6 +267,17 @@ class App {
         }
         return index;
     }
+
+    indexOfLinkedPen(pen) {
+        let index = -1;
+        for (let i = 0; i < this.pens.length; i++) {
+            if (this.pens[i].link && this.pens[i].link.penID === pen.id) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
 }
 
 
@@ -290,6 +302,19 @@ class CreatorApp extends App {
 
     updateUsers(userID, pen) {
         const { pens } = this.users[userID];
+
+        for (let i = 0; i < this.pens.length; i++) {
+            const storedPen = this.pens[i];
+            if (storedPen.link && storedPen.link.penID === pen.id) {
+                storedPen.html = pen.html;
+                storedPen.css = pen.css;
+                storedPen.js = pen.js;
+                if (this.currentPen === i) {
+                    this.changeViewContent();
+                }
+            }
+        }
+
         for (let i = 0; i < pens.length; i++) {
             const storedPen = pens[i];
             if (storedPen.id === pen.id) {
@@ -376,12 +401,12 @@ class CreatorApp extends App {
                 if (index === -1) {
                     return;
                 }
-                this.loadRemotePen(pens[index]);
+                this.loadRemotePen(pens[index], id);
             })
         })
     }
 
-    loadRemotePen(pen) {
+    loadRemotePen(pen, userID) {
         const iFrame = document.getElementById("iFrame");
         const roomName = this.room.name;
         let penToModify;
@@ -390,11 +415,13 @@ class CreatorApp extends App {
             done();
         } else {
             this.createPen(() => {
-                this.changePenName(pen.title, this.currentPen, (() => {
+                const newTitle = `${this.users[userID].user.username} - ${pen.title}`;
+                this.changePenName(newTitle, this.currentPen, (() => {
                     const tabs = document.getElementById("tabs");
                     const newTab = tabs.childNodes[tabs.childNodes.length - 2];
-                    newTab.querySelector("span").innerHTML = pen.title;
+                    newTab.querySelector("span").innerHTML = newTitle;
                     penToModify = this.getCurrentPen();
+                    penToModify.link = { userID, penID: pen.id };
                     done(false);
                 }));
             })

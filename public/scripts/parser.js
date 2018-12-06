@@ -72,7 +72,6 @@ function renderIFrame(app) {
             css,
             js,
         }).then(() => {
-            // TODO: Add a query to the get request to fetch the currently selected pen
             iFrame.src = `/preview/${roomName}?penID=${app.getCurrentPen().id}`;
             if (app.room.creator === app.userID && app.currentPen === 0) {
                 socket.emit('pen.preview', { pen: app.publicPen, roomName });
