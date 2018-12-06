@@ -156,6 +156,13 @@ io.on('connection', (socket) => {
         socket.to(creatorSocket).emit('creator.deletedPen', { id, pen });
     });
 
+    socket.on('pen.resolveHelp', (data) => {
+        const { id } = data;
+        const userSocket = userToSocket.get(id);
+        if (!userSocket) return;
+        socket.to(userSocket).emit('pen.resolveHelp');
+    });
+
     socket.on('pen.change', (o) => {
         console.log('update the pen');
         console.log(o);
@@ -182,7 +189,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('pen.preview', (o) => {
-        let destination = o.roomName || o.userID || userToSocket.get(o.pen.user);
+        const destination = o.roomName || o.userID || userToSocket.get(o.pen.user);
         socket.to(destination).emit('pen.updatePreview', o.pen);
     });
 });

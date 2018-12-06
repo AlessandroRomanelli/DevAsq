@@ -206,6 +206,11 @@ class App {
         });
     }
 
+    resolveHelp() {
+        const raiseHand = document.getElementById('raise-hand');
+        raiseHand.classList.remove('asking-help');
+    }
+
     setupTabsHandlers() {
         const tabBar = document.getElementById('tabs');
         const tabs = tabBar.childNodes;
@@ -359,18 +364,19 @@ class CreatorApp extends App {
         const users = document.getElementById('users').childNodes;
         users.forEach((user) => {
             const image = user.querySelector('img.user-icon');
-            const signal = user.querySelector('.signal');
-            const id = user.id;
+            // const signal = user.querySelector('.signal');
+            const { id } = user;
             image.onclick = ((event) => {
                 if (this.users[id].ping) {
                     this.signalHelp(id);
                 }
+                socket.emit('pen.resolveHelp', { id });
             });
-            signal.onclick = ((event) => {
-                if (this.users[id].ping) {
-                    this.signalHelp(id);
-                }
-            });
+            // signal.onclick = ((event) => {
+            //     if (this.users[id].ping) {
+            //         this.signalHelp(id);
+            //     }
+            // });
         });
     }
 

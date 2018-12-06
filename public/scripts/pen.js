@@ -69,32 +69,37 @@ function init() {
         }
     });
 
-    socket.on("creator.updatePens", (data) => {
-        const {id, pen} = data;
+    socket.on('creator.updatePens', (data) => {
+        const { id, pen } = data;
         if (app instanceof CreatorApp) {
             app.updateUsers(id, pen);
         }
     });
 
-    socket.on("creator.switchPen", (data) => {
-        const {id, newPen} = data;
+    socket.on('creator.switchPen', (data) => {
+        const { id, newPen } = data;
         if (app instanceof CreatorApp) {
             app.updateUserCurrentPen(id, newPen);
         }
     });
 
-    socket.on("creator.deletedPen", (data) => {
-        const {id, pen} = data;
+    socket.on('creator.deletedPen', (data) => {
+        const { id, pen } = data;
         if (app instanceof CreatorApp) {
             app.removeUserPen(id, pen);
         }
     });
 
-    socket.on("creator.helpNeeded", (id) => {
+    socket.on('creator.helpNeeded', (id) => {
         console.log(id);
         if (app instanceof CreatorApp) {
             app.signalHelp(id);
         }
+    });
+
+    socket.on('pen.resolveHelp', () => {
+        console.log('Creator resolved help');
+        app.resolveHelp();
     });
 }
 
