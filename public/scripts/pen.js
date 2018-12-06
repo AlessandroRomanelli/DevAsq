@@ -52,12 +52,6 @@ function init() {
 
     socket.on('pen.updatePreview', (pen) => {
         console.log('updating the preview');
-        console.log(pen);
-        console.log(app.currentPen);
-        console.log(app.indexOfPen(pen));
-        console.log(app.indexOfPenInLinked(pen));
-        console.log(app.indexOfLinkedInPens(pen));
-        console.log(app.pens);
         if (app.indexOfPen(pen) === app.currentPen) {
             app.changeAcesContent();
         } else if (app.indexOfPenInLinked(pen) === app.currentPen) {
@@ -68,12 +62,10 @@ function init() {
     });
 
     socket.on('pen.update', (pen) => {
-        console.log(pen);
         app.updatePen(pen);
     });
 
     socket.on('settings.userJoined', (user) => {
-        console.log(user);
         if (app instanceof CreatorApp) {
             app.userConnected(user);
         }

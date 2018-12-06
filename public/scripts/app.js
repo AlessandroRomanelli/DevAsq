@@ -35,8 +35,8 @@ class App {
 
     switchPen(index) {
         const tabs = document.getElementById('tabs').childNodes;
-        tabs[this.currentPen].classList.toggle('active');
-        tabs[index].classList.toggle('active');
+        tabs[this.currentPen].classList.remove('active');
+        tabs[index].classList.add('active');
         this.currentPen = index;
 
         socket.emit('creator.switchPen', {
@@ -343,12 +343,10 @@ class CreatorApp extends App {
             const storedPen = pens[i];
             if (storedPen.id === pen.id) {
                 pens[i] = pen;
-                console.log(pens);
                 return;
             }
         }
         this.users[userID].pens.push(pen);
-        console.log(pens);
     }
 
     updateUserCurrentPen(userID, newPen) {
@@ -374,16 +372,18 @@ class CreatorApp extends App {
 
         index = this.indexOfPenInLinked(pen);
 
-        if (index === -1) {
-            return;
+        while (index !== -1) {
+            if (index <= this.currentPen) {
+                this.currentPen--;
+            }
+            this.pens.splice(index, 1);
+            const deletedTab = document.querySelectorAll(".switchTab")[index];
+            deletedTab.parentNode.removeChild(deletedTab);
+            index = this.indexOfPenInLinked(pen);
         }
 
-        this.pens.splice(index, 1);
-        let deleteTab = document.querySelectorAll('.switchTab')[index];
-        deleteTab.parentNode.removeChild(deleteTab);
-        if (!this.getCurrentPen()) {
-            this.switchPen(0);
-        }
+        this.setupTabsHandlers();
+        this.switchPen(this.currentPen);
     }
 
     signalHelp(id) {
@@ -393,7 +393,6 @@ class CreatorApp extends App {
 
     updateUI() {
         const roomSettings = document.getElementById('room-settings');
-        console.log(Object.values(this.users));
         dust.render('partials/creator', { users: Object.values(this.users) }, ((err, out) => {
             roomSettings.innerHTML = out;
             this.addTogglerListener();
