@@ -16,6 +16,7 @@ class Pen {
 class App {
     constructor(room, id) {
         this.room = room;
+        this.userID = id;
         this.currentPen = 0;
         this.publicPen = Pen.createFromPen(room.publicPen);
         this.pens = [this.publicPen];
@@ -34,15 +35,20 @@ class App {
         tabs[this.currentPen].classList.toggle("active");
         tabs[index].classList.toggle("active");
         this.currentPen = index;
-        const html = ace.edit('htmlPen');
-        const css = ace.edit('cssPen');
-        const js = ace.edit('jsPen');
-        const pen = this.pens[this.currentPen];
-        html.setValue(pen.html);
-        css.setValue(pen.css);
-        js.setValue(pen.js);
+
+       this.changeAcesContent();
+    }
+
+    changeAcesContent() {
+        this.changeViewContent();
+
         const iFrame = document.getElementById("iFrame");
         iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
+
+        const permission = (this.room.creator === this.userID || this.currentPen !== 0);
+        ace.edit('htmlPen').setReadOnly(!permission);
+        ace.edit('cssPen').setReadOnly(!permission);
+        ace.edit('jsPen').setReadOnly(!permission);
     }
 
     getCurrentPen() {
@@ -82,8 +88,8 @@ class App {
         }
     }
 
-    updatePen(mode, value) {
-        const pen = this.pens[this.currentPen];
+    updateCurrentEditor(mode, value) {
+        const pen = this.getCurrentPen();
         switch (mode) {
         case 'html':
             pen.html = value;
@@ -91,11 +97,38 @@ class App {
         case 'css':
             pen.css = value;
             break;
-        case 'js':
+        case 'javascript':
             pen.js = value;
             break;
         default:
             break;
+        }
+        socket.emit('pen.change', { pen, roomName: this.room.name });
+    }
+
+    changeViewContent() {
+        const pen = this.getCurrentPen();
+        ace.edit('htmlPen').setValue(pen.html);
+        ace.edit('cssPen').setValue(pen.css);
+        ace.edit('jsPen').setValue(pen.js);
+    }
+
+    updatePen(pen) {
+        let index = -1;
+        for (let i = 0; i < this.pens.length; i++) {
+            if (this.pens[i].id === pen.id) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            return;
+        }
+        this.pens[index].html = pen.html;
+        this.pens[index].css = pen.css;
+        this.pens[index].js = pen.js;
+        if (index === this.currentPen) {
+            this.changeViewContent();
         }
     }
 
@@ -174,5 +207,16 @@ class App {
         }
 
         plusTab.onclick = this.createPen.bind(this);
+    }
+
+    indexOfPen(pen) {
+        let index = -1;
+        for (let i = 0; i < this.pens.length; i++) {
+            if (this.pens[i].id === pen.id) {
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
 }

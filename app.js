@@ -17,7 +17,7 @@ const room = require('./routes/room');
 const preview = require('./routes/preview');
 const pen = require('./routes/pen');
 
-const { roomStorage } = require('./rooms');
+const { userToSocket, socketToUser } = require('./rooms');
 
 const app = express();
 
@@ -60,7 +60,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/', (req, res, next) => {
-    console.log(roomStorage);
+    console.log(userToSocket);
+    console.log(socketToUser);
     next();
 });
 
