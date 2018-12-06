@@ -163,7 +163,7 @@ io.on('connection', (socket) => {
         socket.to(userSocket).emit('pen.resolveHelp');
     });
 
-    socket.on('pen.change', (o) => {
+    socket.on('pen.change', (data) => {
         console.log('update the pen');
         console.log(data);
         const userID = socketToUser.get(socket.id);

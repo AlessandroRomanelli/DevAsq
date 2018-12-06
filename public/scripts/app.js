@@ -447,7 +447,6 @@ class CreatorApp extends App {
         const users = document.getElementById('users').childNodes;
         users.forEach((user) => {
             const image = user.querySelector("img.user-icon");
-            const signal = user.querySelector(".signal");
             const loadPen = user.querySelector("button.pen-loader");
             const id = user.id;
             image.onclick = ((event) => {
