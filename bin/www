@@ -175,7 +175,7 @@ io.on('connection', (socket) => {
             return;
         }
 
-        if (room.creator === userID && data.pen.link) {
+        if (room && room.creator === userID && data.pen.link) {
             const creatorPens = room.users[room.creator];
             for (let i = 0; i < creatorPens.length; i++) {
                 if (creatorPens[i].id === data.pen.id) {
