@@ -84,10 +84,10 @@ class App {
         });
     }
 
-    createPen() {
+    createPen(callback) {
         const tabs = document.getElementById('tabs');
         const activeTabs = tabs.childNodes.length;
-        if (activeTabs < 7) {
+        if (activeTabs < 7 || this.room.creator === this.userID) {
             doJSONRequest('POST', `/room/${this.room.name}/pen`, {}, {})
                 .then((res) => {
                     const pen = new Pen(res.title, res.id);
@@ -100,9 +100,12 @@ class App {
                     this.createTabForPen(res);
                     this.setupTabsHandlers();
                     this.switchPen(this.pens.length - 1);
+                    if (callback) {
+                        callback();
+                    }
                 });
         }
-        if (activeTabs === 6) {
+        if (activeTabs === 6 && this.room.creator !== this.userID) {
             tabs.lastChild.className = 'switchTab hidden';
         }
     }
@@ -152,7 +155,7 @@ class App {
     }
 
 
-    changePenName(name, index) {
+    changePenName(name, index, callback) {
         if (index === 0 || index >= this.pens.length) {
             return;
         }
@@ -171,6 +174,9 @@ class App {
                     id: this.userID,
                     newPen: this.pens[index]
                 });
+                if (callback) {
+                    callback();
+                }
             });
     }
 
@@ -376,15 +382,36 @@ class CreatorApp extends App {
     }
 
     loadRemotePen(pen) {
+        const iFrame = document.getElementById("iFrame");
+        const roomName = this.room.name;
+        let penToModify;
         if (this.currentPen === 0) {
-            this.publicPen.html = pen.html;
-            this.publicPen.css = pen.css;
-            this.publicPen.js = pen.js;
-            ace.edit('htmlPen').setValue(pen.html);
-            ace.edit('cssPen').setValue(pen.css);
-            ace.edit('jsPen').setValue(pen.js);
-            socket.emit('pen.change', { pen: this.publicPen, roomName: this.room.name });
-            socket.emit("pen.preview", { pen: this.publicPen, roomName: this.room.name });
+            penToModify = this.publicPen;
+            done();
+        } else {
+            this.createPen(() => {
+                this.changePenName(pen.title, this.currentPen, (() => {
+                    const tabs = document.getElementById("tabs");
+                    const newTab = tabs.childNodes[tabs.childNodes.length - 2];
+                    newTab.querySelector("span").innerHTML = pen.title;
+                    penToModify = this.getCurrentPen();
+                    done(false);
+                }));
+            })
+        }
+
+        function done() {
+            ace.edit("htmlPen").setValue(pen.html);
+            ace.edit("cssPen").setValue(pen.css);
+            ace.edit("jsPen").setValue(pen.js);
+            penToModify.html = pen.html;
+            penToModify.css = pen.css;
+            penToModify.js = pen.js;
+            socket.emit("pen.change", { pen: penToModify, roomName });
+            socket.emit("pen.preview", { pen: penToModify, roomName });
+            setTimeout(() => {
+                iFrame.src = `/preview/${roomName}?penID=${penToModify.id}`;
+            }, 0);
         }
     }
 
