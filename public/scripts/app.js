@@ -29,6 +29,7 @@ class App {
             socket.emit('creator.broadcastPen', { roomName: room.name, id, pen });
         }
         this.setupTabsHandlers();
+        this.setupRoomInfo();
         this.switchPen(0);
     }
 
@@ -92,10 +93,10 @@ class App {
                 .then((res) => {
                     const pen = new Pen(res.title, res.id);
                     this.pens.push(pen);
-                    socket.emit("creator.broadcastPen", {
+                    socket.emit('creator.broadcastPen', {
                         roomName: this.room.name,
                         id: this.userID,
-                        pen
+                        pen,
                     });
                     this.createTabForPen(res);
                     this.setupTabsHandlers();
@@ -161,15 +162,15 @@ class App {
         doJSONRequest('PUT', `/room/${this.room.name}/pen/${penID}`, {}, { name })
             .then((res) => {
                 this.pens[index] = new Pen(res.title, res.id, res.html, res.css, res.js);
-                socket.emit("creator.broadcastPen", {
+                socket.emit('creator.broadcastPen', {
                     roomName: this.room.name,
                     id: this.userID,
-                    pen: this.pens[index]
+                    pen: this.pens[index],
                 });
                 socket.emit('creator.switchPen', {
                     roomName: this.room.name,
                     id: this.userID,
-                    newPen: this.pens[index]
+                    newPen: this.pens[index],
                 });
             });
     }
@@ -182,10 +183,10 @@ class App {
         const penID = this.pens[index].id;
         doFetchRequest('DELETE', `/room/${this.room.name}/pen/${penID}`, {}, {})
             .then((res) => {
-                socket.emit("creator.deletedPen", {
+                socket.emit('creator.deletedPen', {
                     roomName: this.room.name,
                     id: this.userID,
-                    pen: this.pens[index]
+                    pen: this.pens[index],
                 });
                 this.pens.splice(index, 1);
                 if (index === this.currentPen) {
@@ -199,9 +200,9 @@ class App {
     }
 
     askForHelp() {
-        socket.emit("creator.helpNeeded", {
+        socket.emit('creator.helpNeeded', {
             roomName: this.room.name,
-            id: this.userID
+            id: this.userID,
         });
     }
 
@@ -250,6 +251,19 @@ class App {
         plusTab.onclick = this.createPen.bind(this);
     }
 
+    setupRoomInfo() {
+        const participants = document.getElementById('participants');
+        const roomName = document.getElementById('room-name');
+        const raiseHand = document.getElementById('raise-hand');
+
+        participants.parentNode.parentNode.removeChild(participants.parentNode);
+        roomName.innerHTML = this.room.name;
+        raiseHand.onclick = (() => {
+            raiseHand.classList.toggle('asking-help');
+            this.askForHelp();
+        });
+    }
+
     indexOfPen(pen) {
         let index = -1;
         for (let i = 0; i < this.pens.length; i++) {
@@ -263,9 +277,6 @@ class App {
 }
 
 
-
-
-
 class CreatorApp extends App {
     constructor(room, id) {
         super(room, id);
@@ -277,7 +288,7 @@ class CreatorApp extends App {
             user,
             currentPen: this.publicPen,
             pens: [],
-            ping: false
+            ping: false,
         };
         this.updateUI();
     }
@@ -320,10 +331,12 @@ class CreatorApp extends App {
 
     signalHelp(id) {
         this.users[id].ping = !this.users[id].ping;
-        document.getElementById(id).classList.toggle("help-needed");
+        document.getElementById(id).classList.toggle('help-needed');
     }
 
     updateUI() {
+        const participants = document.getElementById('participants');
+        participants.innerHTML = `${Object.keys(this.users).length + 1}`;
         const roomSettings = document.getElementById('room-settings');
         console.log(Object.values(this.users));
         dust.render('partials/creator', { users: Object.values(this.users) }, ((err, out) => {
@@ -335,26 +348,30 @@ class CreatorApp extends App {
     }
 
     addUsersPing() {
-        for (let user in this.users) {
+        for (const user in this.users) {
             if (this.users[user].ping) {
-                this.signalHelp(user)
+                this.signalHelp(user);
             }
         }
     }
 
     addUsersListener() {
-        const users = document.getElementById("users").childNodes;
+        const users = document.getElementById('users').childNodes;
         users.forEach((user) => {
-            const image = user.querySelector("img.user-icon");
-            const signal = user.querySelector(".signal");
+            const image = user.querySelector('img.user-icon');
+            const signal = user.querySelector('.signal');
             const id = user.id;
             image.onclick = ((event) => {
-                this.signalHelp(id);
+                if (this.users[id].ping) {
+                    this.signalHelp(id);
+                }
             });
             signal.onclick = ((event) => {
-                this.signalHelp(id);
+                if (this.users[id].ping) {
+                    this.signalHelp(id);
+                }
             });
-        })
+        });
     }
 
     addTogglerListener() {
@@ -371,5 +388,15 @@ class CreatorApp extends App {
         toggler.onmouseleave = ((event) => {
             document.body.style.cursor = 'default';
         });
+    }
+
+    setupRoomInfo() {
+        const participants = document.getElementById('participants');
+        const roomName = document.getElementById('room-name');
+        const raiseHand = document.getElementById('raise-hand');
+
+        participants.innerHTML = '1';
+        roomName.innerHTML = this.room.name;
+        raiseHand.parentNode.removeChild(raiseHand);
     }
 }
