@@ -22,33 +22,47 @@ class App {
         this.pens = [this.publicPen];
         this.createTabForPen(this.publicPen);
         for (let i = 0; i < room.users[id].length; i++) {
-            const pen = room.users[id][i];
+            let pen = room.users[id][i];
             this.createTabForPen(pen);
-            this.pens.push(Pen.createFromPen(pen));
+            pen = Pen.createFromPen(pen);
+            this.pens.push(pen);
+            socket.emit('creator.broadcastPen', { roomName: room.name, id, pen });
         }
         this.setupTabsHandlers();
         this.switchPen(0);
     }
 
     switchPen(index) {
-        const tabs = document.getElementById("tabs").childNodes;
-        tabs[this.currentPen].classList.toggle("active");
-        tabs[index].classList.toggle("active");
+        const tabs = document.getElementById('tabs').childNodes;
+        tabs[this.currentPen].classList.toggle('active');
+        tabs[index].classList.toggle('active');
         this.currentPen = index;
 
-       this.changeAcesContent();
+        socket.emit('creator.switchPen', {
+            roomName: this.room.name,
+            id: this.userID,
+            newPen: this.getCurrentPen(),
+        });
+
+        this.changeAcesContent();
     }
 
     changeAcesContent() {
-        this.changeViewContent();
+        const html = ace.edit('htmlPen');
+        const css = ace.edit('cssPen');
+        const js = ace.edit('jsPen');
+        const pen = this.getCurrentPen();
+        html.setValue(pen.html);
+        css.setValue(pen.css);
+        js.setValue(pen.js);
+        const iFrame = document.getElementById('iFrame');
 
-        const iFrame = document.getElementById("iFrame");
         iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
 
         const permission = (this.room.creator === this.userID || this.currentPen !== 0);
-        ace.edit('htmlPen').setReadOnly(!permission);
-        ace.edit('cssPen').setReadOnly(!permission);
-        ace.edit('jsPen').setReadOnly(!permission);
+        html.setReadOnly(!permission);
+        css.setReadOnly(!permission);
+        js.setReadOnly(!permission);
     }
 
     getCurrentPen() {
@@ -56,35 +70,40 @@ class App {
     }
 
     createTabForPen(pen) {
-        dust.render("partials/tab", {pen}, function (err, out) {
-            let li = document.createElement("li");
-            const nodes = document.getElementById("tabs");
+        dust.render('partials/tab', { pen }, (err, out) => {
+            let li = document.createElement('li');
+            const nodes = document.getElementById('tabs');
             nodes.insertBefore(li, nodes.childNodes[nodes.childNodes.length - 1]);
             li.outerHTML = out;
-            if (pen.title === "Public") {
+            if (pen.title === 'Public') {
                 li = nodes.childNodes[nodes.childNodes.length - 2];
-                li.classList.toggle("active");
-                li.classList.toggle("locked");
+                li.classList.toggle('active');
+                li.classList.toggle('locked');
                 li.removeChild(li.lastChild);
             }
         });
     }
 
     createPen() {
-        const tabs = document.getElementById("tabs");
+        const tabs = document.getElementById('tabs');
         const activeTabs = tabs.childNodes.length;
         if (activeTabs < 7) {
             doJSONRequest('POST', `/room/${this.room.name}/pen`, {}, {})
-            .then((res) => {
-                const pen = new Pen(res.title, res.id);
-                this.pens.push(pen);
-                this.createTabForPen(res);
-                this.setupTabsHandlers();
-                this.switchPen(this.pens.length - 1);
-            });
+                .then((res) => {
+                    const pen = new Pen(res.title, res.id);
+                    this.pens.push(pen);
+                    socket.emit("creator.broadcastPen", {
+                        roomName: this.room.name,
+                        id: this.userID,
+                        pen
+                    });
+                    this.createTabForPen(res);
+                    this.setupTabsHandlers();
+                    this.switchPen(this.pens.length - 1);
+                });
         }
         if (activeTabs === 6) {
-            tabs.lastChild.className = "switchTab hidden";
+            tabs.lastChild.className = 'switchTab hidden';
         }
     }
 
@@ -140,9 +159,19 @@ class App {
 
         const penID = this.pens[index].id;
         doJSONRequest('PUT', `/room/${this.room.name}/pen/${penID}`, {}, { name })
-        .then((res) => {
-            this.pens[index] = new Pen(res.title, res.id, res.html, res.css, res.js);
-        });
+            .then((res) => {
+                this.pens[index] = new Pen(res.title, res.id, res.html, res.css, res.js);
+                socket.emit("creator.broadcastPen", {
+                    roomName: this.room.name,
+                    id: this.userID,
+                    pen: this.pens[index]
+                });
+                socket.emit('creator.switchPen', {
+                    roomName: this.room.name,
+                    id: this.userID,
+                    newPen: this.pens[index]
+                });
+            });
     }
 
     deletePen(index) {
@@ -152,15 +181,27 @@ class App {
 
         const penID = this.pens[index].id;
         doFetchRequest('DELETE', `/room/${this.room.name}/pen/${penID}`, {}, {})
-        .then((res) => {
-            this.pens.splice(index, 1);
-            if (index === this.currentPen) {
-                this.switchPen(index - 1);
-            }
-            const tabs = document.getElementById("tabs");
-            tabs.removeChild(tabs.childNodes[index]);
-            tabs.lastChild.className = "switchTab";
-            this.setupTabsHandlers();
+            .then((res) => {
+                socket.emit("creator.deletedPen", {
+                    roomName: this.room.name,
+                    id: this.userID,
+                    pen: this.pens[index]
+                });
+                this.pens.splice(index, 1);
+                if (index === this.currentPen) {
+                    this.switchPen(index - 1);
+                }
+                const tabs = document.getElementById('tabs');
+                tabs.removeChild(tabs.childNodes[index]);
+                tabs.lastChild.className = 'switchTab';
+                this.setupTabsHandlers();
+            });
+    }
+
+    askForHelp() {
+        socket.emit("creator.helpNeeded", {
+            roomName: this.room.name,
+            id: this.userID
         });
     }
 
@@ -176,8 +217,8 @@ class App {
             });
 
             if (i !== 0) {
-                const span = tabs[i].querySelector("span");
-                const deleteBtn = tabs[i].querySelector("button");
+                const span = tabs[i].querySelector('span');
+                const deleteBtn = tabs[i].querySelector('button');
 
                 span.ondblclick = ((event) => {
                     event.target.contentEditable = true;
@@ -185,7 +226,7 @@ class App {
                 });
 
                 span.onkeydown = ((event) => {
-                    if (event.key === "Enter") {
+                    if (event.key === 'Enter') {
                         event.preventDefault();
                         event.target.blur();
                     }
@@ -193,8 +234,8 @@ class App {
 
                 span.onblur = ((event) => {
                     event.target.contentEditable = false;
-                    if (event.target.innerHTML === "Public") {
-                        event.target.innerHTML = "MyPublic";
+                    if (event.target.innerHTML === 'Public') {
+                        event.target.innerHTML = 'MyPublic';
                     }
                     this.changePenName(event.target.innerHTML, i);
                 });
@@ -202,7 +243,7 @@ class App {
                 deleteBtn.onclick = ((event) => {
                     event.preventDefault();
                     this.deletePen(i);
-                })
+                });
             }
         }
 
@@ -218,5 +259,90 @@ class App {
             }
         }
         return index;
+    }
+}
+
+
+
+
+
+class CreatorApp extends App {
+    constructor(room, id) {
+        super(room, id);
+        this.users = {};
+    }
+
+    userConnected(user) {
+        this.users[user._id] = {
+            user,
+            currentPen: this.publicPen,
+            pens: [],
+        };
+        this.updateUI();
+    }
+
+    updateUsers(userID, pen) {
+        const { pens } = this.users[userID];
+        for (let i = 0; i < pens.length; i++) {
+            const storedPen = pens[i];
+            if (storedPen.id === pen.id) {
+                pens[i] = pen;
+                console.log(pens);
+                return;
+            }
+        }
+        this.users[userID].pens.push(pen);
+        console.log(pens);
+    }
+
+    updateUserCurrentPen(userID, newPen) {
+        this.users[userID].currentPen = newPen;
+        this.updateUI();
+    }
+
+    removeUserPen(userID, pen) {
+        const { pens } = this.users[userID];
+        let index = -1;
+        for (let i = 0; i < pens.length; i++) {
+            if (pens[i].id === pen.id) {
+                index = i;
+                break;
+            }
+        }
+        if (index === -1) {
+            return;
+        }
+        console.log(this.users[userID]);
+        pens.splice(index, 1);
+        console.log(this.users[userID]);
+    }
+
+    signalHelp(id) {
+        document.getElementById(id).classList.toggle("help-needed");
+    }
+
+    updateUI() {
+        const roomSettings = document.getElementById('room-settings');
+        console.log(Object.values(this.users));
+        dust.render('partials/creator', { users: Object.values(this.users) }, ((err, out) => {
+            roomSettings.innerHTML = out;
+            this.addTogglerListener();
+        }));
+    }
+
+    addTogglerListener() {
+        const roomSettings = document.getElementById('room-settings');
+        const toggler = roomSettings.querySelector('.toggler');
+        toggler.onclick = ((event) => {
+            roomSettings.classList.toggle('hidden');
+        });
+
+        toggler.onmouseenter = ((event) => {
+            document.body.style.cursor = 'pointer';
+        });
+
+        toggler.onmouseleave = ((event) => {
+            document.body.style.cursor = 'default';
+        });
     }
 }

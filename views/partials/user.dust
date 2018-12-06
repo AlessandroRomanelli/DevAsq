@@ -1,7 +1,7 @@
-<div class="user">
+<div id='{user._id}' class="user">
   <img class='user-icon' src="/images/user.png">
-  <p class='user-name'>{user.name}</p>
-  <div>Active Pen: <span class='user-current-pen'>{user.pen}</span></div>
+  <p class='user-name'>{user.username}</p>
+  <div>Active Pen: <span class='user-current-pen'>{currentPen.title}</span></div>
   <button class="pen-loader" type="button" name="button">Load Pen</button>
   <div class="signal"></div>
 </div>
