@@ -56,7 +56,6 @@ function init() {
             app.changeAcesContent();
         }
     });
-}
 
     socket.on('pen.update', (pen) => {
         console.log(pen);
