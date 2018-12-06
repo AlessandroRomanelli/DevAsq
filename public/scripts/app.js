@@ -365,12 +365,25 @@ class CreatorApp extends App {
                 break;
             }
         }
+
         if (index === -1) {
             return;
         }
-        console.log(this.users[userID]);
+
         pens.splice(index, 1);
-        console.log(this.users[userID]);
+
+        index = this.indexOfPenInLinked(pen);
+
+        if (index === -1) {
+            return;
+        }
+
+        this.pens.splice(index, 1);
+        let deleteTab = document.querySelectorAll('.switchTab')[index];
+        deleteTab.parentNode.removeChild(deleteTab);
+        if (!this.getCurrentPen()) {
+            this.switchPen(0);
+        }
     }
 
     signalHelp(id) {
