@@ -1,12 +1,13 @@
 <form id="loginForm" class='profile-form'>
     <fieldset>
-      <input type="text" name="username" placeholder="Username">
+      <input id="login-name" type="text" name="username" placeholder="Username">
     </fieldset>
     <fieldset>
-      <input type="password" name="password" placeholder="Password">
+      <input id="login-password" type="password" name="password" placeholder="Password">
     </fieldset>
     <fieldset class='submit'>
-      <input type="submit" value="Login">
+      <input id='localLogin' type="submit" value="Login" disabled>
+      <p id='login-error' class='submit-error'></p>
       <hr>
       <input id='githubLogin' type="submit" value="Login with GitHub">
     </fieldset>
