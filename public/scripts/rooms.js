@@ -21,6 +21,7 @@ function handleRoomForms() {
         }).then((room) => {
             console.log(room);
             if (room.name) {
+                delete socket;
                 window.location.pathname = `/room/${room.name}`;
             }
         });
@@ -42,8 +43,7 @@ function handleRoomForms() {
                 alert('Room does not exist');
             } else if (res.status === 200 && roomName !== '') {
                 // TODO: get the correct user
-                console.log(socket);
-                socket.emit('room.join', {roomName, user: JSON.parse(localStorage.user) } );
+                delete socket;
                 window.location.pathname = `/room/${roomName}`;
             } else {
                 alert(`Something went wrong: ${res.status}`);

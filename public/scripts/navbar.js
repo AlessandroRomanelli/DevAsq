@@ -51,8 +51,6 @@ function login(username, password) {
         err.data = res;
         throw err;
     }).then((user) => {
-        delete user.password;
-        localStorage.user = JSON.stringify(user);
         localStorage.userLogin = JSON.stringify({ username, password });
         if (user) {
             dust.render('partials/loggedUser', { loggedUser: user }, (err, output) => {

@@ -4,13 +4,11 @@ let socket;
     socket = io();
 
     socket.on('connect', () => {
-        console.log(socket);
-        socket.emit('settings.bindID', { user: localStorage.user });
+        console.log('Main page socket connected');
     });
 
     socket.on('reconnect', (attemptNumber) => {
         console.log('Socket reconnected!', 'ok');
-        socket.emit('settings.bindID', { user: localStorage.user });
     });
 
     socket.on('disconnect', (reason) => {
