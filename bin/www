@@ -8,7 +8,7 @@ const debug = require('debug')('final-project:server');
 const http = require('http');
 const app = require('../app');
 const eventBus = require('../pubsub');
-const { socketToUser, userToSocket, roomStorage } = require('../rooms');
+const { connectionMap, roomStorage } = require('../rooms');
 /**
  * Get port from environment and store in Express.
  */
@@ -99,9 +99,9 @@ function getCreatorSocket(roomName) {
     const room = roomStorage[roomName];
     if (!room) {
         console.error('No room found!');
-        return;
+        return null;
     }
-    return userToSocket.get(room.creator);
+    return connectionMap.getSocket(room.creator);
 }
 
 io.on('connection', (socket) => {
@@ -135,13 +135,23 @@ io.on('connection', (socket) => {
 
     socket.on('settings.bindID', (user) => {
         console.log(user);
-        socketToUser.put(socket.id, user.id);
-        userToSocket.put(user.id, socket.id);
+        connectionMap.registerUser(user.id, socket.id);
+    });
+
+    socket.on('homePage.joinRoom', () => {
+        socket.join('homePage');
+    });
+
+    socket.on('homePage.leaveRoom', () => {
+        socket.leave('homePage', socket.user);
     });
 
     socket.on('settings.joinRoom', (data) => {
-        console.log(data.roomName);
         socket.join(data.roomName);
+        socket.to('homePage').emit('homepage.updateRoomCounter', {
+            population: data.population,
+            roomName: data.roomName
+        });
     });
 
     socket.on('settings.notifyCreator', (data) => {
@@ -179,24 +189,70 @@ io.on('connection', (socket) => {
         socket.to(creatorSocket).emit('creator.deletedPen', { id, pen });
     });
 
+    socket.on('pen.resolveHelp', (data) => {
+        const { id } = data;
+        const userSocket = connectionMap.getSocket(id);
+        if (!userSocket) return;
+        socket.to(userSocket).emit('pen.resolveHelp');
+    });
+
     socket.on('pen.change', (data) => {
         console.log('update the pen');
         console.log(data);
-        const userID = socketToUser.get(socket.id);
+        const userID = connectionMap.getUser(socket.id);
         const room = roomStorage[data.roomName];
-        if (room.creator === userID && data.pen.title === 'Public') {
+        if (room && room.creator === userID && data.pen.title === 'Public') {
             room.publicPen = data.pen;
             // let socketID = userToSocket.get(userID);
             socket.to(room.name).emit('pen.update', data.pen);
             return;
         }
+
+        if (room && room.creator === userID && data.pen.link) {
+            const creatorPens = room.users[room.creator];
+            for (let i = 0; i < creatorPens.length; i++) {
+                if (creatorPens[i].id === data.pen.id) {
+                    creatorPens[i] = data.pen;
+                    break;
+                }
+            }
+
+            const linkedUserPens = room.users[data.pen.link.userID];
+            let found = -1;
+            for (let i = 0; i < linkedUserPens.length; i++) {
+                if (linkedUserPens[i].id === data.pen.link.penID) {
+                    linkedUserPens[i].html = data.pen.html;
+                    linkedUserPens[i].css = data.pen.css;
+                    linkedUserPens[i].js = data.pen.js;
+                    found = i;
+                    break;
+                }
+            }
+
+            if (found !== -1) {
+                const destination = connectionMap.getSocket(data.pen.link.userID);
+                socket.to(destination).emit('pen.update', linkedUserPens[found]);
+            }
+            return;
+        }
+
         const pens = room.users[userID];
-        const creatorSocket = userToSocket.get(room.creator);
+        const creatorSocket = connectionMap.getSocket(room.creator);
         console.log(pens);
         for (let i = 0; i < pens.length; i++) {
             const pen = pens[i];
             if (pen.id === data.pen.id) {
                 pens[i] = data.pen;
+                const creatorPens = room.users[room.creator];
+                for (let j = 0; j < creatorPens.length; j++) {
+                    if (creatorPens[j].link && creatorPens[j].link.penID === data.pen.id) {
+                        creatorPens[j].html = data.pen.html;
+                        creatorPens[j].css = data.pen.css;
+                        creatorPens[j].js = data.pen.js;
+                        creatorPens[j].title = data.pen.title;
+                        break;
+                    }
+                }
                 if (pen.title !== 'Public') {
                     socket.to(creatorSocket).emit('creator.updatePens', { id: userID, pen: pens[i] });
                 }
@@ -205,8 +261,26 @@ io.on('connection', (socket) => {
     });
 
     socket.on('pen.preview', (data) => {
-        let destination = data.roomName || data.userID || userToSocket.get(data.pen.user);
+        console.log(data.pen);
+        let destination;
+        try {
+            destination = data.roomName || connectionMap.getSocket(data.userID) || connectionMap.getSocket(data.pen.link.userID);
+        } catch (e) {
+            destination = undefined;
+        }
         socket.to(destination).emit('pen.updatePreview', data.pen);
+    });
+
+    socket.on('pen.sharedCreated', (data) => {
+        const { userID, penID } = data;
+        const destination = connectionMap.getSocket(userID);
+        socket.to(destination).emit('pen.sharedCreated', penID);
+    });
+
+    socket.on('pen.sharedDeleted', (data) => {
+        const { userID, penID } = data;
+        const destination = connectionMap.getSocket(userID);
+        socket.to(destination).emit('pen.sharedDeleted', penID);
     });
 });
 
