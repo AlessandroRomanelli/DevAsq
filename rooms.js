@@ -8,35 +8,55 @@ require('./models');
 
 class Map {
     constructor() {
-        this.data = {};
+        this.userToSocket = {};
+        this.socketToUser = {};
     }
 
-    get(idKey) {
-        return this.data[idKey];
-    }
-
-    put(idKey, idValue) {
-        const keys = Object.keys(this.data);
-        for (let i = 0; i < keys.length; i += 1) {
-            if (idValue === this.data[keys[i]]) {
-                delete this.data[keys[i]];
+    registerUser(userId, socketId) {
+        const sockets = Object.keys(this.socketToUser);
+        for (let i = 0; i < sockets.length; i++) {
+            const socket = sockets[i];
+            const user = this.socketToUser[socket];
+            if (user === userId) {
+                delete this.socketToUser[socket];
             }
         }
-        this.data[idKey] = idValue;
+        this.userToSocket[userId] = socketId;
+        this.socketToUser[socketId] = userId;
+        console.log(`Registered ${userId}:${socketId}`);
+        console.log(this.userToSocket);
+        console.log(this.socketToUser);
     }
 
-    containsKey(idKey) {
-        return Object.keys(this.data).includes(idKey);
+    unregisterUser(socketId) {
+        const users = Object.keys(this.userToSocket);
+        for (let i = 0; i < users.length; i++) {
+            const user = users[i];
+            const socket = this.userToSocket[user];
+            if (socket === socketId) {
+                delete this.userToSocket[user];
+            }
+        }
+        const sockets = Object.keys(this.socketToUser);
+        for (let i = 0; i < sockets.length; i++) {
+            const socket = sockets[i];
+            if (socket === socketId) {
+                delete this.socketToUser[socket];
+            }
+        }
+        console.log(`Removed socket: ${socketId}`);
     }
 
-    containsValue(idValue) {
-        return Object.values(this.data).includes(idValue);
+    getSocket(userId) {
+        return this.userToSocket[userId];
+    }
+
+    getUser(socketId) {
+        return this.socketToUser[socketId];
     }
 }
 
-const userToSocket = new Map();
-
-const socketToUser = new Map();
+const connectionMap = new Map();
 
 const UIDs = [];
 
@@ -151,6 +171,5 @@ module.exports = {
     Pen,
     roomStorage,
     UIDs,
-    userToSocket,
-    socketToUser,
+    connectionMap,
 };

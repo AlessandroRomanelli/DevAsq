@@ -6,7 +6,6 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const eventBus = require('../pubsub');
-const { socketToUser, userToSocket } = require('../rooms');
 
 const config = require('../config');
 
