@@ -112,6 +112,36 @@ function handleSignupForm() {
     });
 }
 
+function login(username, password) {
+    const modal = document.getElementById('login-signup-modal');
+    doFetchRequest('POST', '/login', {
+        'Content-Type': 'application/json',
+    }, JSON.stringify({
+        username,
+        password,
+    })).then((res) => {
+        if (res.status === 200) {
+            return res.json();
+        }
+        const err = new Error('Invalid Login');
+        err.data = res;
+        throw err;
+    }).then((user) => {
+        localStorage.userLogin = JSON.stringify({ username, password });
+        if (user) {
+            dust.render('partials/loggedUser', { loggedUser: user }, (err, output) => {
+                const profileNav = document.querySelector('.profile');
+                profileNav.innerHTML = output;
+                modal.classList.add('hidden');
+                handleLogout();
+            });
+        }
+    }).catch((err) => {
+        console.error(err);
+        handleError(err, 'localLogin');
+    });
+}
+
 function handleLoginForm() {
     const passwordRegex = new RegExp('^(?=.*[A-z])(?=.*[0-9])(?=.{8,})');
     const modal = document.getElementById('login-signup-modal');
@@ -119,8 +149,13 @@ function handleLoginForm() {
     if (!loginButton) return;
     loginButton.onclick = (event) => {
         event.preventDefault();
-        event.target.classList.toggle('active');
-        modal.classList.toggle('hidden');
+        if (localStorage.userLogin) {
+            const { username, password } = JSON.parse(localStorage.userLogin);
+            login(username, password);
+        } else {
+            event.target.classList.toggle('active');
+            modal.classList.toggle('hidden');
+        }
     };
     const githubLogin = document.getElementById('githubLogin');
     githubLogin.addEventListener('click', (event) => {
@@ -142,31 +177,7 @@ function handleLoginForm() {
         event.preventDefault();
         const username = loginUsername.value;
         const password = loginPassword.value;
-        doFetchRequest('POST', '/login', {
-            'Content-Type': 'application/json',
-        }, JSON.stringify({
-            username,
-            password,
-        })).then((res) => {
-            if (res.status === 200) {
-                return res.json();
-            }
-            const err = new Error('Invalid Login');
-            err.data = res;
-            throw err;
-        }).then((user) => {
-            if (user) {
-                dust.render('partials/loggedUser', { loggedUser: user }, (err, output) => {
-                    const profileNav = document.querySelector('.profile');
-                    profileNav.innerHTML = output;
-                    modal.classList.add('hidden');
-                    handleLogout();
-                });
-            }
-        }).catch((err) => {
-            console.error(err);
-            handleError(err, 'localLogin');
-        });
+        login(username, password);
     });
     const signupButton = document.getElementById('signup');
     signupButton.addEventListener('click', (event) => {
