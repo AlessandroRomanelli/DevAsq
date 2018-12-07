@@ -112,21 +112,32 @@ io.on('connection', (socket) => {
 
     socket.on('settings.bindID', (user) => {
         console.log(user);
-        socketToUser.put(socket.id, user.id);
-        userToSocket.put(user.id, socket.id);
+        socketToUser.put(socket.id, user._id);
+        userToSocket.put(user._id, socket.id);
+        console.log('ID binded')
     });
 
-    socket.on('settings.joinRoom', (data) => {
-        console.log(data.roomName);
-        socket.join(data.roomName);
-    });
+    // socket.on('settings.joinRoom', (data) => {
+    //     console.log(data.roomName);
+    //     socket.join(data.roomName);
+    // });
 
-    socket.on('settings.notifyCreator', (data) => {
+    socket.on('room.join', (data) => {
+        console.log('join room');
         const { roomName, user } = data;
         const creatorSocket = getCreatorSocket(roomName);
+        socket.join(roomName);
+
         if (!creatorSocket) return;
         socket.to(creatorSocket).emit('settings.userJoined', user);
     });
+
+    // socket.on('settings.notifyCreator', (data) => {
+    //     const { roomName, user } = data;
+    //     const creatorSocket = getCreatorSocket(roomName);
+    //     if (!creatorSocket) return;
+    //     socket.to(creatorSocket).emit('settings.userJoined', user);
+    // });
 
     socket.on('creator.helpNeeded', (data) => {
         const { roomName, id } = data;
