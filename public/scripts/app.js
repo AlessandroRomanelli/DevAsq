@@ -126,15 +126,27 @@ class App {
 
     updateCurrentEditor(mode, value) {
         const pen = this.getCurrentPen();
+        let userPen;
+        console.log(pen);
+        if (pen.link && this.userID === this.room.creator) {
+            const userPens = this.users[pen.link.userID].pens;
+            const index = this.indexOfLinkedInPens(pen, userPens);
+            if (index !== -1) {
+                userPen = userPens[index];
+            }
+        }
         switch (mode) {
         case 'html':
             pen.html = value;
+            if (userPen) { userPen.html = value }
             break;
         case 'css':
             pen.css = value;
+            if (userPen) { userPen.css = value }
             break;
         case 'javascript':
             pen.js = value;
+            if (userPen) { userPen.js = value }
             break;
         default:
             break;
@@ -336,13 +348,13 @@ class App {
         return index;
     }
 
-    indexOfLinkedInPens(pen) {
+    indexOfLinkedInPens(pen, pens = this.pens) {
         if (!pen.link) {
             return -1;
         }
         let index = -1;
-        for (let i = 0; i < this.pens.length; i++) {
-            if (pen.link.penID === this.pens[i].id) {
+        for (let i = 0; i < pens.length; i++) {
+            if (pen.link.penID === pens[i].id) {
                 index = i;
                 break;
             }
