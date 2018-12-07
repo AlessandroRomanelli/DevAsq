@@ -8,22 +8,28 @@ const bcrypt = require('bcrypt');
 const eventBus = require('../pubsub');
 
 const config = require('../config');
+const { storeToken } = require('../utils');
+
 
 require('../models');
 
 const User = mongoose.model('User');
 
 router.post('/logout', (req, res) => {
+    res.clearCookie('remember_me');
     req.logout();
     res.status(200).end();
 });
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
-    if (req.user) {
-        res.status(200).json(req.user);
-    } else {
-        res.status(401).end();
-    }
+router.post('/login', passport.authenticate('local'), (req, res, next) => {
+    if (!req.user) { return res.status(401).end(); }
+    storeToken(req.user._id, (err, token) => {
+        if (err) { return next(err); }
+        res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 }); // 1 Week max age
+        return next();
+    });
+}, (req, res) => {
+    res.status(200).json(req.user);
 });
 
 router.post('/signup', (req, res) => {
