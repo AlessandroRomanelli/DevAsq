@@ -351,6 +351,12 @@ class CreatorApp extends App {
         this.updateUI();
     }
 
+    userDisconnected(user) {
+        // TODO: Remove the user from the local storage
+        console.log('User: ', user, ' left the room');
+        this.updateUI();
+    }
+
     updateUsers(userID, pen) {
         const { pens } = this.users[userID];
 
@@ -425,7 +431,7 @@ class CreatorApp extends App {
 
     updateUI() {
         const participants = document.getElementById('participants');
-        participants.innerHTML = `${Object.keys(this.users).length + 1}`;
+        participants.innerHTML = `${Object.keys(this.users).length}`;
         const roomSettings = document.getElementById('room-settings');
         dust.render('partials/creator', { users: Object.values(this.users) }, ((err, out) => {
             roomSettings.innerHTML = out;
@@ -534,7 +540,7 @@ class CreatorApp extends App {
         const roomName = document.getElementById('room-name');
         const raiseHand = document.getElementById('raise-hand');
 
-        participants.innerHTML = '1';
+        participants.innerHTML = '0';
         roomName.innerHTML = this.room.name;
         raiseHand.parentNode.removeChild(raiseHand);
     }

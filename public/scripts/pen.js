@@ -32,7 +32,7 @@ function init() {
         socket.emit('settings.bindID', { id: user._id });
         socket.emit('settings.joinRoom', {
             roomName: app.room.name,
-            population: Object.keys(app.room.users).length
+            population: Object.keys(app.room.users).length-1
         });
         socket.emit('settings.notifyCreator', { roomName: app.room.name, user });
     });
@@ -75,6 +75,12 @@ function init() {
         }
     });
 
+    socket.on('settings.userLeft', (user) => {
+        if (app instanceof CreatorApp) {
+            app.userDisconnected(user);
+        }
+    });
+
     socket.on('creator.updatePens', (data) => {
         const { id, pen } = data;
         if (app instanceof CreatorApp) {
@@ -107,7 +113,7 @@ function init() {
         console.log('Creator resolved help');
         app.resolveHelp();
     });
-    
+
     socket.on('creator.userExit', (userID) => {
         if (app instanceof CreatorApp) {
             console.log('Deleting the user from local storage')

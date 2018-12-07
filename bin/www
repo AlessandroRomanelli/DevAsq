@@ -112,7 +112,8 @@ io.on('connection', (socket) => {
 
     socket.on('disconnecting', (reason) => {
         console.log('Deleting user from the server storage and notify all users');
-        let userID = socketToUser.get(socket.id);
+        let userID = connectionMap.getUser(socket.id);
+
         if (Object.keys(socket.rooms).length > 1) {
             let roomName = Object.keys(socket.rooms)[1];
             console.log(socket.rooms);
@@ -127,7 +128,8 @@ io.on('connection', (socket) => {
                     delete roomStorage[roomName];
                 } else {
                     delete room.users[userID];
-                    socket.to(userToSocket.get(room.creator)).emit('creator.userExit');
+                    // socket.to(connectionMap.getSocket(room.creator)).emit('creator.userExit');
+                    socket.to(room.creator).emit('settings.userLeft', userID);
                 }
             }
         }
