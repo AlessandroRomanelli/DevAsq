@@ -6,7 +6,6 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const eventBus = require('../pubsub');
-const { socketToUser, userToSocket } = require('../rooms');
 
 const config = require('../config');
 
@@ -30,7 +29,7 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
 router.post('/signup', (req, res) => {
     const { username, password } = req.body;
     User.findOne({ username }).then((user) => {
-        if (!user) {
+        if (user == null) {
             return bcrypt.hash(password, config.SALT_ROUNDS);
         }
         throw new Error('Username already taken');

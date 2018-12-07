@@ -6,4 +6,7 @@
   <div class="profile">
     {> "partials/loggedUser" /}
   </div>
+  <div id="login-signup-modal"class="login hidden">
+    {> "partials/loginForm" /}
+  </div>
 </nav>

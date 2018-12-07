@@ -2,10 +2,10 @@
   <h1>New Room</h1>
   <form id='createRoom' method="POST" autocomplete="off">
     <fieldset>
-      <input type="text" name="roomName" placeholder="Room Name">
+      <input type="text" name="roomName" placeholder="Room Name" autocomplete="false">
     </fieldset>
     <fieldset>
-      <input type="password" name="password" placeholder="Password (Optional)">
+      <input type="password" name="password" placeholder="Password (Optional)" autocomplete="false">
     </fieldset>
     <fieldset class="submit">
       <input type="submit" value="Create">
@@ -18,10 +18,10 @@
   <h1>Join Room</h1>
   <form id='joinRoom' method="POST" autocomplete="off">
     <fieldset>
-      <input type="text" name="roomName" placeholder="Room Name">
+      <input type="text" name="roomName" placeholder="Room Name" autocomplete="false">
     </fieldset>
     <fieldset>
-      <input type="password" name="password" placeholder="Password (Optional)">
+      <input type="password" name="password" placeholder="Password (Optional)" autocomplete="false">
     </fieldset>
     <fieldset class="submit">
       <input type="submit" value="Join">
