@@ -11,15 +11,14 @@ Array.prototype.last = function () {
 };
 
 
-let socket;
+// let socket;
 let app;
 
 function init() {
     handleLoginForm();
     handleLogout();
 
-    socket = io();
-
+    // socket = io();
 
     if (room.creator === user._id) {
         app = new CreatorApp(room, user._id);
@@ -30,11 +29,11 @@ function init() {
     addTogglerListener(app);
     startParsing(app);
 
-    socket.on('connect', () => {
-        socket.emit('settings.bindID', { id: user._id });
-        socket.emit('settings.joinRoom', { roomName: app.room.name });
-        socket.emit('settings.notifyCreator', { roomName: app.room.name, user });
-    });
+    // socket.on('connect', () => {
+    //     socket.emit('settings.bindID', { id: user._id });
+    //     socket.emit('settings.joinRoom', { roomName: app.room.name });
+    //     socket.emit('settings.notifyCreator', { roomName: app.room.name, user });
+    // });
 
     socket.on('reconnect', (attemptNumber) => {
         console.log('Socket reconnected!', 'ok');

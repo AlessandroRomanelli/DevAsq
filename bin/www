@@ -120,6 +120,16 @@ io.on('connection', (socket) => {
         socket.join(data.roomName);
     });
 
+    socket.on('room.join', (data) => {
+        console.log('join room');
+        const { roomName, user } = data;
+        const creatorSocket = getCreatorSocket(roomName);
+        socket.join(roomName);
+
+        if (!creatorSocket) return;
+        socket.to(creatorSocket).emit('settings.userJoined', user);
+    });
+
     socket.on('settings.notifyCreator', (data) => {
         const { roomName, user } = data;
         const creatorSocket = getCreatorSocket(roomName);
