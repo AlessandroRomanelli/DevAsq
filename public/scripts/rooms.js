@@ -1,49 +1,69 @@
 function handleRoomForms() {
     const createRoom = document.getElementById('createRoom');
-    createRoom.addEventListener('submit', (event) => {
+    const createRoomButton = document.getElementById('createRoomButton');
+    createRoomButton.addEventListener('click', (event) => {
         event.preventDefault();
-        const roomName = event.target[1].value;
-        const password = event.target[3].value;
-        if (!roomName || roomName === '') alert('Invalid room name');
+        const roomName = createRoom.querySelector('input[name="roomName"]').value;
+        const password = createRoom.querySelector('input[name="password"]').value;
+        if (!roomName || roomName === '') {
+            const err = new Error('No room name specified');
+            console.error(err);
+            handleError(err, 'createRoomButton');
+        }
         doFetchRequest('POST', '/room/create', {
             'Content-Type': 'application/json',
         }, JSON.stringify({
             roomName,
             password,
         })).then((res) => {
-            if (res.status === 403) {
-                alert('Not logged in');
-            } else if (res.status === 400) {
-                alert('Room name is already taken');
-            } else {
+            let err;
+            if (res.status === 201) {
                 return res.json();
             }
-        }).then((room) => {
-            if (room.name) {
-                window.location.pathname = `/room/${room.name}`;
+            if (res.status === 400) {
+                err = new Error('A room with the same name already exists!');
+            } else if (res.status === 403) {
+                err = new Error('User is not authorised to do this');
             }
+            err.data = res;
+            throw err;
+        }).then((room) => {
+            if (room.name) window.location.pathname = `/room/${room.name}`;
+        }).catch((err) => {
+            console.error(err);
+            handleError(err, 'createRoomButton');
         });
     });
+
     const joinRoom = document.getElementById('joinRoom');
-    joinRoom.addEventListener('submit', (event) => {
+    const joinRoomButton = document.getElementById('joinRoomButton');
+    joinRoomButton.addEventListener('click', (event) => {
         event.preventDefault();
-        const roomName = event.target[1].value;
-        const password = event.target[3].value;
+        const roomName = joinRoom.querySelector('input[name="roomName"]').value;
+        const password = joinRoom.querySelector('input[name="password"]').value;
         doFetchRequest('POST', '/room/join', {
             'Content-Type': 'application/json',
         }, JSON.stringify({
             roomName,
             password,
         })).then((res) => {
-            if (res.status === 403) {
-                alert('Unauthorised');
-            } else if (res.status === 404) {
-                alert('Room does not exist');
-            } else if (res.status === 200 && roomName !== '') {
+            if (res.status === 200 && roomName !== '') {
                 window.location.pathname = `/room/${roomName}`;
-            } else {
-                alert(`Something went wrong: ${res.status}`);
+                return;
             }
+            let err;
+            if (res.status === 403) {
+                err = new Error('User was not authorised to enter room');
+            } else if (res.status === 404) {
+                err = new Error('Room does not exist');
+            } else {
+                err = new Error(`Something went wrong: ${res.status}`);
+            }
+            err.data = res;
+            throw err;
+        }).catch((err) => {
+            console.error(err);
+            handleError(err, 'joinRoomButton');
         });
     });
 }
