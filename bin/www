@@ -157,7 +157,7 @@ io.on('connection', (socket) => {
 
     socket.on('pen.resolveHelp', (data) => {
         const { id } = data;
-        const userSocket = connectionMap.getUser(id);
+        const userSocket = connectionMap.getSocket(id);
         if (!userSocket) return;
         socket.to(userSocket).emit('pen.resolveHelp');
     });
@@ -169,6 +169,7 @@ io.on('connection', (socket) => {
         const room = roomStorage[data.roomName];
         if (room && room.creator === userID && data.pen.title === 'Public') {
             room.publicPen = data.pen;
+            // let socketID = userToSocket.get(userID);
             socket.to(room.name).emit('pen.update', data.pen);
             return;
         }
@@ -195,14 +196,14 @@ io.on('connection', (socket) => {
             }
 
             if (found !== -1) {
-                const destination = connectionMap.getUser(data.pen.link.userID);
+                const destination = connectionMap.getSocket(data.pen.link.userID);
                 socket.to(destination).emit('pen.update', linkedUserPens[found]);
             }
             return;
         }
 
         const pens = room.users[userID];
-        const creatorSocket = connectionMap.getUser(room.creator);
+        const creatorSocket = connectionMap.getSocket(room.creator);
         console.log(pens);
         for (let i = 0; i < pens.length; i++) {
             const pen = pens[i];
@@ -229,7 +230,7 @@ io.on('connection', (socket) => {
         console.log(data.pen);
         let destination;
         try {
-            destination = data.roomName || connectionMap.getUser(data.userID) || connectionMap.getUser(data.pen.link.userID);
+            destination = data.roomName || connectionMap.getSocket(data.userID) || connectionMap.getSocket(data.pen.link.userID);
         } catch (e) {
             destination = undefined;
         }
@@ -238,13 +239,13 @@ io.on('connection', (socket) => {
 
     socket.on('pen.sharedCreated', (data) => {
         const { userID, penID } = data;
-        const destination = connectionMap.getUser(userID);
+        const destination = connectionMap.getSocket(userID);
         socket.to(destination).emit('pen.sharedCreated', penID);
     });
 
     socket.on('pen.sharedDeleted', (data) => {
         const { userID, penID } = data;
-        const destination = connectionMap.getUser(userID);
+        const destination = connectionMap.getSocket(userID);
         socket.to(destination).emit('pen.sharedDeleted', penID);
     });
 });
