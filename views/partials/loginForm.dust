@@ -6,7 +6,7 @@
       <input id="login-password" type="password" name="password" placeholder="Password">
     </fieldset>
     <fieldset class='submit'>
-      <input id='localLogin' type="submit" value="Login" disabled>
+      <input id='localLogin' type="submit" value="Login">
       <p id='login-error' class='submit-error'></p>
       <hr>
       <input id='githubLogin' type="submit" value="Login with GitHub">
