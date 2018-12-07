@@ -1,4 +1,5 @@
 <div id='{user._id}' class="user">
+  <img id="preview-icon" src="/images/preview.png" style="width: 32px; height: 32px;">
   <img class='user-icon' src="/images/user.png">
   <p class='user-name'>{user.username}</p>
   <div>Active Pen: <span class='user-current-pen'>{currentPen.title}</span></div>

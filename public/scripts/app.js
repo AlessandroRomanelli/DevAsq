@@ -47,6 +47,16 @@ class App {
         });
 
         this.changeAcesContent();
+
+        if (this.userID === this.room.creator) {
+            const sharePublic = document.getElementById("share-public");
+            sharePublic.querySelector(".info").innerHTML = this.getCurrentPen().title;
+            if (this.currentPen === 0) {
+                sharePublic.classList.add("hidden")
+            } else {
+                sharePublic.classList.remove("hidden");
+            }
+        }
     }
 
     changeAcesContent() {
@@ -247,40 +257,42 @@ class App {
                 this.switchPen(i);
             });
 
-            if (i !== 0) {
-                const span = tabs[i].querySelector('span');
-                const deleteBtn = tabs[i].querySelector('button');
+            if (i === 0) {
+                continue;
+            }
+            const span = tabs[i].querySelector('span');
+            const deleteBtn = tabs[i].querySelector('button');
 
-                span.ondblclick = null;
-                span.onkeydown = null;
-                span.onblur = null;
-                if (!(this instanceof CreatorApp) || !(this.pens[i].link)) {
-                    span.ondblclick = ((event) => {
-                        event.target.contentEditable = true;
-                        event.target.focus();
-                    });
+            span.ondblclick = null;
+            span.onkeydown = null;
+            span.onblur = null;
+            if (!(this instanceof CreatorApp) || !(this.pens[i].link)) {
+                span.ondblclick = ((event) => {
+                    event.target.contentEditable = true;
+                    event.target.focus();
+                });
 
-                    span.onkeydown = ((event) => {
-                        if (event.key === 'Enter') {
-                            event.preventDefault();
-                            event.target.blur();
-                        }
-                    });
+                span.onkeydown = ((event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        event.target.blur();
+                    }
+                });
 
-                    span.onblur = ((event) => {
-                        event.target.contentEditable = false;
-                        if (event.target.innerHTML === 'Public') {
-                            event.target.innerHTML = 'MyPublic';
-                        }
-                        this.changePenName(event.target.innerHTML, i);
-                    });
-                }
-
-                deleteBtn.onclick = ((event) => {
-                    event.preventDefault();
-                    this.deletePen(i);
+                span.onblur = ((event) => {
+                    event.target.contentEditable = false;
+                    if (event.target.innerHTML === 'Public') {
+                        event.target.innerHTML = 'MyPublic';
+                    }
+                    this.changePenName(event.target.innerHTML, i);
                 });
             }
+
+            deleteBtn.onclick = ((event) => {
+                event.preventDefault();
+                this.deletePen(i);
+            });
+
         }
 
         plusTab.onclick = this.createPen.bind(this);
@@ -290,6 +302,7 @@ class App {
         const participants = document.getElementById('participants');
         const roomName = document.getElementById('room-name');
         const raiseHand = document.getElementById('raise-hand');
+        const sharePublic = document.getElementById("share-public");
 
         participants.parentNode.parentNode.removeChild(participants.parentNode);
         roomName.innerHTML = this.room.name;
@@ -297,6 +310,7 @@ class App {
             raiseHand.classList.toggle('asking-help');
             this.askForHelp();
         });
+        sharePublic.parentNode.removeChild(sharePublic);
     }
 
     indexOfPen(pen) {
@@ -458,11 +472,15 @@ class CreatorApp extends App {
         }
         const users = document.getElementById('users').childNodes;
         users.forEach((user) => {
+            const preview = user.querySelector("img#preview-icon");
             const image = user.querySelector("img.user-icon");
             const sharePen = user.querySelector("button#share-pen");
             const loadPen = user.querySelector("button#load-pen");
             const id = user.id;
             const { pens } = this.users[id];
+            preview.onclick = ((event) => {
+                console.log("DISPLAY MODAL");
+            });
             image.onclick = ((event) => {
                 if (this.users[id].ping) {
                     this.signalHelp(id);
@@ -541,9 +559,14 @@ class CreatorApp extends App {
         const participants = document.getElementById('participants');
         const roomName = document.getElementById('room-name');
         const raiseHand = document.getElementById('raise-hand');
+        const sharePublic = document.getElementById("share-public");
 
         participants.innerHTML = '1';
         roomName.innerHTML = this.room.name;
         raiseHand.parentNode.removeChild(raiseHand);
+        sharePublic.classList.add("hidden");
+        sharePublic.onclick = ((event) => {
+            this.setPenContentIntoPen(this.getCurrentPen(), app.publicPen);
+        })
     }
 }
