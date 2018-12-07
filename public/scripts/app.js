@@ -479,19 +479,6 @@ class CreatorApp extends App {
             const loadPen = user.querySelector('button#load-pen');
             const id = user.id;
             const { pens } = this.users[id];
-            preview.onclick = ((event) => {
-                const modal = document.getElementById('preview-modal');
-                const iFrame = modal.querySelector('iframe#preview-iframe');
-
-                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
-                if (index === -1) {
-                    return;
-                }
-                modal.classList.toggle('hidden');
-                console.log(index);
-                console.log(pens[index]);
-                iFrame.src = `/preview/${this.room.name}?penID=${pens[index].id}&userID=${id}`;
-            });
             image.onclick = ((event) => {
                 if (this.users[id].ping) {
                     this.signalHelp(id);
@@ -509,10 +496,25 @@ class CreatorApp extends App {
             loadPen.onclick = ((event) => {
                 event.preventDefault();
                 const index = findIDInUserPen(this.users[id].currentPen.id, pens);
-                if (index === -1) {
+                if (index === -1 || this.indexOfPenInLinked(pens[index]) !== -1) {
                     return;
                 }
                 this.loadRemotePen(pens[index], id);
+            });
+            preview.onclick = ((event) => {
+                const modal = document.getElementById('preview-modal');
+                const shareModalPen = document.getElementById('modal-share');
+                const loadModalPen = document.getElementById('modal-load');
+                const iFrame = modal.querySelector('iframe#preview-iframe');
+
+                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                if (index === -1) {
+                    return;
+                }
+                modal.classList.toggle('hidden');
+                iFrame.src = `/preview/${this.room.name}?penID=${pens[index].id}&userID=${id}`;
+                shareModalPen.onclick = sharePen.onclick;
+                loadModalPen.onclick = loadPen.onclick;
             });
         });
     }
@@ -586,9 +588,13 @@ class CreatorApp extends App {
     setUpModalListeners() {
         const modal = document.getElementById('preview-modal');
         const closeModal = document.getElementById('close-modal');
+        const sharePen = document.getElementById('modal-share');
+        const loadPen = document.getElementById('modal-load');
         closeModal.onclick = ((event) => {
             event.preventDefault();
             modal.classList.toggle('hidden');
+            sharePen.onclick = null;
+            loadPen.onclick = null;
         });
     }
 }

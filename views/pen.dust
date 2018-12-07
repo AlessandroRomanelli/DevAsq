@@ -44,8 +44,8 @@
           <button id="close-modal" class='' type="button" name="button">X</button>
           <iframe id='preview-iframe'></iframe>
           <div id='preview-loaders' class="">
-            <button id='private-load' type="button" name="button">Share pen</button>
-            <button id='public-load' type="button" name="button">Load pen</button>
+            <button id='modal-share' type="button" name="button">Share pen</button>
+            <button id='modal-load' type="button" name="button">Load pen</button>
           </div>
         </div>
       </div>
