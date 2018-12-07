@@ -303,6 +303,7 @@ class App {
         const roomName = document.getElementById('room-name');
         const raiseHand = document.getElementById('raise-hand');
         const sharePublic = document.getElementById("share-public");
+        const modal = document.getElementById("preview-modal");
 
         participants.parentNode.parentNode.removeChild(participants.parentNode);
         roomName.innerHTML = this.room.name;
@@ -311,6 +312,7 @@ class App {
             this.askForHelp();
         });
         sharePublic.parentNode.removeChild(sharePublic);
+        modal.parentNode.removeChild(modal);
     }
 
     indexOfPen(pen) {
@@ -479,7 +481,17 @@ class CreatorApp extends App {
             const id = user.id;
             const { pens } = this.users[id];
             preview.onclick = ((event) => {
-                console.log("DISPLAY MODAL");
+                const modal = document.getElementById("preview-modal");
+                const iFrame = modal.querySelector("iframe#preview-iframe");
+
+                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                if (index === -1) {
+                    return;
+                }
+                modal.classList.toggle("hidden");
+                console.log(index);
+                console.log(pens[index]);
+                iFrame.src = `/preview/${this.room.name}?penID=${pens[index].id}`;
             });
             image.onclick = ((event) => {
                 if (this.users[id].ping) {
@@ -567,6 +579,17 @@ class CreatorApp extends App {
         sharePublic.classList.add("hidden");
         sharePublic.onclick = ((event) => {
             this.setPenContentIntoPen(this.getCurrentPen(), app.publicPen);
+        })
+
+        this.setUpModalListeners();
+    }
+
+    setUpModalListeners() {
+        const modal = document.getElementById("preview-modal");
+        const closeModal = document.getElementById("close-modal");
+        closeModal.onclick = ((event) => {
+            event.preventDefault();
+            modal.classList.toggle("hidden");
         })
     }
 }
