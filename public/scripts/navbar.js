@@ -31,85 +31,9 @@ function updateInputField(isValid, html) {
 
 function handleError(err, submitName) {
     const { data } = err;
-    const modal = document.getElementById('login-signup-modal');
     const submit = document.getElementById(submitName);
     submit.classList.add('error', 'shake-horizontal');
     setTimeout((submit) => { submit.classList.remove('shake-horizontal'); }, 1000, submit);
-}
-
-function handleSignupForm() {
-    const passwordRegex = new RegExp('^(?=.*[A-z])(?=.*[0-9])(?=.{8,})');
-    // const modal = document.getElementById('login-signup-modal');
-    const signupUsername = document.getElementById('signup-name');
-    signupUsername.addEventListener('keyup', (event) => {
-        updateInputField(event.target.value !== '', event.target.parentNode);
-        validateForm({ formName: 'signupForm', submitName: 'signup-submit' });
-    });
-    const signupPassword = document.getElementById('signup-password');
-    signupPassword.addEventListener('keyup', (event) => {
-        updateInputField((passwordRegex.test(event.target.value)), event.target.parentNode);
-        validateForm({ formName: 'signupForm', submitName: 'signup-submit' });
-    });
-    const signupPasswordConfirm = document.getElementById('signup-password-confirm');
-    signupPasswordConfirm.addEventListener('keyup', (event) => {
-        updateInputField(event.target.value === signupPassword.value, event.target.parentNode);
-        validateForm({ formName: 'signupForm', submitName: 'signup-submit' });
-    });
-    const signupForm = document.getElementById('signupForm');
-    signupForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const username = signupUsername.value;
-        const password = signupPassword.value;
-        doFetchRequest('POST', '/signup', {
-            'Content-Type': 'application/json',
-        }, JSON.stringify({
-            username,
-            password,
-        })).then((res) => {
-            if (res.status === 201) {
-                return doFetchRequest('POST', '/login', {
-                    'Content-Type': 'application/json',
-                }, JSON.stringify({
-                    username,
-                    password,
-                }));
-            }
-            const err = new Error('Failed to create new user');
-            err.data = res;
-            throw err;
-        }).then((res) => {
-            if (res.status === 200) {
-                return res.json();
-            }
-            const err = new Error('Login failed');
-            err.data = res;
-            throw err;
-        }).then((user) => {
-            if (user) {
-                dust.render('partials/loggedUser', { loggedUser: user }, (err, output) => {
-                    const profileNav = document.querySelector('.profile');
-                    profileNav.innerHTML = output;
-                    modal.classList.add('hidden');
-                    handleLogout();
-                });
-            }
-        })
-            .catch((err) => {
-                console.error(err);
-                handleError(err, 'signup-submit');
-            });
-    });
-
-    const loginButton = document.getElementById('loginButton');
-    loginButton.addEventListener('click', (event) => {
-        event.preventDefault();
-        dust.render('partials/loginForm', {}, (err, output) => {
-            if (signupForm.parentNode) {
-                signupForm.parentNode.innerHTML = output;
-                handleLoginForm();
-            }
-        });
-    });
 }
 
 function login(username, password) {
@@ -139,6 +63,53 @@ function login(username, password) {
     }).catch((err) => {
         console.error(err);
         handleError(err, 'localLogin');
+    });
+}
+
+function handleSignupForm() {
+    const passwordRegex = new RegExp('^(?=.*[A-z])(?=.*[0-9])(?=.{8,})');
+    const modal = document.getElementById('login-signup-modal');
+    const signupUsername = document.getElementById('signup-name');
+    signupUsername.addEventListener('keyup', (event) => {
+        updateInputField(event.target.value !== '', event.target.parentNode);
+        validateForm({ formName: 'signupForm', submitName: 'signup-submit' });
+    });
+    const signupPassword = document.getElementById('signup-password');
+    signupPassword.addEventListener('keyup', (event) => {
+        updateInputField((passwordRegex.test(event.target.value)), event.target.parentNode);
+        validateForm({ formName: 'signupForm', submitName: 'signup-submit' });
+    });
+    const signupPasswordConfirm = document.getElementById('signup-password-confirm');
+    signupPasswordConfirm.addEventListener('keyup', (event) => {
+        updateInputField(event.target.value === signupPassword.value, event.target.parentNode);
+        validateForm({ formName: 'signupForm', submitName: 'signup-submit' });
+    });
+    const signupForm = document.getElementById('signupForm');
+    signupForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const username = signupUsername.value;
+        const password = signupPassword.value;
+        doFetchRequest('POST', '/signup', {
+            'Content-Type': 'application/json',
+        }, JSON.stringify({
+            username,
+            password,
+        })).then((res) => {
+            if (res.status === 201) {
+                login(username, password);
+            }
+        });
+    });
+
+    const loginButton = document.getElementById('loginButton');
+    loginButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        dust.render('partials/loginForm', {}, (err, output) => {
+            if (signupForm.parentNode) {
+                signupForm.parentNode.innerHTML = output;
+                handleLoginForm();
+            }
+        });
     });
 }
 
