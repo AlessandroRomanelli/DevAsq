@@ -116,18 +116,14 @@ io.on('connection', (socket) => {
     });
 
     socket.on('settings.joinRoom', (data) => {
+        console.log('DEBUG');
         console.log(data.roomName);
         socket.join(data.roomName);
-    });
-
-    socket.on('room.join', (data) => {
-        console.log('join room');
-        const { roomName, user } = data;
-        const creatorSocket = getCreatorSocket(roomName);
-        socket.join(roomName);
-
-        if (!creatorSocket) return;
-        socket.to(creatorSocket).emit('settings.userJoined', user);
+        console.log(socket.rooms);
+        socket.to(socket.rooms[Object.keys(socket.rooms)[0]]).emit('homepage.updateRoomCounter', {
+            population: data.population,
+            roomName: data.roomName
+        });
     });
 
     socket.on('settings.notifyCreator', (data) => {

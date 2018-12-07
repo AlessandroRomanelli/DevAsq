@@ -7,6 +7,10 @@ let socket;
         console.log('Main page socket connected');
     });
 
+    socket.on('homepage.updateRoomCounter', (data) => {
+       console.log(data);
+    });
+
     socket.on('reconnect', (attemptNumber) => {
         console.log('Socket reconnected!', 'ok');
     });

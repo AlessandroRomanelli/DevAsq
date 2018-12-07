@@ -30,7 +30,10 @@ function init() {
     socket.on('connect', () => {
         console.log('Room page socket connected');
         socket.emit('settings.bindID', { id: user._id });
-        socket.emit('settings.joinRoom', { roomName: app.room.name });
+        socket.emit('settings.joinRoom', {
+            roomName: app.room.name,
+            population: app.room.users.length
+        });
         socket.emit('settings.notifyCreator', { roomName: app.room.name, user });
     });
 
