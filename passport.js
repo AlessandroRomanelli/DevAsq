@@ -1,7 +1,9 @@
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
+const TokenStrategy = require('passport-remember-me').Strategy;
 const bcrypt = require('bcrypt');
+const { consumeToken, storeToken } = require('./utils');
 const config = require('./config');
 
 const { User } = require('./models');
@@ -20,6 +22,23 @@ passport.use(new LocalStrategy(
             });
         });
     }),
+));
+
+passport.use(new TokenStrategy(
+    (token, done) => {
+        consumeToken(token, (err, uid) => {
+            if (err) { return done(err); }
+            if (!uid) { return done(null, false); }
+
+            User.findById(uid, (err, user) => {
+                if (err) return done(err);
+                if (!user) return done(null, false);
+                console.log('Logged with token!');
+                return done(null, user);
+            });
+        });
+    },
+    storeToken,
 ));
 
 // GitHub Strategy setup

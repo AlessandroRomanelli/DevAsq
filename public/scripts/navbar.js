@@ -51,7 +51,6 @@ function login(username, password) {
         err.data = res;
         throw err;
     }).then((user) => {
-        localStorage.userLogin = JSON.stringify({ username, password });
         if (user) {
             dust.render('partials/loggedUser', { loggedUser: user }, (err, output) => {
                 const profileNav = document.querySelector('.profile');
@@ -132,13 +131,8 @@ function handleLoginForm() {
     if (!loginButton) return;
     loginButton.onclick = (event) => {
         event.preventDefault();
-        if (localStorage.userLogin) {
-            const { username, password } = JSON.parse(localStorage.userLogin);
-            login(username, password);
-        } else {
-            event.target.classList.toggle('active');
-            modal.classList.toggle('hidden');
-        }
+        event.target.classList.toggle('active');
+        modal.classList.toggle('hidden');
     };
     const githubLogin = document.getElementById('githubLogin');
     githubLogin.addEventListener('click', (event) => {
