@@ -39,6 +39,16 @@
       <div id="room-settings" class='hidden'>
         {> "partials/creator" /}
       </div>
+      <div id='preview-modal' class="modal hidden">
+        <div class="container">
+          <button class='' type="button" name="button">X</button>
+          <iframe id='preview-iframe'></iframe>
+          <div id='preview-loaders' class="">
+            <button id='private-load' type="button" name="button">Load in private</button>
+            <button id='public-load' type="button" name="button">Load in public</button>
+          </div>
+        </div>
+      </div>
       <script src="/scripts/ace/ace.js" charset="utf-8"></script>
       <script src="/scripts/ace/ext-language_tools.js" charset="utf-8"></script>
       <script src="/socket.io/socket.io.js"></script>
