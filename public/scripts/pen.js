@@ -10,8 +10,6 @@ Array.prototype.last = function () {
     return this[this.length - 1];
 };
 
-
-let socket;
 let app;
 
 function init() {
@@ -19,7 +17,6 @@ function init() {
     handleLogout();
 
     socket = io();
-
 
     if (room.creator === user._id) {
         app = new CreatorApp(room, user._id);
@@ -31,8 +28,12 @@ function init() {
     startParsing(app);
 
     socket.on('connect', () => {
+        console.log('Room page socket connected');
         socket.emit('settings.bindID', { id: user._id });
-        socket.emit('settings.joinRoom', { roomName: app.room.name });
+        socket.emit('settings.joinRoom', {
+            roomName: app.room.name,
+            population: Object.keys(app.room.users).length
+        });
         socket.emit('settings.notifyCreator', { roomName: app.room.name, user });
     });
 

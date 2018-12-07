@@ -19,8 +19,9 @@ function handleRoomForms() {
                 return res.json();
             }
         }).then((room) => {
-            console.log(room);
-            if (room.name) window.location.pathname = `/room/${room.name}`;
+            if (room.name) {
+                window.location.pathname = `/room/${room.name}`;
+            }
         });
     });
     const joinRoom = document.getElementById('joinRoom');
