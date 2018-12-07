@@ -2,6 +2,7 @@
   <img class='user-icon' src="/images/user.png">
   <p class='user-name'>{user.username}</p>
   <div>Active Pen: <span class='user-current-pen'>{currentPen.title}</span></div>
-  <button class="pen-loader" type="button" name="button">Load Pen</button>
+  <button id="share-pen" class="pen-loader" type="button" name="button">Share Pen</button>
+  <button id="load-pen" class="pen-loader" type="button" name="button">Load Pen</button>
   <div class="signal"></div>
 </div>

@@ -80,7 +80,9 @@ class App {
             if (pen.title === 'Public') {
                 li = nodes.childNodes[nodes.childNodes.length - 2];
                 li.classList.toggle('active');
-                li.classList.toggle('locked');
+                if (this.userID !== this.room.creator) {
+                    li.classList.toggle('locked');
+                }
                 li.removeChild(li.lastChild);
             }
         });
@@ -444,28 +446,40 @@ class CreatorApp extends App {
     }
 
     addUsersListener() {
+        function findIDInUserPen(currentPenID, pens) {
+            let index = -1;
+            for (let i = 0; i < pens.length; i++) {
+                if (pens[i].id === currentPenID) {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        }
         const users = document.getElementById('users').childNodes;
         users.forEach((user) => {
             const image = user.querySelector("img.user-icon");
-            const loadPen = user.querySelector("button.pen-loader");
+            const sharePen = user.querySelector("button#share-pen");
+            const loadPen = user.querySelector("button#load-pen");
             const id = user.id;
+            const { pens } = this.users[id];
             image.onclick = ((event) => {
                 if (this.users[id].ping) {
                     this.signalHelp(id);
                 }
                 socket.emit('pen.resolveHelp', { id });
             });
+            sharePen.onclick = ((event) => {
+                event.preventDefault();
+                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                if (index === -1) {
+                    return;
+                }
+                this.setPenContentIntoPen(pens[index], this.publicPen);
+            });
             loadPen.onclick = ((event) => {
                 event.preventDefault();
-                const currentPenID = this.users[id].currentPen.id;
-                const { pens } = this.users[id];
-                let index = -1;
-                for (let i = 0; i < pens.length; i++) {
-                    if (pens[i].id === currentPenID) {
-                        index = i;
-                        break;
-                    }
-                }
+                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
                 if (index === -1) {
                     return;
                 }
@@ -474,43 +488,37 @@ class CreatorApp extends App {
         })
     }
 
-    loadRemotePen(pen, userID) {
+    setPenContentIntoPen(pen, penToModify) {
         const iFrame = document.getElementById("iFrame");
         const roomName = this.room.name;
-        let penToModify;
-        if (this.currentPen === 0) {
-            penToModify = this.publicPen;
-            done();
-        } else {
-            this.createPen(() => {
-                const newTitle = `${this.users[userID].user.username} - ${pen.title}`;
-                this.changePenName(newTitle, this.currentPen, (() => {
-                    const tabs = document.getElementById("tabs");
-                    const newTab = tabs.childNodes[tabs.childNodes.length - 2];
-                    newTab.classList.toggle("shared");
-                    newTab.querySelector("span").innerHTML = newTitle;
+        ace.edit("htmlPen").setValue(pen.html);
+        ace.edit("cssPen").setValue(pen.css);
+        ace.edit("jsPen").setValue(pen.js);
+        penToModify.html = pen.html;
+        penToModify.css = pen.css;
+        penToModify.js = pen.js;
+        socket.emit("pen.change", { pen: penToModify, roomName });
+        socket.emit("pen.preview", { pen: penToModify, roomName });
+        setTimeout(() => {iFrame.src = `/preview/${roomName}?penID=${penToModify.id}`}, 0);
+    }
 
-                    socket.emit("pen.sharedCreated", { userID, penID: pen.id });
+    loadRemotePen(pen, userID) {
+        this.createPen(() => {
+            const newTitle = `${this.users[userID].user.username} - ${pen.title}`;
+            this.changePenName(newTitle, this.currentPen, (() => {
+                const tabs = document.getElementById("tabs");
+                const newTab = tabs.childNodes[tabs.childNodes.length - 2];
+                newTab.classList.toggle("shared");
+                newTab.querySelector("span").innerHTML = newTitle;
 
-                    penToModify = this.getCurrentPen();
-                    penToModify.link = { userID, penID: pen.id };
-                    this.setupTabsHandlers();
-                    done(false);
-                }));
-            })
-        }
+                socket.emit("pen.sharedCreated", { userID, penID: pen.id });
 
-        function done() {
-            ace.edit("htmlPen").setValue(pen.html);
-            ace.edit("cssPen").setValue(pen.css);
-            ace.edit("jsPen").setValue(pen.js);
-            penToModify.html = pen.html;
-            penToModify.css = pen.css;
-            penToModify.js = pen.js;
-            socket.emit("pen.change", { pen: penToModify, roomName });
-            socket.emit("pen.preview", { pen: penToModify, roomName });
-            setTimeout(() => {iFrame.src = `/preview/${roomName}?penID=${penToModify.id}`}, 0);
-        }
+                this.getCurrentPen().link = { userID, penID: pen.id };
+                this.setupTabsHandlers();
+
+                this.setPenContentIntoPen(pen, this.getCurrentPen());
+            }));
+        })
     }
 
     addTogglerListener() {
