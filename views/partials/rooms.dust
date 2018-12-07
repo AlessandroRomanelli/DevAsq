@@ -1,31 +1,29 @@
 <div class="form-container">
   <h1>New Room</h1>
-  <form id='createRoom' method="POST" autocomplete="off">
+  <div id='createRoom' class='form'>
     <fieldset>
-      <input type="text" name="roomName" placeholder="Room Name" autocomplete="false">
+      <input type="text" name="roomName" placeholder="Room Name">
     </fieldset>
     <fieldset>
-      <input type="password" name="password" placeholder="Password (Optional)" autocomplete="false">
+      <input type="password" name="password" placeholder="Password (Optional)">
     </fieldset>
     <fieldset class="submit">
-      <input type="submit" value="Create">
+      <input id='createRoomButton' type="submit" value="Create">
     </fieldset>
-    <input autocomplete="false" name="hidden" type="text" style="display:none;">
-  </form>
+  </div>
 </div>
 <div class="separator"></div>
 <div class="form-container">
   <h1>Join Room</h1>
-  <form id='joinRoom' method="POST" autocomplete="off">
+  <div id='joinRoom' class='form'>
     <fieldset>
-      <input type="text" name="roomName" placeholder="Room Name" autocomplete="false">
+      <input type="text" name="roomName" placeholder="Room Name">
     </fieldset>
     <fieldset>
-      <input type="password" name="password" placeholder="Password (Optional)" autocomplete="false">
+      <input type="password" name="password" placeholder="Password (Optional)">
     </fieldset>
     <fieldset class="submit">
-      <input type="submit" value="Join">
+      <input id='joinRoomButton' type="submit" value="Join">
     </fieldset>
-    <input autocomplete="false" name="hidden" type="text" style="display:none;">
-  </form>
+  </div>
 </div>
