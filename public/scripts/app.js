@@ -49,12 +49,12 @@ class App {
         this.changeAcesContent();
 
         if (this.userID === this.room.creator) {
-            const sharePublic = document.getElementById("share-public");
-            sharePublic.querySelector(".info").innerHTML = this.getCurrentPen().title;
+            const sharePublic = document.getElementById('share-public');
+            sharePublic.querySelector('.info').innerHTML = this.getCurrentPen().title;
             if (this.currentPen === 0) {
-                sharePublic.classList.add("hidden")
+                sharePublic.classList.add('hidden');
             } else {
-                sharePublic.classList.remove("hidden");
+                sharePublic.classList.remove('hidden');
             }
         }
     }
@@ -114,7 +114,7 @@ class App {
                     this.createTabForPen(res);
                     this.setupTabsHandlers();
                     this.switchPen(this.pens.length - 1);
-                    if (callback && typeof callback === "function") {
+                    if (callback && typeof callback === 'function') {
                         callback();
                     }
                 });
@@ -219,7 +219,7 @@ class App {
                         }
                     }
                     if (count === 0) {
-                        socket.emit("pen.sharedDeleted", this.pens[index].link);
+                        socket.emit('pen.sharedDeleted', this.pens[index].link);
                     }
                 }
 
@@ -292,7 +292,6 @@ class App {
                 event.preventDefault();
                 this.deletePen(i);
             });
-
         }
 
         plusTab.onclick = this.createPen.bind(this);
@@ -302,8 +301,8 @@ class App {
         const participants = document.getElementById('participants');
         const roomName = document.getElementById('room-name');
         const raiseHand = document.getElementById('raise-hand');
-        const sharePublic = document.getElementById("share-public");
-        const modal = document.getElementById("preview-modal");
+        const sharePublic = document.getElementById('share-public');
+        const modal = document.getElementById('preview-modal');
 
         participants.parentNode.parentNode.removeChild(participants.parentNode);
         roomName.innerHTML = this.room.name;
@@ -380,7 +379,7 @@ class CreatorApp extends App {
                 storedPen.css = pen.css;
                 storedPen.js = pen.js;
 
-                const tab = document.getElementById(storedPen.id).querySelector("span");
+                const tab = document.getElementById(storedPen.id).querySelector('span');
                 tab.innerText = storedPen.title;
 
                 if (this.currentPen === i) {
@@ -427,7 +426,7 @@ class CreatorApp extends App {
                 this.currentPen--;
             }
             this.pens.splice(index, 1);
-            const deletedTab = document.querySelectorAll(".switchTab")[index];
+            const deletedTab = document.querySelectorAll('.switchTab')[index];
             deletedTab.parentNode.removeChild(deletedTab);
             index = this.indexOfPenInLinked(pen);
         }
@@ -474,24 +473,24 @@ class CreatorApp extends App {
         }
         const users = document.getElementById('users').childNodes;
         users.forEach((user) => {
-            const preview = user.querySelector("img#preview-icon");
-            const image = user.querySelector("img.user-icon");
-            const sharePen = user.querySelector("button#share-pen");
-            const loadPen = user.querySelector("button#load-pen");
+            const preview = user.querySelector('img#preview-icon');
+            const image = user.querySelector('img.user-icon');
+            const sharePen = user.querySelector('button#share-pen');
+            const loadPen = user.querySelector('button#load-pen');
             const id = user.id;
             const { pens } = this.users[id];
             preview.onclick = ((event) => {
-                const modal = document.getElementById("preview-modal");
-                const iFrame = modal.querySelector("iframe#preview-iframe");
+                const modal = document.getElementById('preview-modal');
+                const iFrame = modal.querySelector('iframe#preview-iframe');
 
                 const index = findIDInUserPen(this.users[id].currentPen.id, pens);
                 if (index === -1) {
                     return;
                 }
-                modal.classList.toggle("hidden");
+                modal.classList.toggle('hidden');
                 console.log(index);
                 console.log(pens[index]);
-                iFrame.src = `/preview/${this.room.name}?penID=${pens[index].id}`;
+                iFrame.src = `/preview/${this.room.name}?penID=${pens[index].id}&userID=${id}`;
             });
             image.onclick = ((event) => {
                 if (this.users[id].ping) {
@@ -514,41 +513,41 @@ class CreatorApp extends App {
                     return;
                 }
                 this.loadRemotePen(pens[index], id);
-            })
-        })
+            });
+        });
     }
 
     setPenContentIntoPen(pen, penToModify) {
-        const iFrame = document.getElementById("iFrame");
+        const iFrame = document.getElementById('iFrame');
         const roomName = this.room.name;
-        ace.edit("htmlPen").setValue(pen.html);
-        ace.edit("cssPen").setValue(pen.css);
-        ace.edit("jsPen").setValue(pen.js);
+        ace.edit('htmlPen').setValue(pen.html);
+        ace.edit('cssPen').setValue(pen.css);
+        ace.edit('jsPen').setValue(pen.js);
         penToModify.html = pen.html;
         penToModify.css = pen.css;
         penToModify.js = pen.js;
-        socket.emit("pen.change", { pen: penToModify, roomName });
-        socket.emit("pen.preview", { pen: penToModify, roomName });
-        setTimeout(() => {iFrame.src = `/preview/${roomName}?penID=${penToModify.id}`}, 0);
+        socket.emit('pen.change', { pen: penToModify, roomName });
+        socket.emit('pen.preview', { pen: penToModify, roomName });
+        setTimeout(() => { iFrame.src = `/preview/${roomName}?penID=${penToModify.id}`; }, 0);
     }
 
     loadRemotePen(pen, userID) {
         this.createPen(() => {
             const newTitle = `${this.users[userID].user.username} - ${pen.title}`;
             this.changePenName(newTitle, this.currentPen, (() => {
-                const tabs = document.getElementById("tabs");
+                const tabs = document.getElementById('tabs');
                 const newTab = tabs.childNodes[tabs.childNodes.length - 2];
-                newTab.classList.toggle("shared");
-                newTab.querySelector("span").innerHTML = newTitle;
+                newTab.classList.toggle('shared');
+                newTab.querySelector('span').innerHTML = newTitle;
 
-                socket.emit("pen.sharedCreated", { userID, penID: pen.id });
+                socket.emit('pen.sharedCreated', { userID, penID: pen.id });
 
                 this.getCurrentPen().link = { userID, penID: pen.id };
                 this.setupTabsHandlers();
 
                 this.setPenContentIntoPen(pen, this.getCurrentPen());
             }));
-        })
+        });
     }
 
     addTogglerListener() {
@@ -571,25 +570,25 @@ class CreatorApp extends App {
         const participants = document.getElementById('participants');
         const roomName = document.getElementById('room-name');
         const raiseHand = document.getElementById('raise-hand');
-        const sharePublic = document.getElementById("share-public");
+        const sharePublic = document.getElementById('share-public');
 
         participants.innerHTML = '1';
         roomName.innerHTML = this.room.name;
         raiseHand.parentNode.removeChild(raiseHand);
-        sharePublic.classList.add("hidden");
+        sharePublic.classList.add('hidden');
         sharePublic.onclick = ((event) => {
             this.setPenContentIntoPen(this.getCurrentPen(), app.publicPen);
-        })
+        });
 
         this.setUpModalListeners();
     }
 
     setUpModalListeners() {
-        const modal = document.getElementById("preview-modal");
-        const closeModal = document.getElementById("close-modal");
+        const modal = document.getElementById('preview-modal');
+        const closeModal = document.getElementById('close-modal');
         closeModal.onclick = ((event) => {
             event.preventDefault();
-            modal.classList.toggle("hidden");
-        })
+            modal.classList.toggle('hidden');
+        });
     }
 }
