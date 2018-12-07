@@ -32,7 +32,7 @@ function init() {
         socket.emit('settings.bindID', { id: user._id });
         socket.emit('settings.joinRoom', {
             roomName: app.room.name,
-            population: app.room.users.length
+            population: Object.keys(app.room.users).length
         });
         socket.emit('settings.notifyCreator', { roomName: app.room.name, user });
     });

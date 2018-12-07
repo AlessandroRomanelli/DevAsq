@@ -115,12 +115,17 @@ io.on('connection', (socket) => {
         connectionMap.registerUser(user.id, socket.id);
     });
 
+    socket.on('homePage.joinRoom', () => {
+        socket.join('homePage');
+    });
+
+    socket.on('homePage.leaveRoom', () => {
+        socket.leave('homePage', socket.user);
+    });
+
     socket.on('settings.joinRoom', (data) => {
-        console.log('DEBUG');
-        console.log(data.roomName);
         socket.join(data.roomName);
-        console.log(socket.rooms);
-        socket.to(socket.rooms[Object.keys(socket.rooms)[0]]).emit('homepage.updateRoomCounter', {
+        socket.to('homePage').emit('homepage.updateRoomCounter', {
             population: data.population,
             roomName: data.roomName
         });

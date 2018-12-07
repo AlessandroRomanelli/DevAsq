@@ -19,9 +19,7 @@ function handleRoomForms() {
                 return res.json();
             }
         }).then((room) => {
-            console.log(room);
             if (room.name) {
-                delete socket;
                 window.location.pathname = `/room/${room.name}`;
             }
         });
@@ -42,8 +40,6 @@ function handleRoomForms() {
             } else if (res.status === 404) {
                 alert('Room does not exist');
             } else if (res.status === 200 && roomName !== '') {
-                // TODO: get the correct user
-                delete socket;
                 window.location.pathname = `/room/${roomName}`;
             } else {
                 alert(`Something went wrong: ${res.status}`);
