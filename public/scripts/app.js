@@ -47,6 +47,16 @@ class App {
         });
 
         this.changeAcesContent();
+
+        if (this.userID === this.room.creator) {
+            const sharePublic = document.getElementById('share-public');
+            sharePublic.querySelector('.info').innerHTML = this.getCurrentPen().title;
+            if (this.currentPen === 0) {
+                sharePublic.classList.add('hidden');
+            } else {
+                sharePublic.classList.remove('hidden');
+            }
+        }
     }
 
     changeAcesContent() {
@@ -80,7 +90,9 @@ class App {
             if (pen.title === 'Public') {
                 li = nodes.childNodes[nodes.childNodes.length - 2];
                 li.classList.toggle('active');
-                li.classList.toggle('locked');
+                if (this.userID !== this.room.creator) {
+                    li.classList.toggle('locked');
+                }
                 li.removeChild(li.lastChild);
             }
         });
@@ -102,7 +114,7 @@ class App {
                     this.createTabForPen(res);
                     this.setupTabsHandlers();
                     this.switchPen(this.pens.length - 1);
-                    if (callback && typeof callback === "function") {
+                    if (callback && typeof callback === 'function') {
                         callback();
                     }
                 });
@@ -114,15 +126,27 @@ class App {
 
     updateCurrentEditor(mode, value) {
         const pen = this.getCurrentPen();
+        let userPen;
+        console.log(pen);
+        if (pen.link && this.userID === this.room.creator) {
+            const userPens = this.users[pen.link.userID].pens;
+            const index = this.indexOfLinkedInPens(pen, userPens);
+            if (index !== -1) {
+                userPen = userPens[index];
+            }
+        }
         switch (mode) {
         case 'html':
             pen.html = value;
+            if (userPen) { userPen.html = value }
             break;
         case 'css':
             pen.css = value;
+            if (userPen) { userPen.css = value }
             break;
         case 'javascript':
             pen.js = value;
+            if (userPen) { userPen.js = value }
             break;
         default:
             break;
@@ -207,7 +231,7 @@ class App {
                         }
                     }
                     if (count === 0) {
-                        socket.emit("pen.sharedDeleted", this.pens[index].link);
+                        socket.emit('pen.sharedDeleted', this.pens[index].link);
                     }
                 }
 
@@ -245,40 +269,41 @@ class App {
                 this.switchPen(i);
             });
 
-            if (i !== 0) {
-                const span = tabs[i].querySelector('span');
-                const deleteBtn = tabs[i].querySelector('button');
+            if (i === 0) {
+                continue;
+            }
+            const span = tabs[i].querySelector('span');
+            const deleteBtn = tabs[i].querySelector('button');
 
-                span.ondblclick = null;
-                span.onkeydown = null;
-                span.onblur = null;
-                if (!(this instanceof CreatorApp) || !(this.pens[i].link)) {
-                    span.ondblclick = ((event) => {
-                        event.target.contentEditable = true;
-                        event.target.focus();
-                    });
+            span.ondblclick = null;
+            span.onkeydown = null;
+            span.onblur = null;
+            if (!(this instanceof CreatorApp) || !(this.pens[i].link)) {
+                span.ondblclick = ((event) => {
+                    event.target.contentEditable = true;
+                    event.target.focus();
+                });
 
-                    span.onkeydown = ((event) => {
-                        if (event.key === 'Enter') {
-                            event.preventDefault();
-                            event.target.blur();
-                        }
-                    });
+                span.onkeydown = ((event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        event.target.blur();
+                    }
+                });
 
-                    span.onblur = ((event) => {
-                        event.target.contentEditable = false;
-                        if (event.target.innerHTML === 'Public') {
-                            event.target.innerHTML = 'MyPublic';
-                        }
-                        this.changePenName(event.target.innerHTML, i);
-                    });
-                }
-
-                deleteBtn.onclick = ((event) => {
-                    event.preventDefault();
-                    this.deletePen(i);
+                span.onblur = ((event) => {
+                    event.target.contentEditable = false;
+                    if (event.target.innerHTML === 'Public') {
+                        event.target.innerHTML = 'MyPublic';
+                    }
+                    this.changePenName(event.target.innerHTML, i);
                 });
             }
+
+            deleteBtn.onclick = ((event) => {
+                event.preventDefault();
+                this.deletePen(i);
+            });
         }
 
         plusTab.onclick = this.createPen.bind(this);
@@ -288,6 +313,8 @@ class App {
         const participants = document.getElementById('participants');
         const roomName = document.getElementById('room-name');
         const raiseHand = document.getElementById('raise-hand');
+        const sharePublic = document.getElementById('share-public');
+        const modal = document.getElementById('preview-modal');
 
         participants.parentNode.parentNode.removeChild(participants.parentNode);
         roomName.innerHTML = this.room.name;
@@ -295,6 +322,8 @@ class App {
             raiseHand.classList.toggle('asking-help');
             this.askForHelp();
         });
+        sharePublic.parentNode.removeChild(sharePublic);
+        modal.parentNode.removeChild(modal);
     }
 
     indexOfPen(pen) {
@@ -319,13 +348,13 @@ class App {
         return index;
     }
 
-    indexOfLinkedInPens(pen) {
+    indexOfLinkedInPens(pen, pens = this.pens) {
         if (!pen.link) {
             return -1;
         }
         let index = -1;
-        for (let i = 0; i < this.pens.length; i++) {
-            if (pen.link.penID === this.pens[i].id) {
+        for (let i = 0; i < pens.length; i++) {
+            if (pen.link.penID === pens[i].id) {
                 index = i;
                 break;
             }
@@ -362,7 +391,7 @@ class CreatorApp extends App {
                 storedPen.css = pen.css;
                 storedPen.js = pen.js;
 
-                const tab = document.getElementById(storedPen.id).querySelector("span");
+                const tab = document.getElementById(storedPen.id).querySelector('span');
                 tab.innerText = storedPen.title;
 
                 if (this.currentPen === i) {
@@ -409,7 +438,7 @@ class CreatorApp extends App {
                 this.currentPen--;
             }
             this.pens.splice(index, 1);
-            const deletedTab = document.querySelectorAll(".switchTab")[index];
+            const deletedTab = document.querySelectorAll('.switchTab')[index];
             deletedTab.parentNode.removeChild(deletedTab);
             index = this.indexOfPenInLinked(pen);
         }
@@ -444,73 +473,95 @@ class CreatorApp extends App {
     }
 
     addUsersListener() {
+        function findIDInUserPen(currentPenID, pens) {
+            let index = -1;
+            for (let i = 0; i < pens.length; i++) {
+                if (pens[i].id === currentPenID) {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        }
         const users = document.getElementById('users').childNodes;
         users.forEach((user) => {
-            const image = user.querySelector("img.user-icon");
-            const loadPen = user.querySelector("button.pen-loader");
+            const preview = user.querySelector('img#preview-icon');
+            const image = user.querySelector('img.user-icon');
+            const sharePen = user.querySelector('button#share-pen');
+            const loadPen = user.querySelector('button#load-pen');
             const id = user.id;
+            const { pens } = this.users[id];
             image.onclick = ((event) => {
                 if (this.users[id].ping) {
                     this.signalHelp(id);
                 }
                 socket.emit('pen.resolveHelp', { id });
             });
-            loadPen.onclick = ((event) => {
+            sharePen.onclick = ((event) => {
                 event.preventDefault();
-                const currentPenID = this.users[id].currentPen.id;
-                const { pens } = this.users[id];
-                let index = -1;
-                for (let i = 0; i < pens.length; i++) {
-                    if (pens[i].id === currentPenID) {
-                        index = i;
-                        break;
-                    }
-                }
+                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
                 if (index === -1) {
                     return;
                 }
+                this.setPenContentIntoPen(pens[index], this.publicPen);
+            });
+            loadPen.onclick = ((event) => {
+                event.preventDefault();
+                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                if (index === -1 || this.indexOfPenInLinked(pens[index]) !== -1) {
+                    return;
+                }
                 this.loadRemotePen(pens[index], id);
-            })
-        })
+            });
+            preview.onclick = ((event) => {
+                const modal = document.getElementById('preview-modal');
+                const shareModalPen = document.getElementById('modal-share');
+                const loadModalPen = document.getElementById('modal-load');
+                const iFrame = modal.querySelector('iframe#preview-iframe');
+
+                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                if (index === -1) {
+                    return;
+                }
+                modal.classList.toggle('hidden');
+                iFrame.src = `/preview/${this.room.name}?penID=${pens[index].id}&userID=${id}`;
+                shareModalPen.onclick = sharePen.onclick;
+                loadModalPen.onclick = loadPen.onclick;
+            });
+        });
+    }
+
+    setPenContentIntoPen(pen, penToModify) {
+        const iFrame = document.getElementById('iFrame');
+        const roomName = this.room.name;
+        ace.edit('htmlPen').setValue(pen.html);
+        ace.edit('cssPen').setValue(pen.css);
+        ace.edit('jsPen').setValue(pen.js);
+        penToModify.html = pen.html;
+        penToModify.css = pen.css;
+        penToModify.js = pen.js;
+        socket.emit('pen.change', { pen: penToModify, roomName });
+        socket.emit('pen.preview', { pen: penToModify, roomName });
+        setTimeout(() => { iFrame.src = `/preview/${roomName}?penID=${penToModify.id}`; }, 0);
     }
 
     loadRemotePen(pen, userID) {
-        const iFrame = document.getElementById("iFrame");
-        const roomName = this.room.name;
-        let penToModify;
-        if (this.currentPen === 0) {
-            penToModify = this.publicPen;
-            done();
-        } else {
-            this.createPen(() => {
-                const newTitle = `${this.users[userID].user.username} - ${pen.title}`;
-                this.changePenName(newTitle, this.currentPen, (() => {
-                    const tabs = document.getElementById("tabs");
-                    const newTab = tabs.childNodes[tabs.childNodes.length - 2];
-                    newTab.classList.toggle("shared");
-                    newTab.querySelector("span").innerHTML = newTitle;
+        this.createPen(() => {
+            const newTitle = `${this.users[userID].user.username} - ${pen.title}`;
+            this.changePenName(newTitle, this.currentPen, (() => {
+                const tabs = document.getElementById('tabs');
+                const newTab = tabs.childNodes[tabs.childNodes.length - 2];
+                newTab.classList.toggle('shared');
+                newTab.querySelector('span').innerHTML = newTitle;
 
-                    socket.emit("pen.sharedCreated", { userID, penID: pen.id });
+                socket.emit('pen.sharedCreated', { userID, penID: pen.id });
 
-                    penToModify = this.getCurrentPen();
-                    penToModify.link = { userID, penID: pen.id };
-                    this.setupTabsHandlers();
-                    done(false);
-                }));
-            })
-        }
+                this.getCurrentPen().link = { userID, penID: pen.id };
+                this.setupTabsHandlers();
 
-        function done() {
-            ace.edit("htmlPen").setValue(pen.html);
-            ace.edit("cssPen").setValue(pen.css);
-            ace.edit("jsPen").setValue(pen.js);
-            penToModify.html = pen.html;
-            penToModify.css = pen.css;
-            penToModify.js = pen.js;
-            socket.emit("pen.change", { pen: penToModify, roomName });
-            socket.emit("pen.preview", { pen: penToModify, roomName });
-            setTimeout(() => {iFrame.src = `/preview/${roomName}?penID=${penToModify.id}`}, 0);
-        }
+                this.setPenContentIntoPen(pen, this.getCurrentPen());
+            }));
+        });
     }
 
     addTogglerListener() {
@@ -533,9 +584,29 @@ class CreatorApp extends App {
         const participants = document.getElementById('participants');
         const roomName = document.getElementById('room-name');
         const raiseHand = document.getElementById('raise-hand');
+        const sharePublic = document.getElementById('share-public');
 
         participants.innerHTML = '1';
         roomName.innerHTML = this.room.name;
         raiseHand.parentNode.removeChild(raiseHand);
+        sharePublic.classList.add('hidden');
+        sharePublic.onclick = ((event) => {
+            this.setPenContentIntoPen(this.getCurrentPen(), app.publicPen);
+        });
+
+        this.setUpModalListeners();
+    }
+
+    setUpModalListeners() {
+        const modal = document.getElementById('preview-modal');
+        const closeModal = document.getElementById('close-modal');
+        const sharePen = document.getElementById('modal-share');
+        const loadPen = document.getElementById('modal-load');
+        closeModal.onclick = ((event) => {
+            event.preventDefault();
+            modal.classList.toggle('hidden');
+            sharePen.onclick = null;
+            loadPen.onclick = null;
+        });
     }
 }
