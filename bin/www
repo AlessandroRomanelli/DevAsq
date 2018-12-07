@@ -8,7 +8,7 @@ const debug = require('debug')('final-project:server');
 const http = require('http');
 const app = require('../app');
 const eventBus = require('../pubsub');
-const { socketToUser, userToSocket, roomStorage } = require('../rooms');
+const { connectionMap, roomStorage } = require('../rooms');
 /**
  * Get port from environment and store in Express.
  */
@@ -99,9 +99,9 @@ function getCreatorSocket(roomName) {
     const room = roomStorage[roomName];
     if (!room) {
         console.error('No room found!');
-        return;
+        return null;
     }
-    return userToSocket.get(room.creator);
+    return connectionMap.getSocket(room.creator);
 }
 
 io.on('connection', (socket) => {
@@ -112,8 +112,7 @@ io.on('connection', (socket) => {
 
     socket.on('settings.bindID', (user) => {
         console.log(user);
-        socketToUser.put(socket.id, user.id);
-        userToSocket.put(user.id, socket.id);
+        connectionMap.registerUser(user.id, socket.id);
     });
 
     socket.on('settings.joinRoom', (data) => {
@@ -158,7 +157,7 @@ io.on('connection', (socket) => {
 
     socket.on('pen.resolveHelp', (data) => {
         const { id } = data;
-        const userSocket = userToSocket.get(id);
+        const userSocket = connectionMap.getUser(id);
         if (!userSocket) return;
         socket.to(userSocket).emit('pen.resolveHelp');
     });
@@ -166,11 +165,10 @@ io.on('connection', (socket) => {
     socket.on('pen.change', (data) => {
         console.log('update the pen');
         console.log(data);
-        const userID = socketToUser.get(socket.id);
+        const userID = connectionMap.getUser(socket.id);
         const room = roomStorage[data.roomName];
         if (room && room.creator === userID && data.pen.title === 'Public') {
             room.publicPen = data.pen;
-            // let socketID = userToSocket.get(userID);
             socket.to(room.name).emit('pen.update', data.pen);
             return;
         }
@@ -197,14 +195,14 @@ io.on('connection', (socket) => {
             }
 
             if (found !== -1) {
-                const destination = userToSocket.get(data.pen.link.userID);
+                const destination = connectionMap.getUser(data.pen.link.userID);
                 socket.to(destination).emit('pen.update', linkedUserPens[found]);
             }
             return;
         }
 
         const pens = room.users[userID];
-        const creatorSocket = userToSocket.get(room.creator);
+        const creatorSocket = connectionMap.getUser(room.creator);
         console.log(pens);
         for (let i = 0; i < pens.length; i++) {
             const pen = pens[i];
@@ -231,23 +229,23 @@ io.on('connection', (socket) => {
         console.log(data.pen);
         let destination;
         try {
-            destination = data.roomName || userToSocket.get(data.userID) || userToSocket.get(data.pen.link.userID);
+            destination = data.roomName || connectionMap.getUser(data.userID) || connectionMap.getUser(data.pen.link.userID);
         } catch (e) {
             destination = undefined;
         }
         socket.to(destination).emit('pen.updatePreview', data.pen);
     });
 
-    socket.on("pen.sharedCreated", (data) => {
+    socket.on('pen.sharedCreated', (data) => {
         const { userID, penID } = data;
-        const destination = userToSocket.get(userID);
-        socket.to(destination).emit("pen.sharedCreated", penID);
+        const destination = connectionMap.getUser(userID);
+        socket.to(destination).emit('pen.sharedCreated', penID);
     });
 
-    socket.on("pen.sharedDeleted", (data) => {
+    socket.on('pen.sharedDeleted', (data) => {
         const { userID, penID } = data;
-        const destination = userToSocket.get(userID);
-        socket.to(destination).emit("pen.sharedDeleted", penID);
+        const destination = connectionMap.getUser(userID);
+        socket.to(destination).emit('pen.sharedDeleted', penID);
     });
 });
 
