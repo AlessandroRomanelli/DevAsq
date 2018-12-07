@@ -103,6 +103,11 @@ function init() {
         }
     });
 
+    socket.on('pen.resolveHelp', () => {
+        console.log('Creator resolved help');
+        app.resolveHelp();
+    });
+    
     socket.on('creator.userExit', (userID) => {
         if (app instanceof CreatorApp) {
             console.log('Deleting the user from local storage')
