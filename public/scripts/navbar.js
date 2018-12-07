@@ -66,21 +66,26 @@ function login(username, password) {
     });
 }
 
+function addMultiListeners(events, element, fn) {
+    events.split(' ').forEach(event => element.addEventListener(event, fn, false));
+}
+
 function handleSignupForm() {
     const passwordRegex = new RegExp('^(?=.*[A-z])(?=.*[0-9])(?=.{8,})');
     const modal = document.getElementById('login-signup-modal');
     const signupUsername = document.getElementById('signup-name');
-    signupUsername.addEventListener('keyup', (event) => {
+    addMultiListeners('blur keyup change click paste', signupUsername, (event) => {
+        console.log(event.target.value);
         updateInputField(event.target.value !== '', event.target.parentNode);
         validateForm({ formName: 'signupForm', submitName: 'signup-submit' });
     });
     const signupPassword = document.getElementById('signup-password');
-    signupPassword.addEventListener('keyup', (event) => {
+    addMultiListeners('blur keyup change click paste', signupPassword, (event) => {
         updateInputField((passwordRegex.test(event.target.value)), event.target.parentNode);
         validateForm({ formName: 'signupForm', submitName: 'signup-submit' });
     });
     const signupPasswordConfirm = document.getElementById('signup-password-confirm');
-    signupPasswordConfirm.addEventListener('keyup', (event) => {
+    addMultiListeners('blur keyup change click paste', signupPasswordConfirm, (event) => {
         updateInputField(event.target.value === signupPassword.value, event.target.parentNode);
         validateForm({ formName: 'signupForm', submitName: 'signup-submit' });
     });
@@ -97,7 +102,14 @@ function handleSignupForm() {
         })).then((res) => {
             if (res.status === 201) {
                 login(username, password);
+            } else {
+                const err = new Error('Unable to signup');
+                err.data = res;
+                throw err;
             }
+        }).catch((err) => {
+            console.error(err);
+            handleError(err, 'signup-submit');
         });
     });
 
@@ -134,15 +146,7 @@ function handleLoginForm() {
         window.location.pathname = '/login/github';
     });
     const loginUsername = document.getElementById('login-name');
-    loginUsername.addEventListener('keyup', (event) => {
-        updateInputField(event.target.value !== '', event.target.parentNode);
-        validateForm({ formName: 'loginForm', submitName: 'localLogin' });
-    });
     const loginPassword = document.getElementById('login-password');
-    loginPassword.addEventListener('keyup', (event) => {
-        updateInputField((passwordRegex.test(event.target.value)), event.target.parentNode);
-        validateForm({ formName: 'loginForm', submitName: 'localLogin' });
-    });
     const loginForm = document.getElementById('loginForm');
     loginForm.addEventListener('submit', (event) => {
         event.preventDefault();

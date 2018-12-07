@@ -8,7 +8,7 @@ const router = express.Router();
 
 const { roomStorage, Pen } = require('../rooms');
 
-const loops = ["ForStatement", "WhileStatement", "DoWhileStatement"];
+const loops = ['ForStatement', 'WhileStatement', 'DoWhileStatement'];
 
 function random(used) {
     const random = Math.random()
@@ -16,10 +16,9 @@ function random(used) {
         .substring(2, 16);
     if (used && used.includes(random)) {
         return random(used);
-    } else {
-        used.push(random);
-        return random;
     }
+    used.push(random);
+    return random;
 }
 
 function traverseTree(tree, used) {
@@ -47,11 +46,13 @@ function traverseTree(tree, used) {
 
 router.get('/:roomName', (req, res) => {
     if (!req.user) return res.status(403).end();
-    const { penID } = req.query;
+    const { userID, penID } = req.query;
     const { roomName } = req.params;
     if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[roomName];
-    const pen = room.getUserPen(req.user._id, penID);
+    if (userID && (req.user._id !== room.creator && req.user._id !== userID)) return res.status(403).end();
+    const user = userID || req.user._id;
+    const pen = room.getUserPen(user, penID);
     const { html, css, js } = (penID) ? pen : room.publicPen;
 
     const tree = esprima.parseScript(js);
