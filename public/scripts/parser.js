@@ -25,6 +25,26 @@ function startParsing(app) {
     htmlPen.onkeyup = handleKey(app, htmlAce, timer);
     cssPen.onkeyup = handleKey(app, cssAce, timer);
     jsPen.onkeyup = handleKey(app, jsAce, timer);
+
+    htmlAce.on("paste", preventSpam());
+    cssAce.on("paste", preventSpam());
+    jsAce.on("paste", preventSpam());
+}
+
+function preventSpam() {
+    let previousTimeStamp = 0;
+
+    return function (data) {
+        const timeStamp = data.event.timeStamp;
+        if (data.text.length > 2500) {
+            data.text = "";
+        }
+        if (timeStamp - previousTimeStamp < 1000) {
+            data.text = "";
+        } else {
+            previousTimeStamp = timeStamp;
+        }
+    }
 }
 
 function handleKey(app, ace, timer) {
