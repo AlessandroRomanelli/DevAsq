@@ -78,13 +78,22 @@ function createTimer(app, delay) {
 }
 
 function renderIFrame(app) {
+    const htmlAce = ace.edit("htmlPen");
+    const cssAce = ace.edit("cssPen");
+    const jsAce = ace.edit("jsPen");
+    const iFrame = document.getElementById('iFrame');
+
     return function () {
-        const html = ace.edit('htmlPen').getValue();
-        const css = ace.edit('cssPen').getValue();
-        const js = ace.edit('jsPen').getValue();
-        const iFrame = document.getElementById('iFrame');
-        let roomName = window.location.pathname.split('/');
-        roomName = roomName[roomName.length - 1];
+        const html = htmlAce.getValue();
+        const css = cssAce.getValue();
+        const js = jsAce.getValue();
+        const positions = {
+            html: htmlAce.getCursorPosition(),
+            css: cssAce.getCursorPosition(),
+            js: jsAce.getCursorPosition()
+        };
+
+        const roomName = app.room.name;
         doJSONRequest('POST', `/preview/${roomName}`, {}, {
             name: app.getCurrentPen().title,
             penID: app.getCurrentPen().id,
@@ -94,11 +103,11 @@ function renderIFrame(app) {
         }).then(() => {
             iFrame.src = `/preview/${roomName}?penID=${app.getCurrentPen().id}`;
             if (app.room.creator === app.userID && app.currentPen === 0) {
-                socket.emit('pen.preview', { pen: app.publicPen, roomName });
+                socket.emit('pen.preview', { pen: app.publicPen, roomName, positions });
             } else if (app.room.creator === app.userID) {
-                socket.emit('pen.preview', { pen: app.getCurrentPen() });
+                socket.emit('pen.preview', { pen: app.getCurrentPen(), positions });
             } else {
-                socket.emit('pen.preview', { pen: app.getCurrentPen(), userID: app.room.creator });
+                socket.emit('pen.preview', { pen: app.getCurrentPen(), userID: app.room.creator, positions });
             }
         });
     };

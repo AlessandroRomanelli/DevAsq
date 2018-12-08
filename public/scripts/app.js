@@ -59,7 +59,23 @@ class App {
         }
     }
 
-    changeAcesContent() {
+    setPositions(positions) {
+        const htmlAce = ace.edit('htmlPen');
+        const cssAce = ace.edit('cssPen');
+        const jsAce = ace.edit('jsPen');
+        if (positions) {
+            htmlAce.navigateTo(positions.html.row, positions.html.column);
+            cssAce.navigateTo(positions.css.row, positions.css.column);
+            jsAce.navigateTo(positions.js.row, positions.js.column);
+        } else {
+            htmlAce.navigateFileEnd();
+            cssAce.navigateFileEnd();
+            jsAce.navigateFileEnd();
+        }
+    }
+
+
+    changeAcesContent(positions) {
         const html = ace.edit('htmlPen');
         const css = ace.edit('cssPen');
         const js = ace.edit('jsPen');
@@ -67,6 +83,7 @@ class App {
         html.setValue(pen.html);
         css.setValue(pen.css);
         js.setValue(pen.js);
+        this.setPositions(positions);
         const iFrame = document.getElementById('iFrame');
 
         iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
@@ -151,17 +168,22 @@ class App {
         default:
             break;
         }
-        socket.emit('pen.change', { pen, roomName: this.room.name });
+        const html = ace.edit("htmlPen").getCursorPosition();
+        const css = ace.edit("cssPen").getCursorPosition();
+        const js = ace.edit("jsPen").getCursorPosition();
+        const positions = { html, css, js };
+        socket.emit('pen.change', { pen, roomName: this.room.name, positions });
     }
 
-    changeViewContent() {
+    changeViewContent(positions) {
         const pen = this.getCurrentPen();
         ace.edit('htmlPen').setValue(pen.html);
         ace.edit('cssPen').setValue(pen.css);
         ace.edit('jsPen').setValue(pen.js);
+        this.setPositions(positions);
     }
 
-    updatePen(pen) {
+    updatePen(pen, positions) {
         let index = -1;
         for (let i = 0; i < this.pens.length; i++) {
             if (this.pens[i].id === pen.id) {
@@ -176,7 +198,7 @@ class App {
         this.pens[index].css = pen.css;
         this.pens[index].js = pen.js;
         if (index === this.currentPen) {
-            this.changeViewContent();
+            this.changeViewContent(positions);
         }
     }
 
