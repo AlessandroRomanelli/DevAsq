@@ -24,8 +24,8 @@ let socket;
                 isPassworded: data.passworded
             }, (err, html) => {
                 console.log(err);
-                console.log(html);
-                roomTable.innerHTML += html;
+                console.log('<tr id="room_{name}" data-name="{name}">' + html + '</tr>');
+                roomTable.innerHTML += '<tr id="room_{name}" data-name="{name}">' + html + '</tr>';
             });
         }
     });

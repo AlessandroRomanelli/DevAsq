@@ -116,17 +116,10 @@ io.on('connection', (socket) => {
 
         if (Object.keys(socket.rooms).length > 1) {
             let roomName = Object.keys(socket.rooms)[1];
-            console.log(socket.rooms);
-            console.log(roomName);
             let room = roomStorage[roomName];
-            console.log(room);
-            console.log(userID);
             if (room) {
-                console.log(Object.keys(room.users).length);
-                if (Object.keys(room.users).length === 0 || userID === room.creator) {
-                    if (userID === room.creator) {
-                        socket.to(roomName).emit('room.delete', roomName);
-                    }
+                if (userID === room.creator) {
+                    socket.to(roomName).emit('room.delete', roomName);
                     delete roomStorage[roomName];
                 } else {
                     delete room.users[userID];
@@ -146,16 +139,22 @@ io.on('connection', (socket) => {
     });
 
     socket.on('homePage.leaveRoom', () => {
-        socket.leave('homePage', socket.user);
+        socket.leave('homePage');
     });
 
     socket.on('settings.joinRoom', (data) => {
         console.log(data);
+        socket.join(data.roomName);
         socket.to('homePage').emit('homepage.updateRoomCounter', {
             population: data.population,
             roomName: data.roomName,
             passworded: data.passworded
         });
+    });
+
+    socket.on('settings.leaveRoom', (data) => {
+        console.log(data);
+        socket.leave(data.roomName);
     });
 
     socket.on('settings.notifyCreator', (data) => {

@@ -8,7 +8,7 @@
         <th> Link </th>
     </tr>
     {#activeRooms}
-        <tr id="room_{name}">
+        <tr id="room_{name}" data-name="{name}">
             {> "partials/room" /}
         </tr>
     {/activeRooms}

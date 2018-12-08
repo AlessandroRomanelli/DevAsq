@@ -384,8 +384,9 @@ class CreatorApp extends App {
     userDisconnected(user) {
         // TODO: Remove the user from the local storage
         console.log('User: ', user, ' left the room');
-        console.log(this.room);
+        console.log(this.room.users);
         delete this.users[user];
+        console.log(this.room.users);
         this.updateUI();
     }
 

@@ -45,6 +45,7 @@ function init() {
 
     socket.on('disconnect', (reason) => {
         console.log(reason);
+        socket.emit('settings.leaveRoom');
     });
 
     socket.on('pen.updatePreview', (pen) => {
