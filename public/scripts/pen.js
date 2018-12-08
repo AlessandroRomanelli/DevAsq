@@ -47,7 +47,7 @@ function init() {
 
     socket.on('pen.update', (data) => {
         console.log(data);
-        app.updatePen(data.pen, data.positions);
+        app.updatePen(data.pen, data.positions, data.difference, data.rows);
     });
 
     socket.on('pen.updatePreview', (data) => {

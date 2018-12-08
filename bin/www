@@ -197,7 +197,12 @@ io.on('connection', (socket) => {
 
             if (found !== -1) {
                 const destination = connectionMap.getSocket(data.pen.link.userID);
-                socket.to(destination).emit('pen.update', {pen: linkedUserPens[found]});
+                socket.to(destination).emit('pen.update', {
+                    pen: linkedUserPens[found],
+                    difference: data.difference,
+                    positions: data.positions,
+                    rows: data.rows
+                });
             }
             return;
         }

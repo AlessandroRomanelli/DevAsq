@@ -10,6 +10,10 @@ function startParsing(app) {
     cssAce.session.setMode('ace/mode/css');
     jsAce.session.setMode('ace/mode/javascript');
 
+    htmlAce.session.setUseSoftTabs(false);
+    cssAce.session.setUseSoftTabs(false);
+    jsAce.session.setUseSoftTabs(false);
+
     htmlAce.setTheme('ace/theme/monokai');
     cssAce.setTheme('ace/theme/monokai');
     jsAce.setTheme('ace/theme/monokai');
@@ -84,6 +88,9 @@ function renderIFrame(app) {
     const iFrame = document.getElementById('iFrame');
 
     return function () {
+        if (app.currentPen === 0 && app.userID !== app.room.creator) {
+            return;
+        }
         const html = htmlAce.getValue();
         const css = cssAce.getValue();
         const js = jsAce.getValue();
@@ -102,13 +109,13 @@ function renderIFrame(app) {
             js,
         }).then(() => {
             iFrame.src = `/preview/${roomName}?penID=${app.getCurrentPen().id}`;
-            if (app.room.creator === app.userID && app.currentPen === 0) {
-                socket.emit('pen.preview', { pen: app.publicPen, roomName, positions });
-            } else if (app.room.creator === app.userID) {
-                socket.emit('pen.preview', { pen: app.getCurrentPen(), positions });
-            } else {
-                socket.emit('pen.preview', { pen: app.getCurrentPen(), userID: app.room.creator, positions });
-            }
+            // if (app.room.creator === app.userID && app.currentPen === 0) {
+            //     socket.emit('pen.preview', { pen: app.publicPen, roomName, positions });
+            // } else if (app.room.creator === app.userID) {
+            //     socket.emit('pen.preview', { pen: app.getCurrentPen(), positions });
+            // } else {
+            //     socket.emit('pen.preview', { pen: app.getCurrentPen(), userID: app.room.creator });
+            // }
         });
     };
 }

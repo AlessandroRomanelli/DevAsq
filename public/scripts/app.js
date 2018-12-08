@@ -74,6 +74,31 @@ class App {
         }
     }
 
+    adjustPositions(positions, oldPositions, difference, rows) {
+        const htmlAce = ace.edit('htmlPen');
+        const cssAce = ace.edit('cssPen');
+        const jsAce = ace.edit('jsPen');
+        if (positions) {
+            if (rows === 0 && positions.html.row < oldPositions.html.row) {
+                htmlAce.navigateTo(oldPositions.html.row, oldPositions.html.column);
+            } else if (rows === 0 && positions.html.row === oldPositions.html.row) {
+                if (positions.html.column + difference <= oldPositions.html.column) {
+                    htmlAce.navigateTo(oldPositions.html.row, oldPositions.html.column + difference);
+                } else {
+                    htmlAce.navigateTo(oldPositions.html.row, oldPositions.html.column);
+                }
+            } else if (positions.html.row - rows <= oldPositions.html.row) {
+                htmlAce.navigateTo(oldPositions.html.row + rows, oldPositions.html.column);
+            } else {
+                htmlAce.navigateTo(oldPositions.html.row, oldPositions.html.column);
+            }
+        } else {
+            htmlAce.navigateFileEnd();
+            cssAce.navigateFileEnd();
+            jsAce.navigateFileEnd();
+        }
+    }
+
 
     changeAcesContent(positions) {
         const html = ace.edit('htmlPen');
@@ -141,7 +166,20 @@ class App {
         }
     }
 
+    countLines(value) {
+        let count = 0;
+        for (let i = 0; i < value.length; i++) {
+            if (value[i] === "\n") {
+                count++;
+            }
+        }
+        return count;
+    }
+
     updateCurrentEditor(mode, value) {
+        if (this.currentPen === 0 && this.userID !== this.room.creator) {
+            return;
+        }
         const pen = this.getCurrentPen();
         let userPen;
         console.log(pen);
@@ -152,16 +190,25 @@ class App {
                 userPen = userPens[index];
             }
         }
+        let differenceLength;
+        let differenceRows = this.countLines(value);
+
         switch (mode) {
         case 'html':
+            differenceLength = value.length - pen.html.length;
+            differenceRows -= this.countLines(pen.html);
             pen.html = value;
             if (userPen) { userPen.html = value }
             break;
         case 'css':
+            differenceLength = value.length - pen.css.length;
+            differenceRows -= this.countLines(pen.css);
             pen.css = value;
             if (userPen) { userPen.css = value }
             break;
         case 'javascript':
+            differenceLength = value.length - pen.js.length;
+            differenceRows -= this.countLines(pen.js);
             pen.js = value;
             if (userPen) { userPen.js = value }
             break;
@@ -172,18 +219,38 @@ class App {
         const css = ace.edit("cssPen").getCursorPosition();
         const js = ace.edit("jsPen").getCursorPosition();
         const positions = { html, css, js };
-        socket.emit('pen.change', { pen, roomName: this.room.name, positions });
+        socket.emit('pen.change', {
+            pen,
+            roomName: this.room.name,
+            positions,
+            difference: differenceLength,
+            rows: differenceRows
+        });
     }
 
-    changeViewContent(positions) {
+    changeViewContent(positions, difference, rows) {
         const pen = this.getCurrentPen();
-        ace.edit('htmlPen').setValue(pen.html);
-        ace.edit('cssPen').setValue(pen.css);
-        ace.edit('jsPen').setValue(pen.js);
-        this.setPositions(positions);
+        const htmlAce = ace.edit('htmlPen');
+        const cssAce = ace.edit('cssPen');
+        const jsAce = ace.edit('jsPen');
+
+        const oldPositions = {
+            html: htmlAce.getCursorPosition(),
+            css: cssAce.getCursorPosition(),
+            js: jsAce.getCursorPosition()
+        };
+
+        htmlAce.setValue(pen.html);
+        cssAce.setValue(pen.css);
+        jsAce.setValue(pen.js);
+        if (this.currentPen === 0) {
+            this.setPositions(positions);
+        } else {
+            this.adjustPositions(positions, oldPositions, difference, rows);
+        }
     }
 
-    updatePen(pen, positions) {
+    updatePen(pen, positions, difference, rows) {
         let index = -1;
         for (let i = 0; i < this.pens.length; i++) {
             if (this.pens[i].id === pen.id) {
@@ -198,7 +265,7 @@ class App {
         this.pens[index].css = pen.css;
         this.pens[index].js = pen.js;
         if (index === this.currentPen) {
-            this.changeViewContent(positions);
+            this.changeViewContent(positions, difference, rows);
         }
     }
 
