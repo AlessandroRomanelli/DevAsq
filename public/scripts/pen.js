@@ -32,7 +32,8 @@ function init() {
         socket.emit('settings.bindID', { id: user._id });
         socket.emit('settings.joinRoom', {
             roomName: app.room.name,
-            population: Object.keys(app.room.users).length-1
+            population: Object.keys(app.room.users).length-1,
+            passworded: app.room.isPassworded
         });
         socket.emit('settings.notifyCreator', { roomName: app.room.name, user });
     });
@@ -112,14 +113,6 @@ function init() {
     socket.on('pen.resolveHelp', () => {
         console.log('Creator resolved help');
         app.resolveHelp();
-    });
-
-    socket.on('creator.userExit', (userID) => {
-        if (app instanceof CreatorApp) {
-            console.log('Deleting the user from local storage')
-            console.log(app);
-            delete app.room.users[userID];
-        }
     });
 
     socket.on('room.delete', () => {

@@ -371,6 +371,7 @@ class CreatorApp extends App {
     }
 
     userConnected(user) {
+        console.log('User: ', user._id, ' joined the room');
         this.users[user._id] = {
             user,
             currentPen: this.publicPen,
@@ -383,6 +384,8 @@ class CreatorApp extends App {
     userDisconnected(user) {
         // TODO: Remove the user from the local storage
         console.log('User: ', user, ' left the room');
+        console.log(this.room);
+        delete this.users[user];
         this.updateUI();
     }
 

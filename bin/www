@@ -120,7 +120,9 @@ io.on('connection', (socket) => {
             console.log(roomName);
             let room = roomStorage[roomName];
             console.log(room);
+            console.log(userID);
             if (room) {
+                console.log(Object.keys(room.users).length);
                 if (Object.keys(room.users).length === 0 || userID === room.creator) {
                     if (userID === room.creator) {
                         socket.to(roomName).emit('room.delete', roomName);
@@ -128,8 +130,7 @@ io.on('connection', (socket) => {
                     delete roomStorage[roomName];
                 } else {
                     delete room.users[userID];
-                    // socket.to(connectionMap.getSocket(room.creator)).emit('creator.userExit');
-                    socket.to(room.creator).emit('settings.userLeft', userID);
+                    socket.to(connectionMap.getSocket(room.creator)).emit('settings.userLeft', userID);
                 }
             }
         }
@@ -149,10 +150,11 @@ io.on('connection', (socket) => {
     });
 
     socket.on('settings.joinRoom', (data) => {
-        socket.join(data.roomName);
+        console.log(data);
         socket.to('homePage').emit('homepage.updateRoomCounter', {
             population: data.population,
-            roomName: data.roomName
+            roomName: data.roomName,
+            passworded: data.passworded
         });
     });
 
