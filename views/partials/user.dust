@@ -1,9 +1,14 @@
 <div id='{user._id}' class="user">
-  <img id="preview-icon" src="/images/preview.png" style="width: 32px; height: 32px;">
   <img class='user-icon' src="/images/user.png">
   <p class='user-name'>{user.username}</p>
-  <div>Active Pen: <span class='user-current-pen'>{currentPen.title}</span></div>
-  <button id="share-pen" class="pen-loader" type="button" name="button">Share Pen</button>
-  <button id="load-pen" class="pen-loader" type="button" name="button">Load Pen</button>
+  <div class='current-pen'>
+    <span>Pen:</span>
+    <span class='user-current-pen'>{currentPen.title}</span>
+    <img id="preview-icon" src="/images/preview.png">
+  </div>
+  <div class="pen-actions">
+    <button id="share-pen" class="pen-loader" type="button" name="button">Share</button>
+    <button id="load-pen" class="pen-loader" type="button" name="button">Load</button>
+  </div>
   <div class="signal"></div>
 </div>

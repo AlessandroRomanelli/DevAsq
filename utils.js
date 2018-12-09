@@ -6,7 +6,10 @@ function storeToken(uid, done) {
 }
 
 function consumeToken(token, done) {
-    return Token.findByIdAndDelete(token).then(found => done(null, found.uid))
+    return Token.findByIdAndDelete(token).then((found) => {
+        if (!found) return done(null, false);
+        return done(null, found.uid);
+    })
         .catch(err => done(err, null));
 }
 

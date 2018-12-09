@@ -13,8 +13,8 @@
         <span id="share-public">Share: <span class="info">Public</span></span>
       </div>
       <ul id="tabs" class="container">
-        <li class="switchTab">
-          +
+        <li id='newTab' class="switchTab">
+          <img src="/images/plus.png">
         </li>
       </ul>
       <div id="pens" class="container">
