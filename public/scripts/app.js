@@ -307,6 +307,10 @@ class App {
                     id: this.userID,
                     newPen: this.pens[index],
                 });
+                if (this.userID === this.room.creator) {
+                    const sharePublic = document.getElementById('share-public');
+                    sharePublic.querySelector('.info').innerHTML = this.getCurrentPen().title;
+                }
                 if (callback) {
                     callback();
                 }
@@ -499,7 +503,9 @@ class CreatorApp extends App {
                 storedPen.js = pen.js;
 
                 const tab = document.getElementById(storedPen.id).querySelector('span');
+                const sharePublic = document.getElementById('share-public');
                 tab.innerText = storedPen.title;
+                sharePublic.querySelector('.info').innerHTML = storedPen.title;
 
                 if (this.currentPen === i) {
                     this.changeViewContent(positions, difference, rows);
@@ -644,6 +650,7 @@ class CreatorApp extends App {
         ace.edit('htmlPen').setValue(pen.html);
         ace.edit('cssPen').setValue(pen.css);
         ace.edit('jsPen').setValue(pen.js);
+        this.setPositions();
         penToModify.html = pen.html;
         penToModify.css = pen.css;
         penToModify.js = pen.js;
