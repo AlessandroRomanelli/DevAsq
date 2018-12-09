@@ -225,7 +225,13 @@ io.on('connection', (socket) => {
                     }
                 }
                 if (pen.title !== 'Public') {
-                    socket.to(creatorSocket).emit('creator.updatePens', { id: userID, pen: pens[i] });
+                    socket.to(creatorSocket).emit('creator.updatePens', {
+                        id: userID,
+                        pen: pens[i],
+                        difference: data.difference,
+                        positions: data.positions,
+                        rows: data.rows
+                    });
                 }
             }
         }

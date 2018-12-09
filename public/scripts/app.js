@@ -78,19 +78,38 @@ class App {
         const htmlAce = ace.edit('htmlPen');
         const cssAce = ace.edit('cssPen');
         const jsAce = ace.edit('jsPen');
+        const aces = {html: htmlAce, css: cssAce, js: jsAce};
         if (positions) {
-            if (rows === 0 && positions.html.row < oldPositions.html.row) {
-                htmlAce.navigateTo(oldPositions.html.row, oldPositions.html.column);
-            } else if (rows === 0 && positions.html.row === oldPositions.html.row) {
-                if (positions.html.column + difference <= oldPositions.html.column) {
-                    htmlAce.navigateTo(oldPositions.html.row, oldPositions.html.column + difference);
+            for (const key in aces) {
+                if (rows === 0 && positions[key].row < oldPositions[key].row) {
+                    htmlAce.navigateTo(oldPositions[key].row, oldPositions[key].column);
+                } else if (rows === 0 && positions[key].row === oldPositions[key].row) {
+                    if (positions[key].column + difference <= oldPositions[key].column) {
+                        aces[key].navigateTo(oldPositions[key].row, oldPositions[key].column + difference);
+                    } else {
+                        aces[key].navigateTo(oldPositions[key].row, oldPositions[key].column);
+                    }
+                } else if (positions[key].row - rows < oldPositions[key].row) {
+                    aces[key].navigateTo(oldPositions[key].row + rows, oldPositions[key].column);
+                } else if (positions[key].row - rows === oldPositions[key].row) {
+                    let previousLineLength;
+                    try {
+                        previousLineLength = aces[key].getValue().split("\n")[positions[key].row - rows].length;
+                    } catch (e) {
+                        previousLineLength = 0;
+                    }
+                    if (previousLineLength > oldPositions[key].column) {
+                        if (rows < 0) {
+                            aces[key].navigateTo(oldPositions[key].row + rows, oldPositions[key].column + positions[key].column);
+                        } else {
+                            aces[key].navigateTo(oldPositions[key].row, oldPositions[key].column);
+                        }
+                    } else {
+                        aces[key].navigateTo(oldPositions[key].row + rows, oldPositions[key].column - previousLineLength);
+                    }
                 } else {
-                    htmlAce.navigateTo(oldPositions.html.row, oldPositions.html.column);
+                    aces[key].navigateTo(oldPositions[key].row, oldPositions[key].column);
                 }
-            } else if (positions.html.row - rows <= oldPositions.html.row) {
-                htmlAce.navigateTo(oldPositions.html.row + rows, oldPositions.html.column);
-            } else {
-                htmlAce.navigateTo(oldPositions.html.row, oldPositions.html.column);
             }
         } else {
             htmlAce.navigateFileEnd();
@@ -167,13 +186,7 @@ class App {
     }
 
     countLines(value) {
-        let count = 0;
-        for (let i = 0; i < value.length; i++) {
-            if (value[i] === "\n") {
-                count++;
-            }
-        }
-        return count;
+        return value.split("\n").length;
     }
 
     updateCurrentEditor(mode, value) {
@@ -469,7 +482,7 @@ class CreatorApp extends App {
         this.updateUI();
     }
 
-    updateUsers(userID, pen) {
+    updateUsers(userID, pen, positions, difference, rows) {
         const { pens } = this.users[userID];
 
         for (let i = 0; i < this.pens.length; i++) {
@@ -484,7 +497,7 @@ class CreatorApp extends App {
                 tab.innerText = storedPen.title;
 
                 if (this.currentPen === i) {
-                    this.changeViewContent();
+                    this.changeViewContent(positions, difference, rows);
                 }
             }
         }

@@ -76,9 +76,9 @@ function init() {
     });
 
     socket.on('creator.updatePens', (data) => {
-        const { id, pen } = data;
+        const { id, pen, rows, difference, positions } = data;
         if (app instanceof CreatorApp) {
-            app.updateUsers(id, pen);
+            app.updateUsers(id, pen, positions, difference, rows);
         }
     });
 
