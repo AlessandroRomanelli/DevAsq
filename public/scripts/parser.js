@@ -109,13 +109,13 @@ function renderIFrame(app) {
             js,
         }).then(() => {
             iFrame.src = `/preview/${roomName}?penID=${app.getCurrentPen().id}`;
-            // if (app.room.creator === app.userID && app.currentPen === 0) {
-            //     socket.emit('pen.preview', { pen: app.publicPen, roomName, positions });
-            // } else if (app.room.creator === app.userID) {
-            //     socket.emit('pen.preview', { pen: app.getCurrentPen(), positions });
-            // } else {
-            //     socket.emit('pen.preview', { pen: app.getCurrentPen(), userID: app.room.creator });
-            // }
+            if (app.room.creator === app.userID && app.currentPen === 0) {
+                socket.emit('pen.preview', { pen: app.publicPen, roomName, positions });
+            } else if (app.room.creator === app.userID) {
+                socket.emit('pen.preview', { pen: app.getCurrentPen(), positions });
+            } else {
+                socket.emit('pen.preview', { pen: app.getCurrentPen(), userID: app.room.creator });
+            }
         });
     };
 }

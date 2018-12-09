@@ -120,22 +120,27 @@ class App {
 
 
     changeAcesContent(positions) {
-        const html = ace.edit('htmlPen');
-        const css = ace.edit('cssPen');
-        const js = ace.edit('jsPen');
+        const htmlAce = ace.edit('htmlPen');
+        const cssAce = ace.edit('cssPen');
+        const jsAce = ace.edit('jsPen');
         const pen = this.getCurrentPen();
-        html.setValue(pen.html);
-        css.setValue(pen.css);
-        js.setValue(pen.js);
-        this.setPositions(positions);
+        const oldPositions = {
+            html: htmlAce.getCursorPosition(),
+            css: cssAce.getCursorPosition(),
+            js: jsAce.getCursorPosition()
+        };
+        htmlAce.setValue(pen.html);
+        cssAce.setValue(pen.css);
+        jsAce.setValue(pen.js);
+        this.setPositions(this.currentPen === 0 ? positions : oldPositions);
         const iFrame = document.getElementById('iFrame');
 
         iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
 
         const permission = (this.room.creator === this.userID || this.currentPen !== 0);
-        html.setReadOnly(!permission);
-        css.setReadOnly(!permission);
-        js.setReadOnly(!permission);
+        htmlAce.setReadOnly(!permission);
+        cssAce.setReadOnly(!permission);
+        jsAce.setReadOnly(!permission);
     }
 
     getCurrentPen() {
