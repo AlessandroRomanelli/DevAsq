@@ -27,7 +27,8 @@ function traverseTree(tree, used) {
     }
     used = used || [];
 
-    let array = (tree.consequent && tree.consequent.body) || [];
+    let array = (tree.expression && tree.expression.arguments) || [];
+    array = (tree.consequent && tree.consequent.body) || array;
     array = (tree.body && tree.body.body || tree.body) || array;
     for (let i = 0; i < array.length; i++) {
         if (loops.includes(array[i].type)) {
