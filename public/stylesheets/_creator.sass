@@ -120,19 +120,6 @@
         margin: 0.5em 0
       .user-icon
         max-width: 50px
-      .pen-loader
-        outline: none
-        height: 2em
-        width: 100%
-        background: none
-        border: none
-        color: white
-        transition: 0.25s ease-in-out
-        border-radius: 1em
-        &:hover
-          background: $primary-color
-          color: $dark
-          cursor: pointer
 
       &.help-needed
         border-color: $primary-color
@@ -154,6 +141,55 @@
         overflow: hidden
         animation: ping-creator 0.8s ease-in-out infinite both
         pointer-events: none
+      .current-pen
+        display: flex
+        justify-content: center
+        align-items: space-between
+        span
+          &:last-of-type
+            margin-left: 0.25em
+            margin-right: 0.5em
+        img
+          filter: grayscale(1) brightness(2)
+          transition: 0.2s ease-in-out
+          &:hover
+            cursor: pointer
+            filter: grayscale(0) brightness(1)
+            transform: scale(1.1)
+      .pen-actions
+        margin-top: 0.5em
+        display: flex
+        .pen-loader
+          outline: none
+          height: 2em
+          width: 100%
+          background: none
+          border: none
+          color: white
+          transition: 0.25s ease-in-out
+          border: 1px solid transparent
+          border-radius: 1em
+          &:first-child
+            color: white
+            border-color: white
+            border-radius: 1em 0 0 1em
+            &:hover
+              background: white
+              border-color: darken(white, 10%)
+          &:last-child
+            color: $primary-color
+            border-color: $primary-color
+            border-radius: 0 1em 1em 0
+            &:hover
+              background: $primary-color
+              border-color: darken($primary-color, 10%)
+          &:hover
+            cursor: pointer
+            color: $dark
+
+#preview-icon
+  width: 20px
+  height: 20px
 
 #preview-modal
   position: fixed
@@ -195,7 +231,7 @@
       padding: 0.5em 1em 0.5em 2em
       border-radius: 1.5em 0 0 1.5em
       background: $color-background
-      border-color: whiter
+      border-color: white
       &:hover
         background: white
         border-color: darken(white, 10%)
