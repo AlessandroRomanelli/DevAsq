@@ -48,19 +48,20 @@ function init() {
         socket.emit('settings.leaveRoom');
     });
 
-    socket.on('pen.updatePreview', (pen) => {
-        console.log('updating the preview');
-        if (app.indexOfPen(pen) === app.currentPen) {
-            app.changeAcesContent();
-        } else if (app.indexOfPenInLinked(pen) === app.currentPen) {
-            app.changeAcesContent();
-        } else if (app.indexOfLinkedInPens(pen) === app.currentPen) {
-            app.changeAcesContent();
-        }
+    socket.on('pen.update', (data) => {
+        console.log(data);
+        app.updatePen(data.pen, data.positions, data.difference, data.rows);
     });
 
-    socket.on('pen.update', (pen) => {
-        app.updatePen(pen);
+    socket.on('pen.updatePreview', (data) => {
+        console.log('updating the preview');
+        if (app.indexOfPen(data.pen) === app.currentPen) {
+            app.changeAcesContent(data.positions);
+        } else if (app.indexOfPenInLinked(data.pen) === app.currentPen) {
+            app.changeAcesContent(data.positions);
+        } else if (app.indexOfLinkedInPens(data.pen) === app.currentPen) {
+            app.changeAcesContent(data.positions);
+        }
     });
 
     socket.on("pen.sharedCreated", (penID) => {
@@ -84,9 +85,9 @@ function init() {
     });
 
     socket.on('creator.updatePens', (data) => {
-        const { id, pen } = data;
+        const { id, pen, rows, difference, positions } = data;
         if (app instanceof CreatorApp) {
-            app.updateUsers(id, pen);
+            app.updateUsers(id, pen, positions, difference, rows);
         }
     });
 
@@ -109,11 +110,6 @@ function init() {
         if (app instanceof CreatorApp) {
             app.signalHelp(id);
         }
-    });
-
-    socket.on('pen.resolveHelp', () => {
-        console.log('Creator resolved help');
-        app.resolveHelp();
     });
 
     socket.on('room.delete', () => {

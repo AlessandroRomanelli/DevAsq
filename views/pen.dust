@@ -13,8 +13,8 @@
         <span id="share-public">Share: <span class="info">Public</span></span>
       </div>
       <ul id="tabs" class="container">
-        <li class="switchTab">
-          +
+        <li id='newTab' class="switchTab">
+          <img src="/images/plus.png">
         </li>
       </ul>
       <div id="pens" class="container">
@@ -41,7 +41,7 @@
       </div>
       <div id='preview-modal' class="modal hidden">
         <div class="container">
-          <button id="close-modal" class='' type="button" name="button">X</button>
+          <div id="close-modal"></div>
           <iframe id='preview-iframe'></iframe>
           <div id='preview-loaders' class="">
             <button id='modal-share' type="button" name="button">Share pen</button>

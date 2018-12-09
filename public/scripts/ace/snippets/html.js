@@ -461,9 +461,6 @@ snippet html5\n\
 	<!DOCTYPE html>\n\
 	<html>\n\
 		<head>\n\
-			<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />\n\
-			<title>${1:`substitute(Filename('', 'Page Title'), '^.', '\\u&', '')`}</title>\n\
-			${2:meta}\n\
 		</head>\n\
 		<body>\n\
 			${3:body}\n\
@@ -867,4 +864,3 @@ exports.scope = "html";
                         }
                     });
                 })();
-            
