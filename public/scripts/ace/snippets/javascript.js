@@ -95,7 +95,7 @@ snippet ret\n\
 	return ${1:result}\n\
 # for (property in object ) { ... }\n\
 snippet fori\n\
-	for (var ${1:prop} in ${2:Things}) {\n\
+	for (let ${1:prop} in ${2:Things}) {\n\
 		${0:$2[$1]}\n\
 	}\n\
 # hasOwnProperty\n\
@@ -120,7 +120,7 @@ snippet jsons\n\
 	JSON.stringify(${1:object});\n\
 # self-defining function\n\
 snippet sdf\n\
-	var ${1:function_name} = function(${2:argument}) {\n\
+	let ${1:function_name} = function(${2:argument}) {\n\
 		${3:// initial code ...}\n\
 \n\
 		$1 = function($2) {\n\
@@ -131,7 +131,7 @@ snippet sdf\n\
 snippet sing\n\
 	function ${1:Singleton} (${2:argument}) {\n\
 		// the cached instance\n\
-		var instance;\n\
+		let instance;\n\
 \n\
 		// rewrite the constructor\n\
 		$1 = function $1($2) {\n\
@@ -154,7 +154,7 @@ snippet sing\n\
 # class\n\
 snippet class\n\
 regex /^\\s*/clas{0,2}/\n\
-	var ${1:class} = function(${20}) {\n\
+	let ${1:class} = function(${20}) {\n\
 		$40$0\n\
 	};\n\
 	\n\
@@ -165,17 +165,17 @@ regex /^\\s*/clas{0,2}/\n\
 	exports.${1:class} = ${1:class};\n\
 # \n\
 snippet for-\n\
-	for (var ${1:i} = ${2:Things}.length; ${1:i}--; ) {\n\
+	for (let ${1:i} = ${2:Things}.length; ${1:i}--; ) {\n\
 		${0:${2:Things}[${1:i}];}\n\
 	}\n\
 # for (...) {...}\n\
 snippet for\n\
-	for (var ${1:i} = 0; $1 < ${2:Things}.length; $1++) {\n\
+	for (let ${1:i} = 0; $1 < ${2:Things}.length; $1++) {\n\
 		${3:$2[$1]}$0\n\
 	}\n\
 # for (...) {...} (Improved Native For-Loop)\n\
 snippet forr\n\
-	for (var ${1:i} = ${2:Things}.length - 1; $1 >= 0; $1--) {\n\
+	for (let ${1:i} = ${2:Things}.length - 1; $1 >= 0; $1--) {\n\
 		${3:$2[$1]}$0\n\
 	}\n\
 \n\
@@ -184,17 +184,17 @@ snippet forr\n\
 snippet def\n\
 	define(function(require, exports, module) {\n\
 	\"use strict\";\n\
-	var ${1/.*\\///} = require(\"${1}\");\n\
+	let ${1/.*\\///} = require(\"${1}\");\n\
 	\n\
 	$TM_SELECTED_TEXT\n\
 	});\n\
 snippet req\n\
 guard ^\\s*\n\
-	var ${1/.*\\///} = require(\"${1}\");\n\
+	let ${1/.*\\///} = require(\"${1}\");\n\
 	$0\n\
 snippet requ\n\
 guard ^\\s*\n\
-	var ${1/.*\\/(.)/\\u$1/} = require(\"${1}\").${1/.*\\/(.)/\\u$1/};\n\
+	let ${1/.*\\/(.)/\\u$1/} = require(\"${1}\").${1/.*\\/(.)/\\u$1/};\n\
 	$0\n\
 ";
 exports.scope = "javascript";
@@ -207,4 +207,3 @@ exports.scope = "javascript";
                         }
                     });
                 })();
-            

@@ -167,14 +167,14 @@ io.on('connection', (socket) => {
         console.log(data);
         const userID = connectionMap.getUser(socket.id);
         const room = roomStorage[data.roomName];
-        if (room && room.creator === userID && data.pen.title === 'Public') {
+        if (room && `${room.creator}` === `${userID}` && data.pen.title === 'Public') {
             room.publicPen = data.pen;
             // let socketID = userToSocket.get(userID);
-            socket.to(room.name).emit('pen.update', data.pen);
+            socket.to(room.name).emit('pen.update', { pen: data.pen, positions: data.positions });
             return;
         }
 
-        if (room && room.creator === userID && data.pen.link) {
+        if (room && `${room.creator}` === `${userID}` && data.pen.link) {
             const creatorPens = room.users[room.creator];
             for (let i = 0; i < creatorPens.length; i++) {
                 if (creatorPens[i].id === data.pen.id) {
@@ -197,7 +197,12 @@ io.on('connection', (socket) => {
 
             if (found !== -1) {
                 const destination = connectionMap.getSocket(data.pen.link.userID);
-                socket.to(destination).emit('pen.update', linkedUserPens[found]);
+                socket.to(destination).emit('pen.update', {
+                    pen: linkedUserPens[found],
+                    difference: data.difference,
+                    positions: data.positions,
+                    rows: data.rows
+                });
             }
             return;
         }
@@ -220,7 +225,13 @@ io.on('connection', (socket) => {
                     }
                 }
                 if (pen.title !== 'Public') {
-                    socket.to(creatorSocket).emit('creator.updatePens', { id: userID, pen: pens[i] });
+                    socket.to(creatorSocket).emit('creator.updatePens', {
+                        id: userID,
+                        pen: pens[i],
+                        difference: data.difference,
+                        positions: data.positions,
+                        rows: data.rows
+                    });
                 }
             }
         }
@@ -234,7 +245,7 @@ io.on('connection', (socket) => {
         } catch (e) {
             destination = undefined;
         }
-        socket.to(destination).emit('pen.updatePreview', data.pen);
+        socket.to(destination).emit('pen.updatePreview', {pen: data.pen, positions: data.positions});
     });
 
     socket.on('pen.sharedCreated', (data) => {

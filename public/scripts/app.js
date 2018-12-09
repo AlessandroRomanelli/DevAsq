@@ -59,22 +59,88 @@ class App {
         }
     }
 
-    changeAcesContent() {
-        const html = ace.edit('htmlPen');
-        const css = ace.edit('cssPen');
-        const js = ace.edit('jsPen');
+    setPositions(positions) {
+        const htmlAce = ace.edit('htmlPen');
+        const cssAce = ace.edit('cssPen');
+        const jsAce = ace.edit('jsPen');
+        if (positions) {
+            htmlAce.navigateTo(positions.html.row, positions.html.column);
+            cssAce.navigateTo(positions.css.row, positions.css.column);
+            jsAce.navigateTo(positions.js.row, positions.js.column);
+        } else {
+            htmlAce.navigateFileEnd();
+            cssAce.navigateFileEnd();
+            jsAce.navigateFileEnd();
+        }
+    }
+
+    adjustPositions(positions, oldPositions, difference, rows) {
+        const htmlAce = ace.edit('htmlPen');
+        const cssAce = ace.edit('cssPen');
+        const jsAce = ace.edit('jsPen');
+        const aces = {html: htmlAce, css: cssAce, js: jsAce};
+        if (positions) {
+            for (const key in aces) {
+                if (rows === 0 && positions[key].row < oldPositions[key].row) {
+                    htmlAce.navigateTo(oldPositions[key].row, oldPositions[key].column);
+                } else if (rows === 0 && positions[key].row === oldPositions[key].row) {
+                    if (positions[key].column + difference <= oldPositions[key].column) {
+                        aces[key].navigateTo(oldPositions[key].row, oldPositions[key].column + difference);
+                    } else {
+                        aces[key].navigateTo(oldPositions[key].row, oldPositions[key].column);
+                    }
+                } else if (positions[key].row - rows < oldPositions[key].row) {
+                    aces[key].navigateTo(oldPositions[key].row + rows, oldPositions[key].column);
+                } else if (positions[key].row - rows === oldPositions[key].row) {
+                    let previousLineLength;
+                    try {
+                        previousLineLength = aces[key].getValue().split("\n")[positions[key].row - rows].length;
+                    } catch (e) {
+                        previousLineLength = 0;
+                    }
+                    if (previousLineLength > oldPositions[key].column) {
+                        if (rows < 0) {
+                            aces[key].navigateTo(oldPositions[key].row + rows, oldPositions[key].column + positions[key].column);
+                        } else {
+                            aces[key].navigateTo(oldPositions[key].row, oldPositions[key].column);
+                        }
+                    } else {
+                        aces[key].navigateTo(oldPositions[key].row + rows, oldPositions[key].column - previousLineLength);
+                    }
+                } else {
+                    aces[key].navigateTo(oldPositions[key].row, oldPositions[key].column);
+                }
+            }
+        } else {
+            htmlAce.navigateFileEnd();
+            cssAce.navigateFileEnd();
+            jsAce.navigateFileEnd();
+        }
+    }
+
+
+    changeAcesContent(positions) {
+        const htmlAce = ace.edit('htmlPen');
+        const cssAce = ace.edit('cssPen');
+        const jsAce = ace.edit('jsPen');
         const pen = this.getCurrentPen();
-        html.setValue(pen.html);
-        css.setValue(pen.css);
-        js.setValue(pen.js);
+        const oldPositions = {
+            html: htmlAce.getCursorPosition(),
+            css: cssAce.getCursorPosition(),
+            js: jsAce.getCursorPosition()
+        };
+        htmlAce.setValue(pen.html);
+        cssAce.setValue(pen.css);
+        jsAce.setValue(pen.js);
+        this.setPositions(this.currentPen === 0 ? positions : oldPositions);
         const iFrame = document.getElementById('iFrame');
 
         iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
 
         const permission = (this.room.creator === this.userID || this.currentPen !== 0);
-        html.setReadOnly(!permission);
-        css.setReadOnly(!permission);
-        js.setReadOnly(!permission);
+        htmlAce.setReadOnly(!permission);
+        cssAce.setReadOnly(!permission);
+        jsAce.setReadOnly(!permission);
     }
 
     getCurrentPen() {
@@ -124,7 +190,14 @@ class App {
         }
     }
 
+    countLines(value) {
+        return value.split("\n").length;
+    }
+
     updateCurrentEditor(mode, value) {
+        if (this.currentPen === 0 && this.userID !== this.room.creator) {
+            return;
+        }
         const pen = this.getCurrentPen();
         let userPen;
         console.log(pen);
@@ -135,33 +208,67 @@ class App {
                 userPen = userPens[index];
             }
         }
+        let differenceLength;
+        let differenceRows = this.countLines(value);
+
         switch (mode) {
         case 'html':
+            differenceLength = value.length - pen.html.length;
+            differenceRows -= this.countLines(pen.html);
             pen.html = value;
             if (userPen) { userPen.html = value }
             break;
         case 'css':
+            differenceLength = value.length - pen.css.length;
+            differenceRows -= this.countLines(pen.css);
             pen.css = value;
             if (userPen) { userPen.css = value }
             break;
         case 'javascript':
+            differenceLength = value.length - pen.js.length;
+            differenceRows -= this.countLines(pen.js);
             pen.js = value;
             if (userPen) { userPen.js = value }
             break;
         default:
             break;
         }
-        socket.emit('pen.change', { pen, roomName: this.room.name });
+        const html = ace.edit("htmlPen").getCursorPosition();
+        const css = ace.edit("cssPen").getCursorPosition();
+        const js = ace.edit("jsPen").getCursorPosition();
+        const positions = { html, css, js };
+        socket.emit('pen.change', {
+            pen,
+            roomName: this.room.name,
+            positions,
+            difference: differenceLength,
+            rows: differenceRows
+        });
     }
 
-    changeViewContent() {
+    changeViewContent(positions, difference, rows) {
         const pen = this.getCurrentPen();
-        ace.edit('htmlPen').setValue(pen.html);
-        ace.edit('cssPen').setValue(pen.css);
-        ace.edit('jsPen').setValue(pen.js);
+        const htmlAce = ace.edit('htmlPen');
+        const cssAce = ace.edit('cssPen');
+        const jsAce = ace.edit('jsPen');
+
+        const oldPositions = {
+            html: htmlAce.getCursorPosition(),
+            css: cssAce.getCursorPosition(),
+            js: jsAce.getCursorPosition()
+        };
+
+        htmlAce.setValue(pen.html);
+        cssAce.setValue(pen.css);
+        jsAce.setValue(pen.js);
+        if (this.currentPen === 0) {
+            this.setPositions(positions);
+        } else {
+            this.adjustPositions(positions, oldPositions, difference, rows);
+        }
     }
 
-    updatePen(pen) {
+    updatePen(pen, positions, difference, rows) {
         let index = -1;
         for (let i = 0; i < this.pens.length; i++) {
             if (this.pens[i].id === pen.id) {
@@ -176,7 +283,7 @@ class App {
         this.pens[index].css = pen.css;
         this.pens[index].js = pen.js;
         if (index === this.currentPen) {
-            this.changeViewContent();
+            this.changeViewContent(positions, difference, rows);
         }
     }
 
@@ -200,6 +307,10 @@ class App {
                     id: this.userID,
                     newPen: this.pens[index],
                 });
+                if (this.userID === this.room.creator) {
+                    const sharePublic = document.getElementById('share-public');
+                    sharePublic.querySelector('.info').innerHTML = this.getCurrentPen().title;
+                }
                 if (callback) {
                     callback();
                 }
@@ -380,7 +491,7 @@ class CreatorApp extends App {
         this.updateUI();
     }
 
-    updateUsers(userID, pen) {
+    updateUsers(userID, pen, positions, difference, rows) {
         const { pens } = this.users[userID];
 
         for (let i = 0; i < this.pens.length; i++) {
@@ -392,10 +503,12 @@ class CreatorApp extends App {
                 storedPen.js = pen.js;
 
                 const tab = document.getElementById(storedPen.id).querySelector('span');
+                const sharePublic = document.getElementById('share-public');
                 tab.innerText = storedPen.title;
+                sharePublic.querySelector('.info').innerHTML = storedPen.title;
 
                 if (this.currentPen === i) {
-                    this.changeViewContent();
+                    this.changeViewContent(positions, difference, rows);
                 }
             }
         }
@@ -537,6 +650,7 @@ class CreatorApp extends App {
         ace.edit('htmlPen').setValue(pen.html);
         ace.edit('cssPen').setValue(pen.css);
         ace.edit('jsPen').setValue(pen.js);
+        this.setPositions();
         penToModify.html = pen.html;
         penToModify.css = pen.css;
         penToModify.js = pen.js;
