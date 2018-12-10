@@ -207,6 +207,16 @@ class App {
         const cssAce = ace.edit("cssPen");
         const jsAce = ace.edit("jsPen");
 
+        if (this.userID === this.room.creator) {
+            const tab = document.getElementById("tabs").childNodes[this.currentPen];
+            console.log(tab);
+            if (!tab.classList.contains("locked")) {
+                htmlAce.setReadOnly(false);
+                cssAce.setReadOnly(false);
+                jsAce.setReadOnly(false);
+            }
+        }
+
         const pen = this.getCurrentPen();
         let userPen;
         console.log(pen);
@@ -223,6 +233,7 @@ class App {
         switch (mode) {
         case 'html':
             if (htmlAce.getReadOnly()) {
+                console.log("BREAKING");
                 return;
             }
             differenceLength = value.length - pen.html.length;
@@ -232,6 +243,7 @@ class App {
             break;
         case 'css':
             if (cssAce.getReadOnly()) {
+                console.log("BREAKING");
                 return;
             }
             differenceLength = value.length - pen.css.length;
@@ -241,6 +253,7 @@ class App {
             break;
         case 'javascript':
             if (jsAce.getReadOnly()) {
+                console.log("BREAKING");
                 return;
             }
             differenceLength = value.length - pen.js.length;
