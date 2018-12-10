@@ -15,43 +15,49 @@ function init() {
     handleLoginForm();
     handleLogout();
 
-    addExplorerListener()
-
+    addExplorerListener();
 }
 
 function addExplorerListener() {
-    const row = document.getElementById("roomTable").querySelector("tr");
-    const name = row.querySelector("th");
-    const population = row.querySelectorAll("th")[1];
+    const row = document.getElementById('roomTable').querySelector('tr');
+    const name = row.querySelector('th');
+    const population = row.querySelectorAll('th')[1];
 
     name.ondblclick = sortName;
     population.ondblclick = sortPopulation;
 
-    const links = document.querySelectorAll("#roomTable a");
+    const links = document.querySelectorAll('#roomTable a');
     links.forEach((link) => {
         link.addEventListener('click', (event) => {
             event.preventDefault();
             const roomName = link.parentNode.parentNode.dataset.name;
-            const password = link.parentNode.parentNode.querySelector("input").value;
+            const password = link.parentNode.parentNode.querySelector('input').value;
             doFetchRequest('POST', '/room/join', {
                 'Content-Type': 'application/json',
             }, JSON.stringify({
                 roomName,
                 password,
             }))
-            .then((res) => {
-                console.log(res);
-                if (res.status === 403) {
-                    alert('Unauthorised');
-                } else if (res.status === 404) {
-                    alert('Room does not exist');
-                } else if (res.status === 200 && roomName !== '') {
-                    window.location.pathname = '/room/' + roomName;
-                } else {
-                    alert('Something went wrong: ' + res.status);
-                }
-            });
+                .then((res) => {
+                    if (res.status === 200 && roomName !== '') {
+                        window.location.pathname = `/room/${roomName}`;
+                    } else {
+                        let err;
+                        if (res.status === 403) {
+                            err = new Error('Unauthorised');
+                        } else if (res.status === 404) {
+                            err = new Error('Room does not exist');
+                        } else {
+                            err = new Error('Something went wrong');
+                        }
+                        err.data = res;
+                        throw err;
+                    }
+                }).catch((err) => {
+                    console.error(err);
+                    // TODO: Implement error handling
+                    handleError();
+                });
         });
     });
-
 }

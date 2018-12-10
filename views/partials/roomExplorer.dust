@@ -1,10 +1,12 @@
-<p id="room-browser-title" class="hidden"> Room browser </p>
+<div id='room-browser'>
+  <h1 id="room-browser-title" class="hidden"> Room Browser</h1>
 
-<table id="roomTable" class="hidden">
-    <tr>
-        <th> Name </th>
-        <th> Population </th>
-        <th> Password </th>
-        <th> Link </th>
-    </tr>
-</table>
+  <table id="roomTable" class="hidden">
+      <tr>
+          <th> Name </th>
+          <th> <img src="/images/user.png" width="15" height="15" alt=""> </th>
+          <th> Password </th>
+          <th>  </th>
+      </tr>
+  </table>
+</div>

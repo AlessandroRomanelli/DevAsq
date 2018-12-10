@@ -1,70 +1,68 @@
 let socket;
-let currentSort = "nameUp";
+let currentSort = 'nameUp';
 
 function sortName() {
-    const roomTable = document.getElementById("roomTable");
+    const roomTable = document.getElementById('roomTable');
     let entries = Array.prototype.slice.call(roomTable.childNodes);
     const headers = entries.splice(0, 1);
 
     entries.sort((first, second) => {
         const firstText = first.firstChild.firstChild.innerText;
         const secondText = second.firstChild.firstChild.innerText;
-        if (currentSort === "nameUp") {
+        if (currentSort === 'nameUp') {
             return (firstText < secondText) ? -1 : 1;
-        } else {
-            return (firstText > secondText) ? -1 : 1;
         }
+        return (firstText > secondText) ? -1 : 1;
     });
 
     entries = headers.concat(entries);
 
     console.log(currentSort);
 
-    let result = "";
+    let result = '';
     entries.forEach((entry) => {
-        result += `<tbody>${entry.innerHTML}</tbody>`;
+        result += entry.innerHTML;
     });
 
     roomTable.innerHTML = result;
 
-    if (currentSort === "nameUp") {
-        currentSort = "nameDown";
+    if (currentSort === 'nameUp') {
+        currentSort = 'nameDown';
     } else {
-        currentSort = "nameUp";
+        currentSort = 'nameUp';
     }
 
     addExplorerListener();
 }
 
 function sortPopulation() {
-    const roomTable = document.getElementById("roomTable");
+    const roomTable = document.getElementById('roomTable');
     let entries = Array.prototype.slice.call(roomTable.childNodes);
     const headers = entries.splice(0, 1);
 
     entries.sort((first, second) => {
         const firstText = first.firstChild.childNodes[1].innerText;
         const secondText = second.firstChild.childNodes[1].innerText;
-        if (currentSort === "populationUp") {
+        if (currentSort === 'populationUp') {
             return (firstText < secondText) ? -1 : 1;
-        } else {
-            return (firstText > secondText) ? -1 : 1;
         }
+        return (firstText > secondText) ? -1 : 1;
     });
 
     entries = headers.concat(entries);
 
-    let result = "";
+    let result = '';
     entries.forEach((entry) => {
-        result += `<tbody>${entry.innerHTML}</tbody>`;
+        result += entry.innerHTML;
     });
 
     console.log(currentSort);
     roomTable.innerHTML = result;
 
-    if (currentSort === "populationUp") {
-        currentSort = "populationDown";
+    if (currentSort === 'populationUp') {
+        currentSort = 'populationDown';
     } else {
-        currentSort = "populationUp";
+        currentSort = 'populationUp';
     }
 
     addExplorerListener();
@@ -72,7 +70,7 @@ function sortPopulation() {
 
 function insertInSorted() {
     const previousValue = currentSort;
-    if (currentSort === "nameUp" || currentSort === "nameDown") {
+    if (currentSort === 'nameUp' || currentSort === 'nameDown') {
         sortName();
     } else {
         sortPopulation();
@@ -80,7 +78,7 @@ function insertInSorted() {
     currentSort = previousValue;
 }
 
-(function() {
+(function () {
     socket = io();
 
     socket.on('connect', () => {
@@ -94,8 +92,8 @@ function insertInSorted() {
         const roomEntry = document.getElementById(`room_${data.roomName}`).parentNode;
         roomTable.removeChild(roomEntry);
         if (roomTable.childNodes.length === 1) {
-            roomBrowserTitle.classList.add("hidden");
-            roomTable.classList.add("hidden");
+            roomBrowserTitle.classList.add('hidden');
+            roomTable.classList.add('hidden');
         }
     });
 
@@ -106,26 +104,25 @@ function insertInSorted() {
         const roomTable = document.getElementById('roomTable');
         const roomEntry = document.getElementById(`room_${data.roomName}`);
 
-        roomBrowserTitle.classList.remove("hidden");
-        roomTable.classList.remove("hidden");
+        roomBrowserTitle.classList.remove('hidden');
+        roomTable.classList.remove('hidden');
 
         if (roomEntry) {
             roomEntry.querySelectorAll('td')[1].innerText = data.population;
-            if (currentSort === "populationUp" || currentSort === "populationDown") {
+            if (currentSort === 'populationUp' || currentSort === 'populationDown') {
                 insertInSorted();
             }
         } else {
             dust.render('partials/room', {
                 name: data.roomName,
-                users: data.population || "0"
+                users: data.population || '0',
             }, (err, out) => {
-                const row = document.createElement("tr");
+                const row = document.createElement('tr');
                 roomTable.appendChild(row);
                 row.outerHTML = out;
                 insertInSorted();
-            })
+            });
         }
-
     });
 
     socket.on('reconnect', (attemptNumber) => {
