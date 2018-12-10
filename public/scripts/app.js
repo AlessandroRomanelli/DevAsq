@@ -119,7 +119,7 @@ class App {
     }
 
 
-    changeAcesContent(positions) {
+    changeAcesContent(positions, fromSocket) {
         const htmlAce = ace.edit('htmlPen');
         const cssAce = ace.edit('cssPen');
         const jsAce = ace.edit('jsPen');
@@ -136,8 +136,13 @@ class App {
         const iFrame = document.getElementById('iFrame');
 
         iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
+        const tab = document.getElementById("tabs").childNodes[this.currentPen];
 
-        const permission = (this.room.creator === this.userID || this.currentPen !== 0);
+        if (fromSocket && this.currentPen !== 0) {
+            tab.classList.remove("locked");
+        }
+
+        const permission = (this.room.creator === this.userID || this.currentPen !== 0) && !tab.classList.contains("locked");
         htmlAce.setReadOnly(!permission);
         cssAce.setReadOnly(!permission);
         jsAce.setReadOnly(!permission);
@@ -198,6 +203,20 @@ class App {
         if (this.currentPen === 0 && this.userID !== this.room.creator) {
             return;
         }
+        const htmlAce = ace.edit("htmlPen");
+        const cssAce = ace.edit("cssPen");
+        const jsAce = ace.edit("jsPen");
+
+        if (this.userID === this.room.creator) {
+            const tab = document.getElementById("tabs").childNodes[this.currentPen];
+            console.log(tab);
+            if (!tab.classList.contains("locked")) {
+                htmlAce.setReadOnly(false);
+                cssAce.setReadOnly(false);
+                jsAce.setReadOnly(false);
+            }
+        }
+
         const pen = this.getCurrentPen();
         let userPen;
         console.log(pen);
@@ -213,18 +232,30 @@ class App {
 
         switch (mode) {
         case 'html':
+            if (htmlAce.getReadOnly()) {
+                console.log("BREAKING");
+                return;
+            }
             differenceLength = value.length - pen.html.length;
             differenceRows -= this.countLines(pen.html);
             pen.html = value;
             if (userPen) { userPen.html = value }
             break;
         case 'css':
+            if (cssAce.getReadOnly()) {
+                console.log("BREAKING");
+                return;
+            }
             differenceLength = value.length - pen.css.length;
             differenceRows -= this.countLines(pen.css);
             pen.css = value;
             if (userPen) { userPen.css = value }
             break;
         case 'javascript':
+            if (jsAce.getReadOnly()) {
+                console.log("BREAKING");
+                return;
+            }
             differenceLength = value.length - pen.js.length;
             differenceRows -= this.countLines(pen.js);
             pen.js = value;
@@ -233,9 +264,10 @@ class App {
         default:
             break;
         }
-        const html = ace.edit("htmlPen").getCursorPosition();
-        const css = ace.edit("cssPen").getCursorPosition();
-        const js = ace.edit("jsPen").getCursorPosition();
+
+        const html = htmlAce.getCursorPosition();
+        const css = cssAce.getCursorPosition();
+        const js = jsAce.getCursorPosition();
         const positions = { html, css, js };
         socket.emit('pen.change', {
             pen,
@@ -265,7 +297,19 @@ class App {
             this.setPositions(positions);
         } else {
             this.adjustPositions(positions, oldPositions, difference, rows);
+            this.collaboratorIsWriting();
         }
+    }
+
+    collaboratorIsWriting() {
+        const tab = document.getElementById("tabs").childNodes[this.currentPen];
+        tab.classList.add("locked");
+        const htmlAce = ace.edit('htmlPen');
+        const cssAce = ace.edit('cssPen');
+        const jsAce = ace.edit('jsPen');
+        htmlAce.setReadOnly(true);
+        cssAce.setReadOnly(true);
+        jsAce.setReadOnly(true);
     }
 
     updatePen(pen, positions, difference, rows) {
@@ -647,10 +691,12 @@ class CreatorApp extends App {
     setPenContentIntoPen(pen, penToModify) {
         const iFrame = document.getElementById('iFrame');
         const roomName = this.room.name;
-        ace.edit('htmlPen').setValue(pen.html);
-        ace.edit('cssPen').setValue(pen.css);
-        ace.edit('jsPen').setValue(pen.js);
-        this.setPositions();
+        if (this.getCurrentPen().id === penToModify.id) {
+            ace.edit('htmlPen').setValue(pen.html);
+            ace.edit('cssPen').setValue(pen.css);
+            ace.edit('jsPen').setValue(pen.js);
+            this.setPositions();
+        }
         penToModify.html = pen.html;
         penToModify.css = pen.css;
         penToModify.js = pen.js;

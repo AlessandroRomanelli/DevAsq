@@ -82,20 +82,31 @@
     color: gray
     letter-spacing: 1px
     transition: 0.2s all ease-in-out
-    &.locked::after
-      position: absolute
-      top: 50%
-      right: 0
-      content: ''
-      width: 15px
-      height: 15px
-      opacity: 0.8
-      background: url('../images/lock-icon.png') no-repeat center
-      background-size: cover
-      transform: translate(-50%, -50%)
+    &:not(.locked) span
+      margin: 0
+      margin-left: 1em
+    &.locked
+      &::after
+        color: $primary-color
+        position: absolute
+        top: 50%
+        left: 50%
+        content: 'Locked'
+        text-transform: uppercase
+        opacity: 1
+        font-size: 0.5em
+        letter-spacing: 2px
+        opacity: 0.5
+        // background: url('../images/lock-icon.png') no-repeat center
+        // background-size: cover
+        transform: translate(-50%, -15%)
+        overflow: visible
+        transition: 0.2s ease-in-out
+      &:hover::after, &.active::after
+        opacity: 1
     span
       outline: none
-      margin-left: 1em
+      margin: 0 1em
     .closeButton
       position: relative
       bottom: -1px
@@ -115,12 +126,16 @@
       &:hover
         filter: grayscale(0) brightness(1)
 
+
     &.shared .closeButton
       background: url('../images/link.png') no-repeat center
       background-size: cover
+      opacity: 0.5
+      transition: 0.2s ease-in-out
       &:hover
         background: url('../images/broken-link.png') no-repeat center
         background-size: cover
+        opacity: 1
 
     &:hover .closeButton
       opacity: 0.85
