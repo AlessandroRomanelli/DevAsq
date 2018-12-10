@@ -2,13 +2,13 @@ let socket;
 let currentSort = 'nameUp';
 
 function sortName() {
-    const roomTable = document.getElementById('roomTable');
+    const roomTable = document.getElementById('roomTable').childNodes[0];
     let entries = Array.prototype.slice.call(roomTable.childNodes);
     const headers = entries.splice(0, 1);
 
     entries.sort((first, second) => {
-        const firstText = first.firstChild.firstChild.innerText;
-        const secondText = second.firstChild.firstChild.innerText;
+        const firstText = first.firstChild.innerText;
+        const secondText = second.firstChild.innerText;
         if (currentSort === 'nameUp') {
             return (firstText < secondText) ? -1 : 1;
         }
@@ -19,10 +19,19 @@ function sortName() {
 
     console.log(currentSort);
 
-    let result = '';
+    let result = '<tbody>';
     entries.forEach((entry) => {
-        result += entry.innerHTML;
+        let id = "";
+        let dataName = "";
+        if (entry.id) {
+            id = `id="${entry.id}"`;
+        }
+        if (entry.dataset.name) {
+            dataName = `data-name="${entry.dataset.name}"`
+        }
+        result += `<tr ${id} ${dataName}>${entry.innerHTML}</tr>`;
     });
+    result += "</tbody>";
 
     roomTable.innerHTML = result;
 
@@ -36,13 +45,13 @@ function sortName() {
 }
 
 function sortPopulation() {
-    const roomTable = document.getElementById('roomTable');
+    const roomTable = document.getElementById('roomTable').childNodes[0];
     let entries = Array.prototype.slice.call(roomTable.childNodes);
     const headers = entries.splice(0, 1);
 
     entries.sort((first, second) => {
-        const firstText = first.firstChild.childNodes[1].innerText;
-        const secondText = second.firstChild.childNodes[1].innerText;
+        const firstText = first.childNodes[1].innerText;
+        const secondText = second.childNodes[1].innerText;
         if (currentSort === 'populationUp') {
             return (firstText < secondText) ? -1 : 1;
         }
@@ -51,10 +60,19 @@ function sortPopulation() {
 
     entries = headers.concat(entries);
 
-    let result = '';
+    let result = '<tbody>';
     entries.forEach((entry) => {
-        result += entry.innerHTML;
+        let id = "";
+        let dataName = "";
+        if (entry.id) {
+            id = `id="${entry.id}"`;
+        }
+        if (entry.dataset.name) {
+            dataName = `data-name="${entry.dataset.name}"`
+        }
+        result += `<tr ${id} ${dataName}>${entry.innerHTML}</tr>`;
     });
+    result += "</tbody>";
 
     console.log(currentSort);
     roomTable.innerHTML = result;
@@ -102,6 +120,9 @@ function insertInSorted() {
         console.log(data);
         const roomBrowserTitle = document.getElementById('room-browser-title');
         const roomTable = document.getElementById('roomTable');
+        const roomBody = roomTable.childNodes[0];
+        console.log(roomBody);
+
         const roomEntry = document.getElementById(`room_${data.roomName}`);
 
         roomBrowserTitle.classList.remove('hidden');
@@ -113,13 +134,13 @@ function insertInSorted() {
                 insertInSorted();
             }
         } else {
+            console.log(roomTable);
             dust.render('partials/room', {
                 name: data.roomName,
                 users: data.population || '0',
             }, (err, out) => {
-                const row = document.createElement('tr');
-                roomTable.appendChild(row);
-                row.outerHTML = out;
+                console.log(out);
+                roomBody.innerHTML = roomBody.innerHTML + out;
                 insertInSorted();
             });
         }
