@@ -20,10 +20,7 @@
             </div>
         </div>
 
-        <footer class="index_footer">
-          <p>2018 &copy; All rights reserved to DevAsq++</p>
-        </footer>
-
+        {> "partials/footer" /}
 
         <script src="/scripts/ace/ace.js" charset="utf-8"></script>
         <script src="/scripts/ace/ext-language_tools.js" charset="utf-8"></script>
