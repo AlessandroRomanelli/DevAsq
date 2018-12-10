@@ -88,6 +88,17 @@ function insertInSorted() {
         socket.emit('homePage.joinRoom');
     });
 
+    socket.on('homePage.roomDelete', (data) => {
+        const roomBrowserTitle = document.getElementById('room-browser-title');
+        const roomTable = document.getElementById('roomTable');
+        const roomEntry = document.getElementById(`room_${data.roomName}`).parentNode;
+        roomTable.removeChild(roomEntry);
+        if (roomTable.childNodes.length === 1) {
+            roomBrowserTitle.classList.add("hidden");
+            roomTable.classList.add("hidden");
+        }
+    });
+
     socket.on('homePage.updateRoomCounter', (data) => {
         console.log('Updating room browser counters');
         console.log(data);

@@ -120,6 +120,7 @@ io.on('connection', (socket) => {
             if (room) {
                 if (userID === room.creator) {
                     socket.to(roomName).emit('room.delete', roomName);
+                    socket.to('homePage').emit('homePage.roomDelete', {roomName});
                     delete roomStorage[roomName];
                 } else {
                     socket.to(connectionMap.getSocket(room.creator)).emit('settings.userLeft', userID);
