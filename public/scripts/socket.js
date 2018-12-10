@@ -89,8 +89,8 @@ function insertInSorted() {
     socket.on('homePage.roomDelete', (data) => {
         const roomBrowserTitle = document.getElementById('room-browser-title');
         const roomTable = document.getElementById('roomTable');
-        const roomEntry = document.getElementById(`room_${data.roomName}`).parentNode;
-        roomTable.removeChild(roomEntry);
+        const roomEntry = document.getElementById(`room_${data.roomName}`);
+        roomEntry.parentNode.removeChild(roomEntry);
         if (roomTable.childNodes.length === 1) {
             roomBrowserTitle.classList.add('hidden');
             roomTable.classList.add('hidden');
