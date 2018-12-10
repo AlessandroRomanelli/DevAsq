@@ -122,8 +122,8 @@ io.on('connection', (socket) => {
                     socket.to(roomName).emit('room.delete', roomName);
                     delete roomStorage[roomName];
                 } else {
-                    delete room.users[userID];
                     socket.to(connectionMap.getSocket(room.creator)).emit('settings.userLeft', userID);
+                    console.log(room.users);
                 }
             }
         }
@@ -138,10 +138,6 @@ io.on('connection', (socket) => {
         socket.join('homePage');
     });
 
-    socket.on('homePage.leaveRoom', () => {
-        socket.leave('homePage');
-    });
-
     socket.on('settings.joinRoom', (data) => {
         console.log(data);
         socket.join(data.roomName);
@@ -150,11 +146,6 @@ io.on('connection', (socket) => {
             roomName: data.roomName,
             passworded: data.passworded
         });
-    });
-
-    socket.on('settings.leaveRoom', (data) => {
-        console.log(data);
-        socket.leave(data.roomName);
     });
 
     socket.on('settings.notifyCreator', (data) => {

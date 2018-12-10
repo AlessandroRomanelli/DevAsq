@@ -32,11 +32,15 @@ function init() {
     socket.on('connect', () => {
         console.log('Room page socket connected');
         socket.emit('settings.bindID', { id: user._id });
+
+        console.log(app.room);
+
         socket.emit('settings.joinRoom', {
             roomName: app.room.name,
             population: Object.keys(app.room.users).length-1,
             passworded: app.room.isPassworded
         });
+
         socket.emit('settings.notifyCreator', { roomName: app.room.name, user });
     });
 

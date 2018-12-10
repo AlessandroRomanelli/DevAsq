@@ -488,6 +488,7 @@ class CreatorApp extends App {
             currentPen: this.publicPen,
             pens: [],
             ping: false,
+            state: 'connected'
         };
         this.updateUI();
     }
@@ -496,7 +497,8 @@ class CreatorApp extends App {
         // TODO: Remove the user from the local storage
         console.log('User: ', user, ' left the room');
         console.log(this.room.users);
-        delete this.users[user];
+        // delete this.users[user];
+        this.users[user].user.state = 'disconnected';
         console.log(this.room.users);
         this.updateUI();
     }
@@ -577,9 +579,18 @@ class CreatorApp extends App {
 
     updateUI() {
         const participants = document.getElementById('participants');
-        participants.innerHTML = `${Object.keys(this.users).length}`;
+        // `${Object.keys(this.users).length}`;
+        const connectedUsers = {};
+
+        for (let key in this.users) {
+            if (this.users[key].user.state === 'connected') {
+                connectedUsers[key] = this.users[key];
+            }
+        }
+        participants.innerHTML = `${Object.keys(connectedUsers).length}`;
+
         const roomSettings = document.getElementById('room-settings');
-        dust.render('partials/creator', { users: Object.values(this.users) }, ((err, out) => {
+        dust.render('partials/creator', { users: Object.values(connectedUsers) }, ((err, out) => {
             roomSettings.innerHTML = out;
             this.addTogglerListener();
             this.addUsersPing();
