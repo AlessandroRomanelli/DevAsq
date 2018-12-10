@@ -13,6 +13,8 @@
         color: #fff
         outline: 0
 
+
+
       td:nth-child(3)
         max-width: 100px
 
@@ -29,3 +31,18 @@
 
       &:not(:first-child):nth-child(2n+1)
         border-top: 1px solid darken($primary-color, 10%)
+
+.sort-by
+  display: inline-block
+  width: 10px
+  height: 10px
+  font-size: 0.5em
+  margin-left: 0.5em
+  transform: scaleX(1.5)
+  opacity: 0.5
+  transition: 0.2s ease-in-out
+  &.active
+    color: $primary-color
+  &:hover, &.active
+    cursor: pointer
+    opacity: 1
