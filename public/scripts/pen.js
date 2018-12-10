@@ -12,6 +12,8 @@ Array.prototype.last = function () {
 
 let app;
 
+let socket;
+
 function init() {
     handleLoginForm();
     handleLogout();
