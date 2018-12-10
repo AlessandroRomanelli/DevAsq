@@ -119,7 +119,7 @@ class App {
     }
 
 
-    changeAcesContent(positions) {
+    changeAcesContent(positions, fromSocket) {
         const htmlAce = ace.edit('htmlPen');
         const cssAce = ace.edit('cssPen');
         const jsAce = ace.edit('jsPen');
@@ -136,8 +136,13 @@ class App {
         const iFrame = document.getElementById('iFrame');
 
         iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
+        const tab = document.getElementById("tabs").childNodes[this.currentPen];
 
-        const permission = (this.room.creator === this.userID || this.currentPen !== 0);
+        if (fromSocket && this.currentPen !== 0) {
+            tab.classList.remove("locked");
+        }
+
+        const permission = (this.room.creator === this.userID || this.currentPen !== 0) && !tab.classList.contains("locked");
         htmlAce.setReadOnly(!permission);
         cssAce.setReadOnly(!permission);
         jsAce.setReadOnly(!permission);
@@ -265,7 +270,19 @@ class App {
             this.setPositions(positions);
         } else {
             this.adjustPositions(positions, oldPositions, difference, rows);
+            this.collaboratorIsWriting();
         }
+    }
+
+    collaboratorIsWriting() {
+        const tab = document.getElementById("tabs").childNodes[this.currentPen];
+        tab.classList.add("locked");
+        const htmlAce = ace.edit('htmlPen');
+        const cssAce = ace.edit('cssPen');
+        const jsAce = ace.edit('jsPen');
+        htmlAce.setReadOnly(true);
+        cssAce.setReadOnly(true);
+        jsAce.setReadOnly(true);
     }
 
     updatePen(pen, positions, difference, rows) {
@@ -647,10 +664,12 @@ class CreatorApp extends App {
     setPenContentIntoPen(pen, penToModify) {
         const iFrame = document.getElementById('iFrame');
         const roomName = this.room.name;
-        ace.edit('htmlPen').setValue(pen.html);
-        ace.edit('cssPen').setValue(pen.css);
-        ace.edit('jsPen').setValue(pen.js);
-        this.setPositions();
+        if (this.getCurrentPen().id === penToModify.id) {
+            ace.edit('htmlPen').setValue(pen.html);
+            ace.edit('cssPen').setValue(pen.css);
+            ace.edit('jsPen').setValue(pen.js);
+            this.setPositions();
+        }
         penToModify.html = pen.html;
         penToModify.css = pen.css;
         penToModify.js = pen.js;
