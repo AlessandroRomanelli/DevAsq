@@ -823,7 +823,7 @@ class CreatorApp extends App {
 
     setupRoomInfo() {
         const participants = document.getElementById('participants');
-        participants.innerHTML = '1';
+        participants.innerHTML = '0';
 
         const roomName = document.getElementById('room-name');
         roomName.innerHTML = this.room.name;
@@ -833,9 +833,6 @@ class CreatorApp extends App {
 
         const sharePublic = document.getElementById('share-public');
 
-        participants.innerHTML = '0';
-        roomName.innerHTML = this.room.name;
-        raiseHand.parentNode.removeChild(raiseHand);
         sharePublic.classList.add('hidden');
         sharePublic.onclick = ((event) => {
             if (event.target.id !== 'share-public') return;
