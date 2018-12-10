@@ -62,11 +62,11 @@ function init() {
     socket.on('pen.updatePreview', (data) => {
         console.log('updating the preview');
         if (app.indexOfPen(data.pen) === app.currentPen) {
-            app.changeAcesContent(data.positions);
+            app.changeAcesContent(data.positions, true);
         } else if (app.indexOfPenInLinked(data.pen) === app.currentPen) {
-            app.changeAcesContent(data.positions);
+            app.changeAcesContent(data.positions, true);
         } else if (app.indexOfLinkedInPens(data.pen) === app.currentPen) {
-            app.changeAcesContent(data.positions);
+            app.changeAcesContent(data.positions, true);
         }
     });
 

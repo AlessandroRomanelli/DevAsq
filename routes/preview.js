@@ -27,7 +27,8 @@ function traverseTree(tree, used) {
     }
     used = used || [];
 
-    let array = (tree.consequent && tree.consequent.body) || [];
+    let array = (tree.expression && tree.expression.arguments) || [];
+    array = (tree.consequent && tree.consequent.body) || array;
     array = (tree.body && tree.body.body || tree.body) || array;
     for (let i = 0; i < array.length; i++) {
         if (loops.includes(array[i].type)) {
@@ -50,7 +51,7 @@ router.get('/:roomName', (req, res) => {
     const { roomName } = req.params;
     if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[roomName];
-    if (userID && (req.user._id !== room.creator && req.user._id !== userID)) return res.status(403).end();
+    if (userID && (`${req.user._id}` !== `${room.creator}` && `${req.user._id}` !== `${userID}`)) return res.status(403).end();
     const user = userID || req.user._id;
     const pen = room.getUserPen(user, penID);
     const { html, css, js } = (penID) ? pen : room.publicPen;

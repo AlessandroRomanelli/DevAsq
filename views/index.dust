@@ -21,6 +21,10 @@
           {> "partials/roomExplorer" /}
         </div>
 
+        <footer class="index_footer">
+          <p>2018 &copy; All rights reserved to DevAsq++</p>
+        </footer>
+
 
 
         <script src="/socket.io/socket.io.js"></script>
@@ -33,4 +37,5 @@
         <script src="/scripts/rooms.js" charset="utf-8"></script>
         <script src="/scripts/main.js" charset="utf-8"></script>
     </body>
+
 </html>
