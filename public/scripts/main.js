@@ -14,4 +14,17 @@ function init() {
     handleRoomForms();
     handleLoginForm();
     handleLogout();
+
+    addExplorerListener()
+
+}
+
+function addExplorerListener() {
+    const row = document.getElementById("roomTable").querySelector("tr");
+    const name = row.querySelector("th");
+    const population = row.querySelectorAll("th")[1];
+
+    name.ondblclick = sortName;
+
+    population.ondblclick = sortPopulation;
 }

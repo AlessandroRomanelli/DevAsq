@@ -1,8 +1,6 @@
-<td> {name} </td>
-<td> {users} </td>
-{@eq key=isPassworded value="true"}
-    <td> <input type="password" class="passworded"> </td>
-{:else}
-    <td> <input type="password" class="notPassworded"> </td>
-{/eq}
-<td> <a href=""> Join </a> </td>
+<tr id="room_{name}" data-name="{name}">
+    <td>{name}</td>
+    <td>{users}</td>
+    <td><input type="password" class="passworded" placeholder="Optional"></td>
+    <td><a href="">Join</a></td>
+</tr>

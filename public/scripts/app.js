@@ -534,16 +534,23 @@ class CreatorApp extends App {
             ping: false,
             state: 'connected'
         };
+        socket.emit('homePage.updatePopulation', {
+            roomName: this.room.name,
+            population: `${Object.values(this.countActive()).length}`
+        });
         this.updateUI();
     }
 
     userDisconnected(user) {
-        // TODO: Remove the user from the local storage
         console.log('User: ', user, ' left the room');
         console.log(this.room.users);
         // delete this.users[user];
-        this.users[user].user.state = 'disconnected';
+        this.users[user].state = 'disconnected';
         console.log(this.room.users);
+        socket.emit('homePage.updatePopulation', {
+            roomName: this.room.name,
+            population: `${Object.values(this.countActive()).length}`
+        });
         this.updateUI();
     }
 
@@ -621,17 +628,22 @@ class CreatorApp extends App {
         document.getElementById(id).classList.toggle('help-needed');
     }
 
-    updateUI() {
-        const participants = document.getElementById('participants');
-        // `${Object.keys(this.users).length}`;
+    countActive() {
         const connectedUsers = {};
-
         for (let key in this.users) {
-            if (this.users[key].user.state === 'connected') {
+            if (this.users[key].state === 'connected') {
                 connectedUsers[key] = this.users[key];
             }
         }
-        participants.innerHTML = `${Object.keys(connectedUsers).length}`;
+        return connectedUsers;
+    }
+
+    updateUI() {
+        const participants = document.getElementById('participants');
+        // `${Object.keys(this.users).length}`;
+        const connectedUsers = this.countActive();
+        const count = Object.values(connectedUsers).length;
+        participants.innerHTML = `${count}`;
 
         const roomSettings = document.getElementById('room-settings');
         dust.render('partials/creator', { users: Object.values(connectedUsers) }, ((err, out) => {

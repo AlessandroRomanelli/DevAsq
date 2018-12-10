@@ -10,7 +10,6 @@ const userSchema = new Schema({
     password: { type: String, required: true },
     registratedAt: { type: Date, default: new Date() },
     savedPens: [{ type: Schema.Types.ObjectId, ref: 'Pen' }],
-    state: {type: String, default: 'connected'}
 });
 
 mongoose.model('User', userSchema);

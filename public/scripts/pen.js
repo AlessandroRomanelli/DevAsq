@@ -37,8 +37,8 @@ function init() {
 
         socket.emit('settings.joinRoom', {
             roomName: app.room.name,
-            population: Object.keys(app.room.users).length-1,
-            passworded: app.room.isPassworded
+            // population: Object.keys(app.room.users).length-1,
+            // passworded: app.room.isPassworded
         });
 
         socket.emit('settings.notifyCreator', { roomName: app.room.name, user });
@@ -115,6 +115,15 @@ function init() {
         console.log(id);
         if (app instanceof CreatorApp) {
             app.signalHelp(id);
+        }
+    });
+
+    socket.on('creator.sendRoomInformation', () => {
+        if (app instanceof CreatorApp) {
+            socket.emit('homePage.updatePopulation', {
+                roomName: app.room.name,
+                population: `${Object.values(app.countActive()).length}`
+            });
         }
     });
 

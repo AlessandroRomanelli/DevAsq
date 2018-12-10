@@ -136,16 +136,33 @@ io.on('connection', (socket) => {
 
     socket.on('homePage.joinRoom', () => {
         socket.join('homePage');
+        for (const key in roomStorage) {
+            socket.to(getCreatorSocket(key)).emit('creator.sendRoomInformation');
+        }
+    });
+
+    socket.on('homePage.updatePopulation', (data) => {
+        const { roomName, population } = data;
+        console.log(roomName, "Population:", population);
+        if (!roomName || !population) return;
+        socket.to('homePage').emit('homePage.updateRoomCounter', {
+            population, roomName
+        });
     });
 
     socket.on('settings.joinRoom', (data) => {
         console.log(data);
         socket.join(data.roomName);
-        socket.to('homePage').emit('homepage.updateRoomCounter', {
-            population: data.population,
-            roomName: data.roomName,
-            passworded: data.passworded
-        });
+        console.log(socket.id);
+        console.log(getCreatorSocket(data.roomName));
+        if (`${socket.id}` === `${getCreatorSocket(data.roomName)}`) {
+            socket.to('homePage').emit('homePage.updateRoomCounter', { roomName: data.roomName });
+        }
+        // socket.to('homePage').emit('homepage.updateRoomCounter', {
+        //     population: data.population,
+        //     roomName: data.roomName,
+        //     passworded: data.passworded
+        // });
     });
 
     socket.on('settings.notifyCreator', (data) => {
