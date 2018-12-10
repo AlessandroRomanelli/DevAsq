@@ -82,6 +82,9 @@
     color: gray
     letter-spacing: 1px
     transition: 0.2s all ease-in-out
+    &:not(.locked) span
+      margin: 0
+      margin-left: 1em
     &.locked
       &::after
         color: $primary-color
@@ -127,9 +130,12 @@
     &.shared .closeButton
       background: url('../images/link.png') no-repeat center
       background-size: cover
+      opacity: 0.5
+      transition: 0.2s ease-in-out
       &:hover
         background: url('../images/broken-link.png') no-repeat center
         background-size: cover
+        opacity: 1
 
     &:hover .closeButton
       opacity: 0.85
