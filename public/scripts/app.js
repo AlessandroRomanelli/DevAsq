@@ -203,6 +203,10 @@ class App {
         if (this.currentPen === 0 && this.userID !== this.room.creator) {
             return;
         }
+        const htmlAce = ace.edit("htmlPen");
+        const cssAce = ace.edit("cssPen");
+        const jsAce = ace.edit("jsPen");
+
         const pen = this.getCurrentPen();
         let userPen;
         console.log(pen);
@@ -218,18 +222,27 @@ class App {
 
         switch (mode) {
         case 'html':
+            if (htmlAce.getReadOnly()) {
+                return;
+            }
             differenceLength = value.length - pen.html.length;
             differenceRows -= this.countLines(pen.html);
             pen.html = value;
             if (userPen) { userPen.html = value }
             break;
         case 'css':
+            if (cssAce.getReadOnly()) {
+                return;
+            }
             differenceLength = value.length - pen.css.length;
             differenceRows -= this.countLines(pen.css);
             pen.css = value;
             if (userPen) { userPen.css = value }
             break;
         case 'javascript':
+            if (jsAce.getReadOnly()) {
+                return;
+            }
             differenceLength = value.length - pen.js.length;
             differenceRows -= this.countLines(pen.js);
             pen.js = value;
@@ -238,9 +251,10 @@ class App {
         default:
             break;
         }
-        const html = ace.edit("htmlPen").getCursorPosition();
-        const css = ace.edit("cssPen").getCursorPosition();
-        const js = ace.edit("jsPen").getCursorPosition();
+
+        const html = htmlAce.getCursorPosition();
+        const css = cssAce.getCursorPosition();
+        const js = jsAce.getCursorPosition();
         const positions = { html, css, js };
         socket.emit('pen.change', {
             pen,
