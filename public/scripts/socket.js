@@ -137,35 +137,3 @@ function insertInSorted() {
         socket.emit('homePage.leaveRoom');
     });
 }());
-
-// <!--<script>-->
-// <!--let links = document.querySelectorAll("#roomTable a");-->
-// <!--if (links.length > 0) {-->
-// <!--console.log(links);-->
-// <!--links.forEach((link) => {-->
-// <!--link.addEventListener('click', (event) => {-->
-// <!--event.preventDefault();-->
-// <!--const roomName = link.parentNode.parentNode.dataset.name;-->
-// <!--const password = link.parentNode.parentNode.querySelector("input").value;-->
-// <!--doFetchRequest('POST', '/room/join', {-->
-// <!--'Content-Type': 'application/json',-->
-// <!--}, JSON.stringify({-->
-// <!--roomName,-->
-// <!--password,-->
-// <!--}))-->
-// <!--.then((res) => {-->
-// <!--console.log(res);-->
-// <!--if (res.status === 403) {-->
-// <!--alert('Unauthorised');-->
-// <!--} else if (res.status === 404) {-->
-// <!--alert('Room does not exist');-->
-// <!--} else if (res.status === 200 && roomName !== '') {-->
-// <!--window.location.pathname = '/room/' + roomName;-->
-// <!--} else {-->
-// <!--alert('Something went wrong: ' + res.status);-->
-// <!--}-->
-// <!--});-->
-// <!--});-->
-// <!--});-->
-// <!--}-->
-// <!--</script>-->
