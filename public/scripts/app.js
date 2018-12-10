@@ -50,7 +50,7 @@ class App {
 
         if (this.userID === this.room.creator) {
             const sharePublic = document.getElementById('share-public');
-            sharePublic.querySelector('.info').innerHTML = this.getCurrentPen().title;
+            // sharePublic.querySelector('.info').innerHTML = this.getCurrentPen().title;
             if (this.currentPen === 0) {
                 sharePublic.classList.add('hidden');
             } else {
@@ -78,7 +78,7 @@ class App {
         const htmlAce = ace.edit('htmlPen');
         const cssAce = ace.edit('cssPen');
         const jsAce = ace.edit('jsPen');
-        const aces = {html: htmlAce, css: cssAce, js: jsAce};
+        const aces = { html: htmlAce, css: cssAce, js: jsAce };
         if (positions) {
             for (const key in aces) {
                 if (rows === 0 && positions[key].row < oldPositions[key].row) {
@@ -94,7 +94,7 @@ class App {
                 } else if (positions[key].row - rows === oldPositions[key].row) {
                     let previousLineLength;
                     try {
-                        previousLineLength = aces[key].getValue().split("\n")[positions[key].row - rows].length;
+                        previousLineLength = aces[key].getValue().split('\n')[positions[key].row - rows].length;
                     } catch (e) {
                         previousLineLength = 0;
                     }
@@ -127,7 +127,7 @@ class App {
         const oldPositions = {
             html: htmlAce.getCursorPosition(),
             css: cssAce.getCursorPosition(),
-            js: jsAce.getCursorPosition()
+            js: jsAce.getCursorPosition(),
         };
         htmlAce.setValue(pen.html);
         cssAce.setValue(pen.css);
@@ -136,13 +136,13 @@ class App {
         const iFrame = document.getElementById('iFrame');
 
         iFrame.src = `/preview/${this.room.name}?penID=${this.getCurrentPen().id}`;
-        const tab = document.getElementById("tabs").childNodes[this.currentPen];
+        const tab = document.getElementById('tabs').childNodes[this.currentPen];
 
         if (fromSocket && this.currentPen !== 0) {
-            tab.classList.remove("locked");
+            tab.classList.remove('locked');
         }
 
-        const permission = (this.room.creator === this.userID || this.currentPen !== 0) && !tab.classList.contains("locked");
+        const permission = (this.room.creator === this.userID || this.currentPen !== 0) && !tab.classList.contains('locked');
         htmlAce.setReadOnly(!permission);
         cssAce.setReadOnly(!permission);
         jsAce.setReadOnly(!permission);
@@ -196,21 +196,21 @@ class App {
     }
 
     countLines(value) {
-        return value.split("\n").length;
+        return value.split('\n').length;
     }
 
     updateCurrentEditor(mode, value) {
         if (this.currentPen === 0 && this.userID !== this.room.creator) {
             return;
         }
-        const htmlAce = ace.edit("htmlPen");
-        const cssAce = ace.edit("cssPen");
-        const jsAce = ace.edit("jsPen");
+        const htmlAce = ace.edit('htmlPen');
+        const cssAce = ace.edit('cssPen');
+        const jsAce = ace.edit('jsPen');
 
         if (this.userID === this.room.creator) {
-            const tab = document.getElementById("tabs").childNodes[this.currentPen];
+            const tab = document.getElementById('tabs').childNodes[this.currentPen];
             console.log(tab);
-            if (!tab.classList.contains("locked")) {
+            if (!tab.classList.contains('locked')) {
                 htmlAce.setReadOnly(false);
                 cssAce.setReadOnly(false);
                 jsAce.setReadOnly(false);
@@ -233,33 +233,33 @@ class App {
         switch (mode) {
         case 'html':
             if (htmlAce.getReadOnly()) {
-                console.log("BREAKING");
+                console.log('BREAKING');
                 return;
             }
             differenceLength = value.length - pen.html.length;
             differenceRows -= this.countLines(pen.html);
             pen.html = value;
-            if (userPen) { userPen.html = value }
+            if (userPen) { userPen.html = value; }
             break;
         case 'css':
             if (cssAce.getReadOnly()) {
-                console.log("BREAKING");
+                console.log('BREAKING');
                 return;
             }
             differenceLength = value.length - pen.css.length;
             differenceRows -= this.countLines(pen.css);
             pen.css = value;
-            if (userPen) { userPen.css = value }
+            if (userPen) { userPen.css = value; }
             break;
         case 'javascript':
             if (jsAce.getReadOnly()) {
-                console.log("BREAKING");
+                console.log('BREAKING');
                 return;
             }
             differenceLength = value.length - pen.js.length;
             differenceRows -= this.countLines(pen.js);
             pen.js = value;
-            if (userPen) { userPen.js = value }
+            if (userPen) { userPen.js = value; }
             break;
         default:
             break;
@@ -274,7 +274,7 @@ class App {
             roomName: this.room.name,
             positions,
             difference: differenceLength,
-            rows: differenceRows
+            rows: differenceRows,
         });
     }
 
@@ -287,7 +287,7 @@ class App {
         const oldPositions = {
             html: htmlAce.getCursorPosition(),
             css: cssAce.getCursorPosition(),
-            js: jsAce.getCursorPosition()
+            js: jsAce.getCursorPosition(),
         };
 
         htmlAce.setValue(pen.html);
@@ -302,8 +302,8 @@ class App {
     }
 
     collaboratorIsWriting() {
-        const tab = document.getElementById("tabs").childNodes[this.currentPen];
-        tab.classList.add("locked");
+        const tab = document.getElementById('tabs').childNodes[this.currentPen];
+        tab.classList.add('locked');
         const htmlAce = ace.edit('htmlPen');
         const cssAce = ace.edit('cssPen');
         const jsAce = ace.edit('jsPen');
@@ -351,10 +351,10 @@ class App {
                     id: this.userID,
                     newPen: this.pens[index],
                 });
-                if (this.userID === this.room.creator) {
-                    const sharePublic = document.getElementById('share-public');
-                    sharePublic.querySelector('.info').innerHTML = this.getCurrentPen().title;
-                }
+                // if (this.userID === this.room.creator) {
+                //     const sharePublic = document.getElementById('share-public');
+                //     sharePublic.querySelector('.info').innerHTML = this.getCurrentPen().title;
+                // }
                 if (callback) {
                     callback();
                 }
@@ -547,9 +547,9 @@ class CreatorApp extends App {
                 storedPen.js = pen.js;
 
                 const tab = document.getElementById(storedPen.id).querySelector('span');
-                const sharePublic = document.getElementById('share-public');
+                // const sharePublic = document.getElementById('share-public');
                 tab.innerText = storedPen.title;
-                sharePublic.querySelector('.info').innerHTML = storedPen.title;
+                // sharePublic.querySelector('.info').innerHTML = storedPen.title;
 
                 if (this.currentPen === i) {
                     this.changeViewContent(positions, difference, rows);
@@ -688,18 +688,31 @@ class CreatorApp extends App {
         });
     }
 
-    setPenContentIntoPen(pen, penToModify) {
+    setPenContentIntoPen(pen, penToModify, options) {
         const iFrame = document.getElementById('iFrame');
         const roomName = this.room.name;
         if (this.getCurrentPen().id === penToModify.id) {
-            ace.edit('htmlPen').setValue(pen.html);
-            ace.edit('cssPen').setValue(pen.css);
-            ace.edit('jsPen').setValue(pen.js);
+            if (options) {
+                console.log(options);
+                if (options.html) { ace.edit('htmlPen').setValue(pen.html); }
+                if (options.css) { ace.edit('cssPen').setValue(pen.css); }
+                if (options.js) { ace.edit('jsPen').setValue(pen.js); }
+            } else {
+                ace.edit('htmlPen').setValue(pen.html);
+                ace.edit('cssPen').setValue(pen.css);
+                ace.edit('jsPen').setValue(pen.js);
+            }
             this.setPositions();
         }
-        penToModify.html = pen.html;
-        penToModify.css = pen.css;
-        penToModify.js = pen.js;
+        if (options) {
+            if (options.html) { penToModify.html = pen.html; }
+            if (options.css) { penToModify.css = pen.css; }
+            if (options.js) { penToModify.js = pen.js; }
+        } else {
+            penToModify.html = pen.html;
+            penToModify.css = pen.css;
+            penToModify.js = pen.js;
+        }
         socket.emit('pen.change', { pen: penToModify, roomName });
         socket.emit('pen.preview', { pen: penToModify, roomName });
         setTimeout(() => { iFrame.src = `/preview/${roomName}?penID=${penToModify.id}`; }, 0);
@@ -740,19 +753,68 @@ class CreatorApp extends App {
         });
     }
 
+    decodeSharingOptions(code) {
+        const html = [1, 3, 5, 7].includes(code);
+        const css = [2, 3, 6, 7].includes(code);
+        const js = [4, 5, 6, 7].includes(code);
+        return { html, css, js };
+    }
+
+    handleShareOptions(checkboxs) {
+        function encodeOptions() {
+            let encoded = 0;
+            for (let i = 1; i < checkboxs.length; i++) {
+                const checkbox = checkboxs[i];
+                if (checkbox.checked) {
+                    encoded += 2 ** (i - 1);
+                }
+            }
+            const shareButton = document.getElementById('share-public');
+            shareButton.setAttribute('data-encoded-options', encoded);
+        }
+        checkboxs[0].addEventListener('input', (event) => {
+            for (let i = 1; i < checkboxs.length; i++) {
+                const checkbox = checkboxs[i];
+                checkbox.checked = event.target.checked;
+            }
+            encodeOptions();
+        });
+        for (let i = 1; i < checkboxs.length; i++) {
+            const checkbox = checkboxs[i];
+            checkbox.addEventListener('input', (event) => {
+                console.log('Checkbox activated!');
+                encodeOptions();
+            });
+        }
+    }
+
     setupRoomInfo() {
         const participants = document.getElementById('participants');
-        const roomName = document.getElementById('room-name');
-        const raiseHand = document.getElementById('raise-hand');
-        const sharePublic = document.getElementById('share-public');
-
         participants.innerHTML = '1';
+
+        const roomName = document.getElementById('room-name');
         roomName.innerHTML = this.room.name;
+
+        const raiseHand = document.getElementById('raise-hand');
         raiseHand.parentNode.removeChild(raiseHand);
+
+        const sharePublic = document.getElementById('share-public');
         sharePublic.classList.add('hidden');
         sharePublic.onclick = ((event) => {
-            this.setPenContentIntoPen(this.getCurrentPen(), app.publicPen);
+            if (event.target.id !== 'share-public') return;
+            const decodedOptions = this.decodeSharingOptions(parseInt(event.target.getAttribute('data-encoded-options')));
+            this.setPenContentIntoPen(this.getCurrentPen(), app.publicPen, decodedOptions);
+            this.switchPen(0);
         });
+
+        const shareToggle = document.getElementById('share-toggler');
+        shareToggle.onclick = (event) => {
+            event.target.parentNode.classList.toggle('open');
+        };
+
+        const shareOptions = document.getElementById('share-options');
+        const checkboxs = shareOptions.querySelectorAll('input[type="checkbox"]');
+        this.handleShareOptions(checkboxs);
 
         this.setUpModalListeners();
     }

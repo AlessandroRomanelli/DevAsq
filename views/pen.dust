@@ -10,7 +10,34 @@
         <span>Name: <span id="room-name" class="info"></span></span>
         <span id="raise-hand" class="info">Ask for help</span>
         <span>Participants: <span id="participants" class="info"></span></span>
-        <span id="share-public">Share: <span class="info">Public</span></span>
+        <span id="share-public" data-encoded-options="7">Share <button id='share-toggler'>▼</button>
+          <div id="share-options">
+            <div class="option-container">
+              <span>ALL</span>
+              <label class="switch" for="all">
+                <input type="checkbox" name="all" checked><span class="slider"></span>
+              </label>
+            </div>
+            <div class="option-container">
+              <span>HTML</span>
+              <label class="switch" for="html">
+                <input type="checkbox" name="html" checked><span class="slider"></span>
+              </label>
+            </div>
+            <div class="option-container">
+              <span>CSS</span>
+              <label class="switch" for="css">
+                <input type="checkbox" name="css" checked><span class="slider"></span>
+              </label>
+            </div>
+            <div class="option-container">
+              <span>JS</span>
+              <label class="switch" for="js">
+                <input type="checkbox" name="js" checked><span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </span>
       </div>
       <ul id="tabs" class="container">
         <li id='newTab' class="switchTab">
