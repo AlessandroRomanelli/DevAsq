@@ -20,11 +20,16 @@ function init() {
 
 function addExplorerListener() {
     const row = document.getElementById('roomTable').querySelector('tr');
-    const name = row.querySelector('th');
-    const population = row.querySelectorAll('th')[1];
+    // const name = row.querySelector('th');
+    // const population = row.querySelectorAll('th')[1];
+    const name = document.getElementById('name-sort');
+    const population = document.getElementById('pop-sort');
 
-    name.ondblclick = sortName;
-    population.ondblclick = sortPopulation;
+    // name.ondblclick = sortName;
+    // population.ondblclick = sortPopulation;
+    name.onclick = sortName;
+    population.onclick = sortPopulation;
+
 
     const links = document.querySelectorAll('#roomTable a');
     links.forEach((link) => {

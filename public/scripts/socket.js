@@ -6,6 +6,8 @@ function sortName() {
     let entries = Array.prototype.slice.call(roomTable.childNodes);
     const headers = entries.splice(0, 1);
 
+    const name = document.getElementById('name-sort');
+
     entries.sort((first, second) => {
         const firstText = first.firstChild.innerText;
         const secondText = second.firstChild.innerText;
@@ -37,8 +39,10 @@ function sortName() {
 
     if (currentSort === 'nameUp') {
         currentSort = 'nameDown';
+        name.classList.add('invert');
     } else {
         currentSort = 'nameUp';
+        name.classList.remove('invert');
     }
 
     addExplorerListener();
