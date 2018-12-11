@@ -700,6 +700,8 @@ class CreatorApp extends App {
                 event.preventDefault();
                 this.setModalContent(`kick ${this.users[id].user.username}`,
                     (() => {
+                        const modal = document.getElementById('confirm-modal');
+                        modal.classList.toggle('hidden');
                         socket.emit('user.kick', {userID: id});
                         console.log("sending kick request", id);
                     }),
@@ -713,6 +715,8 @@ class CreatorApp extends App {
                 event.preventDefault();
                 this.setModalContent(`ban ${this.users[id].user.username}`,
                     (() => {
+                        const modal = document.getElementById('confirm-modal');
+                        modal.classList.toggle('hidden');
                         this.users[id].state = 'banned';
                         socket.emit('user.kick', {userID: id});
                     }),

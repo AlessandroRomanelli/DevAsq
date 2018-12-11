@@ -67,6 +67,15 @@
         <div id="room-settings" class='hidden'>
           {> "partials/creator" /}
         </div>
+        <div id="confirm-modal" class="modal hidden">
+          <div class="container">
+            <p>Are you really sure you want to do this?</p>
+            <div class="choice-buttons">
+              <button class="cancel" type="button" name="button">Cancel</button>
+              <button class="confirm" type="button" name="button">Confirm</button>
+            </div>
+          </div>
+        </div>
         <div id='preview-modal' class="modal hidden">
           <div class="container">
             <div id="close-modal"></div>
