@@ -589,17 +589,26 @@ class CreatorApp extends App {
     }
 
     updateUserCurrentPen(userID, newPen) {
+        const oldCurrent = this.users[userID].currentPen;
         this.users[userID].currentPen = newPen;
-        this.updateUserUI(userID);
+        this.updateUserUI(userID, newPen);
         // this.updateUI();
     }
 
 
-    updateUserUI(id) {
+    updateUserUI(id, newPen) {
         console.log(this.users[id]);
         dust.render('partials/user', this.users[id], (err, out) => {
-            const userDiv = document.getElementById(id);
+            let userDiv = document.getElementById(id);
             userDiv.outerHTML = out;
+            console.log(newPen);
+
+            const index = this.findIDInUserPen(newPen.id, this.users[id].pens);
+
+            console.log('index', index);
+
+            userDiv = document.getElementById(id);
+            userDiv.querySelector('select').options.selectedIndex = index + 1;
             this.addUsersListener();
         });
     }
@@ -675,17 +684,19 @@ class CreatorApp extends App {
         }
     }
 
-    addUsersListener() {
-        function findIDInUserPen(currentPenID, pens) {
-            let index = -1;
-            for (let i = 0; i < pens.length; i++) {
-                if (`${pens[i].id}` === `${currentPenID}`) {
-                    index = i;
-                    break;
-                }
+    findIDInUserPen(currentPenID, pens) {
+        let index = -1;
+        for (let i = 0; i < pens.length; i++) {
+            if (`${pens[i].id}` === `${currentPenID}`) {
+                index = i;
+                break;
             }
-            return index;
         }
+        return index;
+    }
+
+    addUsersListener() {
+
         const users = document.getElementById('users').childNodes;
         users.forEach((user) => {
             const preview = user.querySelector('img#preview-icon');
@@ -745,7 +756,7 @@ class CreatorApp extends App {
                 if (selectedPen === "") {
                     selectedPen = this.publicPen.id;
                 }
-                const index = findIDInUserPen(selectedPen, pens);
+                const index = this.findIDInUserPen(selectedPen, pens);
                 if (index === -1) {
                     return;
                 }
@@ -758,7 +769,7 @@ class CreatorApp extends App {
                 if (selectedPen === "") {
                     selectedPen = this.publicPen.id;
                 }
-                const index = findIDInUserPen(selectedPen, pens);
+                const index = this.findIDInUserPen(selectedPen, pens);
                 if (index === -1 || this.indexOfPenInLinked(pens[index]) !== -1) {
                     return;
                 }
@@ -775,7 +786,7 @@ class CreatorApp extends App {
                 if (selectedPen === "") {
                     selectedPen = this.publicPen.id;
                 }
-                const index = findIDInUserPen(selectedPen, pens);
+                const index = this.findIDInUserPen(selectedPen, pens);
 
                 if (index === -1) {
                     return;
