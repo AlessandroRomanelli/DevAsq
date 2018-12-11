@@ -590,7 +590,18 @@ class CreatorApp extends App {
 
     updateUserCurrentPen(userID, newPen) {
         this.users[userID].currentPen = newPen;
-        this.updateUI();
+        this.updateUserUI(userID);
+        // this.updateUI();
+    }
+
+
+    updateUserUI(id) {
+        console.log(this.users[id]);
+        dust.render('partials/user', this.users[id], (err, out) => {
+            const userDiv = document.getElementById(id);
+            userDiv.outerHTML = out;
+            this.addUsersListener();
+        });
     }
 
     removeUserPen(userID, pen) {
@@ -668,7 +679,7 @@ class CreatorApp extends App {
         function findIDInUserPen(currentPenID, pens) {
             let index = -1;
             for (let i = 0; i < pens.length; i++) {
-                if (pens[i].id === currentPenID) {
+                if (`${pens[i].id}` === `${currentPenID}`) {
                     index = i;
                     break;
                 }
@@ -684,6 +695,7 @@ class CreatorApp extends App {
             const ban = user.querySelector('.ban');
             const sharePen = user.querySelector('button#share-pen');
             const loadPen = user.querySelector('button#load-pen');
+            const select = document.querySelector('select');
             const id = user.id;
             const { pens } = this.users[id];
 
@@ -728,7 +740,12 @@ class CreatorApp extends App {
             });
             sharePen.onclick = ((event) => {
                 event.preventDefault();
-                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                let selectedPen = select.selectedOptions[0].id;
+                if (selectedPen === "") {
+                    selectedPen = this.publicPen.id;
+                }
+                const index = findIDInUserPen(selectedPen, pens);
                 if (index === -1) {
                     return;
                 }
@@ -736,7 +753,12 @@ class CreatorApp extends App {
             });
             loadPen.onclick = ((event) => {
                 event.preventDefault();
-                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                let selectedPen = select.selectedOptions[0].id;
+                if (selectedPen === "") {
+                    selectedPen = this.publicPen.id;
+                }
+                const index = findIDInUserPen(selectedPen, pens);
                 if (index === -1 || this.indexOfPenInLinked(pens[index]) !== -1) {
                     return;
                 }
@@ -748,7 +770,13 @@ class CreatorApp extends App {
                 const loadModalPen = document.getElementById('modal-load');
                 const iFrame = modal.querySelector('iframe#preview-iframe');
 
-                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                let selectedPen = select.selectedOptions[0].id;
+                if (selectedPen === "") {
+                    selectedPen = this.publicPen.id;
+                }
+                const index = findIDInUserPen(selectedPen, pens);
+
                 if (index === -1) {
                     return;
                 }
