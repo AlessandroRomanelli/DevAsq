@@ -838,17 +838,25 @@ class CreatorApp extends App {
     addTogglerListener() {
         const roomSettings = document.getElementById('room-settings');
         const toggler = roomSettings.querySelector('.toggler');
-        toggler.onclick = ((event) => {
+        const content = document.getElementById('content');
+
+        content.onclick = (e) => {
+            if (!(roomSettings.classList.contains('hidden'))) {
+                roomSettings.classList.add('hidden');
+            }
+        };
+
+        toggler.onclick = (event) => {
             roomSettings.classList.toggle('hidden');
-        });
+        };
 
-        toggler.onmouseenter = ((event) => {
+        toggler.onmouseenter = (event) => {
             document.body.style.cursor = 'pointer';
-        });
+        };
 
-        toggler.onmouseleave = ((event) => {
+        toggler.onmouseleave = (event) => {
             document.body.style.cursor = 'default';
-        });
+        };
     }
 
     decodeSharingOptions(code) {
