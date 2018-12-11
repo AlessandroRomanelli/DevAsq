@@ -669,6 +669,7 @@ class CreatorApp extends App {
     signalHelp(id) {
         this.users[id].ping = !this.users[id].ping;
         document.getElementById(id).classList.toggle('help-needed');
+        this.updateRoomSettings();
     }
 
     countActive() {
