@@ -29,11 +29,11 @@ function updateInputField(isValid, html) {
     }
 }
 
-function handleError(err, submitName) {
+function handleError(err, html) {
+    console.log(html);
     const { data } = err;
-    const submit = document.getElementById(submitName);
-    submit.classList.add('error', 'shake-horizontal');
-    setTimeout((submit) => { submit.classList.remove('shake-horizontal'); }, 1000, submit);
+    html.classList.add('error', 'shake-horizontal');
+    setTimeout((html) => { html.classList.remove('shake-horizontal'); }, 1000, html);
 }
 
 function login(username, password) {
@@ -58,15 +58,16 @@ function login(username, password) {
                 modal.classList.add('hidden');
                 handleLogout();
             });
-            dust.render('partials/rooms', {loggedUser: user}, (err, output) => {
-              const contentDiv = document.getElementById('content');
-              contentDiv.innerHTML = output;
-              handleRoomForms();
-            })
+            dust.render('partials/rooms', { loggedUser: user }, (err, output) => {
+                const contentDiv = document.getElementById('content');
+                contentDiv.innerHTML = output;
+                handleRoomForms();
+            });
         }
     }).catch((err) => {
         console.error(err);
-        handleError(err, 'localLogin');
+        const loginButton = document.getElementById('localLogin');
+        handleError(err, loginButton);
     });
 }
 
@@ -113,7 +114,8 @@ function handleSignupForm() {
             }
         }).catch((err) => {
             console.error(err);
-            handleError(err, 'signup-submit');
+            const signupButton = document.getElementById('signup-submit');
+            handleError(err, signupButton);
         });
     });
 
@@ -182,10 +184,9 @@ function handleLogout() {
                     handleLoginForm();
                 });
                 dust.render('partials/about', {}, (err, output) => {
-                  const contentDiv = document.getElementById("content");
-                  contentDiv.innerHTML = output;
-                })
-
+                    const contentDiv = document.getElementById('content');
+                    contentDiv.innerHTML = output;
+                });
             }
         });
     });

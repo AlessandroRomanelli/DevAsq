@@ -10,14 +10,6 @@ Array.prototype.last = function () {
     return this[this.length - 1];
 };
 
-function init() {
-    handleRoomForms();
-    handleLoginForm();
-    handleLogout();
-
-    addExplorerListener();
-}
-
 function addExplorerListener() {
     const table = document.getElementById('roomTable');
     if (!table) return;
@@ -41,9 +33,9 @@ function addExplorerListener() {
                 password,
             })).then((res) => {
                 if (res.status === 200 && roomName !== '') {
-                    console.log("requesting permission to enter", roomName);
+                    console.log('requesting permission to enter', roomName);
                     console.log(user);
-                    socket.emit('room.isAllowed', {roomName, userID: user._id});
+                    socket.emit('room.isAllowed', { roomName, userID: user._id });
                     return;
                 }
                 let err;
@@ -58,8 +50,16 @@ function addExplorerListener() {
                 throw err;
             }).catch((err) => {
                 console.error(err);
-                handleError(err, 'joinRoomButton');
+                const button = link.parentNode;
+                handleError(err, button);
             });
         });
     });
+}
+
+function init() {
+    handleRoomForms();
+    handleLoginForm();
+    handleLogout();
+    addExplorerListener();
 }

@@ -1,7 +1,7 @@
 function handleRoomForms() {
     const createRoom = document.getElementById('createRoom');
     const createRoomButton = document.getElementById('createRoomButton');
-    if (!createRoom || !createRoomButton) return
+    if (!createRoom || !createRoomButton) return;
     createRoomButton.addEventListener('click', (event) => {
         event.preventDefault();
         const roomName = createRoom.querySelector('input[name="roomName"]').value;
@@ -9,7 +9,8 @@ function handleRoomForms() {
         if (!roomName || roomName === '') {
             const err = new Error('No room name specified');
             console.error(err);
-            handleError(err, 'createRoomButton');
+            const button = document.getElementById('createRoomButton');
+            handleError(err, button);
         }
         doFetchRequest('POST', '/room/create', {
             'Content-Type': 'application/json',
@@ -32,7 +33,8 @@ function handleRoomForms() {
             if (room.name) window.location.pathname = `/room/${room.name}`;
         }).catch((err) => {
             console.error(err);
-            handleError(err, 'createRoomButton');
+            const button = document.getElementById('createRoomButton');
+            handleError(err, button);
         });
     });
 
@@ -66,7 +68,8 @@ function handleRoomForms() {
             throw err;
         }).catch((err) => {
             console.error(err);
-            handleError(err, 'joinRoomButton');
+            const button = document.getElementById('joinRoomButton');
+            handleError(err, button);
         });
     });
 }

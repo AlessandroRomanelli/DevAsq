@@ -17,6 +17,7 @@ let socket;
 function init() {
     handleLoginForm();
     handleLogout();
+    handleModals();
 
     socket = io();
 
@@ -70,12 +71,12 @@ function init() {
         }
     });
 
-    socket.on("pen.sharedCreated", (penID) => {
-        document.getElementById(penID).classList.add("shared");
+    socket.on('pen.sharedCreated', (penID) => {
+        document.getElementById(penID).classList.add('shared');
     });
 
-    socket.on("pen.sharedDeleted", (penID) => {
-        document.getElementById(penID).classList.remove("shared");
+    socket.on('pen.sharedDeleted', (penID) => {
+        document.getElementById(penID).classList.remove('shared');
     });
 
     socket.on('settings.userJoined', (user) => {
@@ -91,7 +92,9 @@ function init() {
     });
 
     socket.on('creator.updatePens', (data) => {
-        const { id, pen, rows, difference, positions } = data;
+        const {
+            id, pen, rows, difference, positions,
+        } = data;
         if (app instanceof CreatorApp) {
             app.updateUsers(id, pen, positions, difference, rows);
         }
@@ -115,6 +118,7 @@ function init() {
         console.log(id);
         if (app instanceof CreatorApp) {
             app.signalHelp(id);
+            app.updateRoomSettings();
         }
     });
 
@@ -122,7 +126,7 @@ function init() {
         if (app instanceof CreatorApp) {
             socket.emit('homePage.updatePopulation', {
                 roomName: app.room.name,
-                population: `${Object.values(app.countActive()).length}`
+                population: `${Object.values(app.countActive()).length}`,
             });
         }
     });
@@ -132,14 +136,14 @@ function init() {
     });
 
     socket.on('room.isAllowed', (data) => {
-        console.log("creator received request to enter", data);
+        console.log('creator received request to enter', data);
         const { userID } = data;
         if (app instanceof CreatorApp) {
             let response = 'true';
             if (app.users[userID]) {
-                response = `${app.users[userID].state !== 'banned'}`
+                response = `${app.users[userID].state !== 'banned'}`;
             }
-            console.log("sending request to enter");
+            console.log('sending request to enter');
             socket.emit('room.accessResponse', {
                 userID,
                 response,
@@ -154,6 +158,17 @@ function init() {
     });
 }
 
+
+function handleModals() {
+    const modals = document.querySelectorAll('.modal');
+    console.log(modals);
+    for (let i = 0; i < modals.length; i++) {
+        const modal = modals[i];
+        modal.addEventListener('click', (event) => {
+            event.target.classList.add('hidden');
+        });
+    }
+}
 
 function addTogglerListener(app) {
     if (app instanceof CreatorApp) {

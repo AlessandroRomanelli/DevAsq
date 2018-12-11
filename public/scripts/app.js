@@ -532,11 +532,11 @@ class CreatorApp extends App {
             currentPen: this.publicPen,
             pens: [],
             ping: false,
-            state: 'connected'
+            state: 'connected',
         };
         socket.emit('homePage.updatePopulation', {
             roomName: this.room.name,
-            population: `${Object.values(this.countActive()).length}`
+            population: `${Object.values(this.countActive()).length}`,
         });
         this.updateUserUI(user._id, this.publicPen);
     }
@@ -551,7 +551,7 @@ class CreatorApp extends App {
         console.log(this.room.users);
         socket.emit('homePage.updatePopulation', {
             roomName: this.room.name,
-            population: `${Object.values(this.countActive()).length}`
+            population: `${Object.values(this.countActive()).length}`,
         });
 
         document.getElementById(user).outerHTML = '';
@@ -609,7 +609,7 @@ class CreatorApp extends App {
                 previousSelected = `${userDiv.querySelector('select').selectedOptions[0].id}`;
             } else {
                 const roomSettings = document.getElementById('users');
-                const div = document.createElement("div");
+                const div = document.createElement('div');
                 roomSettings.appendChild(div);
                 div.outerHTML = out;
             }
@@ -628,7 +628,7 @@ class CreatorApp extends App {
             userDiv = document.getElementById(id);
             userDiv.querySelector('select').options.selectedIndex = index + 1;
             if (this.users[id].ping) {
-                userDiv.classList.add("help-needed");
+                userDiv.classList.add('help-needed');
             }
             this.addSingleUserListener(id);
         });
@@ -673,7 +673,7 @@ class CreatorApp extends App {
 
     countActive() {
         const connectedUsers = {};
-        for (let key in this.users) {
+        for (const key in this.users) {
             if (this.users[key].state === 'connected') {
                 connectedUsers[key] = this.users[key];
             }
@@ -683,13 +683,27 @@ class CreatorApp extends App {
 
     updateUI() {
         const participants = document.getElementById('participants');
-        // `${Object.keys(this.users).length}`;
         const connectedUsers = this.countActive();
         const count = Object.values(connectedUsers).length;
         participants.innerHTML = `${count}`;
-
         for (const key in connectedUsers) {
             this.updateUserUI(key, this.users[key].currentPen);
+        }
+        this.updateRoomSettings();
+    }
+
+    updateRoomSettings() {
+        const roomSettings = document.getElementById('room-settings');
+        const users = Object.keys(this.users);
+        let count = 0;
+        for (let i = 0; i < users.length; i++) {
+            const user = this.users[users[i]];
+            if (user.ping === true) count++;
+        }
+        if (count > 0) {
+            roomSettings.classList.add('help-needed');
+        } else {
+            roomSettings.classList.remove('help-needed');
         }
     }
 
@@ -705,6 +719,7 @@ class CreatorApp extends App {
     }
 
     addSingleUserListener(userID) {
+        const roomSettings = document.getElementById('room-settings');
         const user = document.getElementById(userID);
         const preview = user.querySelector('img#preview-icon');
         const image = user.querySelector('img.user-icon');
@@ -726,20 +741,28 @@ class CreatorApp extends App {
         kickBanMenu.onclick = ((event) => {
             kickBanMenu.classList.toggle('open');
         });
+        roomSettings.addEventListener('click', (event) => {
+            console.log('Clicking content');
+            const kickBanMenu = document.getElementById(userID).querySelector('.user-remove');
+            if (!(kickBanMenu.contains(event.target)) && kickBanMenu.classList.contains('open')) {
+                kickBanMenu.classList.remove('open');
+            }
+        });
+
+
         kick.onclick = ((event) => {
             event.preventDefault();
             this.setModalContent(`kick ${this.users[id].user.username}`,
                 (() => {
                     const modal = document.getElementById('confirm-modal');
                     modal.classList.toggle('hidden');
-                    socket.emit('user.kick', {userID: id});
-                    console.log("sending kick request", id);
+                    socket.emit('user.kick', { userID: id });
+                    console.log('sending kick request', id);
                 }),
                 (() => {
                     const modal = document.getElementById('confirm-modal');
                     modal.classList.toggle('hidden');
-                })
-            );
+                }));
         });
         ban.onclick = ((event) => {
             event.preventDefault();
@@ -748,19 +771,18 @@ class CreatorApp extends App {
                     const modal = document.getElementById('confirm-modal');
                     modal.classList.toggle('hidden');
                     this.users[id].state = 'banned';
-                    socket.emit('user.kick', {userID: id});
+                    socket.emit('user.kick', { userID: id });
                 }),
                 (() => {
                     const modal = document.getElementById('confirm-modal');
                     modal.classList.toggle('hidden');
-                })
-            );
+                }));
         });
         sharePen.onclick = ((event) => {
             event.preventDefault();
             // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
             let selectedPen = select.selectedOptions[0].id;
-            if (selectedPen === "") {
+            if (selectedPen === '') {
                 selectedPen = this.publicPen.id;
             }
             const index = this.findIDInUserPen(selectedPen, pens);
@@ -773,7 +795,7 @@ class CreatorApp extends App {
             event.preventDefault();
             // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
             let selectedPen = select.selectedOptions[0].id;
-            if (selectedPen === "") {
+            if (selectedPen === '') {
                 selectedPen = this.publicPen.id;
             }
             const index = this.findIDInUserPen(selectedPen, pens);
@@ -790,7 +812,7 @@ class CreatorApp extends App {
 
             // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
             let selectedPen = select.selectedOptions[0].id;
-            if (selectedPen === "") {
+            if (selectedPen === '') {
                 selectedPen = this.publicPen.id;
             }
             const index = this.findIDInUserPen(selectedPen, pens);
@@ -869,17 +891,25 @@ class CreatorApp extends App {
     addTogglerListener() {
         const roomSettings = document.getElementById('room-settings');
         const toggler = roomSettings.querySelector('.toggler');
-        toggler.onclick = ((event) => {
+        const content = document.getElementById('content');
+
+        content.addEventListener('click', () => {
+            if (!(roomSettings.classList.contains('hidden'))) {
+                roomSettings.classList.add('hidden');
+            }
+        });
+
+        toggler.onclick = (event) => {
             roomSettings.classList.toggle('hidden');
-        });
+        };
 
-        toggler.onmouseenter = ((event) => {
+        toggler.onmouseenter = (event) => {
             document.body.style.cursor = 'pointer';
-        });
+        };
 
-        toggler.onmouseleave = ((event) => {
+        toggler.onmouseleave = (event) => {
             document.body.style.cursor = 'default';
-        });
+        };
     }
 
     decodeSharingOptions(code) {
@@ -890,29 +920,25 @@ class CreatorApp extends App {
     }
 
     handleShareOptions(checkboxs) {
-        function encodeOptions() {
-            let encoded = 0;
-            for (let i = 1; i < checkboxs.length; i++) {
-                const checkbox = checkboxs[i];
-                if (checkbox.checked) {
-                    encoded += 2 ** (i - 1);
-                }
-            }
-            const shareButton = document.getElementById('share-public');
-            shareButton.setAttribute('data-encoded-options', encoded);
+        const share = document.getElementById('share-public');
+        function updateShare() {
+            share.setAttribute('data-html', checkboxs[1].checked);
+            share.setAttribute('data-css', checkboxs[2].checked);
+            share.setAttribute('data-js', checkboxs[3].checked);
         }
+
         checkboxs[0].addEventListener('input', (event) => {
             for (let i = 1; i < checkboxs.length; i++) {
                 const checkbox = checkboxs[i];
                 checkbox.checked = event.target.checked;
             }
-            encodeOptions();
+            updateShare();
         });
+
         for (let i = 1; i < checkboxs.length; i++) {
             const checkbox = checkboxs[i];
             checkbox.addEventListener('input', (event) => {
-                console.log('Checkbox activated!');
-                encodeOptions();
+                updateShare();
             });
         }
     }
@@ -932,9 +958,22 @@ class CreatorApp extends App {
         sharePublic.classList.add('hidden');
         sharePublic.onclick = ((event) => {
             if (event.target.id !== 'share-public') return;
-            const decodedOptions = this.decodeSharingOptions(parseInt(event.target.getAttribute('data-encoded-options')));
-            this.setPenContentIntoPen(this.getCurrentPen(), app.publicPen, decodedOptions);
+            const { html, css, js } = sharePublic.dataset;
+            const options = {
+                html, css, js,
+            };
+            this.setPenContentIntoPen(this.getCurrentPen(), app.publicPen, options);
             this.switchPen(0);
+        });
+
+        const content = document.getElementById('content');
+        content.addEventListener('click', (event) => {
+            const sharePublic = document.getElementById('share-public');
+            if (sharePublic.classList.contains('open')) {
+                if (!sharePublic.contains(event.target)) {
+                    sharePublic.classList.remove('open');
+                }
+            }
         });
 
         const shareToggle = document.getElementById('share-toggler');

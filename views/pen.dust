@@ -11,7 +11,7 @@
           <span>Name: <span id="room-name" class="info"></span></span>
           <span id="raise-hand" class="info">Ask for help</span>
           <span>Participants: <span id="participants" class="info"></span></span>
-          <span id="share-public" data-encoded-options="7">Share <button id='share-toggler'>▼</button>
+          <span id="share-public" data-html="true" data-css="true" data-js="true">Share <button id='share-toggler'>▼</button>
             <div id="share-options">
               <div class="option-container">
                 <span>ALL</span>
@@ -64,26 +64,26 @@
             <iframe id="iFrame" src="/preview.html"></iframe>
           </div>
         </div>
-        <div id="room-settings" class='hidden'>
-          {> "partials/creator" /}
-        </div>
-        <div id="confirm-modal" class="modal hidden">
-          <div class="container">
-            <p>Are you really sure you want to do this?</p>
-            <div class="choice-buttons">
-              <button class="cancel" type="button" name="button">Cancel</button>
-              <button class="confirm" type="button" name="button">Confirm</button>
-            </div>
+      </div>
+      <div id="room-settings" class='hidden'>
+        {> "partials/creator" /}
+      </div>
+      <div id="confirm-modal" class="modal hidden">
+        <div class="container">
+          <p>Are you really sure you want to do this?</p>
+          <div class="choice-buttons">
+            <button class="cancel" type="button" name="button">Cancel</button>
+            <button class="confirm" type="button" name="button">Confirm</button>
           </div>
         </div>
-        <div id='preview-modal' class="modal hidden">
-          <div class="container">
-            <div id="close-modal"></div>
-            <iframe id='preview-iframe'></iframe>
-            <div id='preview-loaders' class="">
-              <button id='modal-share' type="button" name="button">Share pen</button>
-              <button id='modal-load' type="button" name="button">Load pen</button>
-            </div>
+      </div>
+      <div id='preview-modal' class="modal hidden">
+        <div class="container">
+          <div id="close-modal"></div>
+          <iframe id='preview-iframe'></iframe>
+          <div id='preview-loaders' class="">
+            <button id='modal-share' type="button" name="button">Share pen</button>
+            <button id='modal-load' type="button" name="button">Load pen</button>
           </div>
         </div>
       </div>
