@@ -592,20 +592,21 @@ class CreatorApp extends App {
     }
 
     updateUserCurrentPen(userID, newPen) {
-        const oldCurrent = this.users[userID].currentPen;
+        const oldPen = this.users[userID].currentPen;
         this.users[userID].currentPen = newPen;
-        this.updateUserUI(userID, newPen);
+        this.updateUserUI(userID, newPen, oldPen);
         // this.updateUI();
     }
 
 
-    updateUserUI(id, newPen) {
+    updateUserUI(id, newPen, oldPen) {
         console.log(this.users[id]);
         dust.render('partials/user', this.users[id], (err, out) => {
             let userDiv = document.getElementById(id);
+            let previousSelected = "";
             if (userDiv) {
                 userDiv.outerHTML = out;
-                console.log(newPen);
+                previousSelected = `${userDiv.querySelector('select').selectedOptions[0].id}`;
             } else {
                 const roomSettings = document.getElementById('users');
                 const div = document.createElement("div");
@@ -613,7 +614,14 @@ class CreatorApp extends App {
                 div.outerHTML = out;
             }
 
-            const index = this.findIDInUserPen(newPen.id, this.users[id].pens);
+
+            let index = -1;
+
+            if (oldPen && previousSelected !== "" && `${oldPen.id}` !== previousSelected) {
+                index = this.findIDInUserPen(previousSelected, this.users[id].pens);
+            } else {
+                index = this.findIDInUserPen(newPen.id, this.users[id].pens);
+            }
 
             console.log('index', index);
 
