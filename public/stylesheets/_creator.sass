@@ -233,8 +233,25 @@
         transition: 0.2s ease-in-out
         &:hover
           filter: grayscale(0) brightness(1)
-          transform: scale(1.1)
           cursor: pointer
+        .remove-choice
+          position: absolute
+          left: 50%
+          bottom: -15px
+          width: 74px
+          display: flex
+          justify-content: center
+          opacity: 0
+          transform: translateX(-50%)
+          button
+            background: none
+            border: none
+            color: $primary-color
+            &:hover
+              cursor: pointer
+              color: darken($primary-color, 10%)
+        &.open .remove-choice
+          opacity: 1
 
       p
         margin: 0.5em 0

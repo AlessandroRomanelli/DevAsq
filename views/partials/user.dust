@@ -1,5 +1,10 @@
 <div id='{user._id}' class="user">
-  <div class="user-remove"></div>
+  <div class="user-remove open">
+    <div class="remove-choice">
+      <button class="kick" type="button" name="button">Kick</button>
+      <button class="ban" type="button" name="button">Ban</button>
+    </div>
+  </div>
   <img class='user-icon' src="/images/user.png">
   <p class='user-name'>{user.username}</p>
   <div class='current-pen'>
