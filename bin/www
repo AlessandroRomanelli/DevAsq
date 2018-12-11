@@ -208,6 +208,25 @@ io.on('connection', (socket) => {
         socket.to(userSocket).emit('pen.resolveHelp');
     });
 
+    socket.on('user.kick', (data) => {
+        console.log("kicking", data);
+        const userID = connectionMap.getSocket(data.userID);
+        socket.to(userID).emit('room.delete');
+    });
+
+    socket.on('room.isAllowed', (data) => {
+        console.log("asking permission to creator", data);
+        const { roomName, userID } = data;
+        const creator = getCreatorSocket(roomName);
+        socket.to(creator).emit('room.isAllowed', {userID});
+    });
+
+    socket.on('room.accessResponse', (data) => {
+        console.log("sending response from creator to user", data);
+        const {userID, response, roomName} = data;
+        socket.to('homePage').emit('room.accessResponse', {roomName, response, userID});
+    });
+
     socket.on('pen.change', (data) => {
         console.log('update the pen');
         console.log(data);

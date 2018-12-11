@@ -190,4 +190,17 @@ function insertInSorted() {
         console.log(reason);
         socket.emit('homePage.leaveRoom');
     });
+
+    socket.on('room.accessResponse', (data) => {
+        console.log("response received from the server", data);
+        const { response, roomName, userID } = data;
+        if (`${user._id}` !== `${userID}`) {
+            return;
+        }
+        if (response === 'true') {
+            window.location.pathname = `/room/${roomName}`;
+        } else {
+            handleError({data: 'You are banned'}, 'joinRoomButton');
+        }
+    });
 }());

@@ -86,7 +86,6 @@
             <button id='modal-load' type="button" name="button">Load pen</button>
           </div>
         </div>
-
       </div>
 
       {> "partials/footer" /}
