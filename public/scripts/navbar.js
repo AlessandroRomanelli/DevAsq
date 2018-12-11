@@ -58,6 +58,11 @@ function login(username, password) {
                 modal.classList.add('hidden');
                 handleLogout();
             });
+            dust.render('partials/rooms', {loggedUser: user}, (err, output) => {
+              const contentDiv = document.getElementById('content');
+              contentDiv.innerHTML = output;
+              handleRoomForms();
+            })
         }
     }).catch((err) => {
         console.error(err);
@@ -176,6 +181,11 @@ function handleLogout() {
                     profileNav.innerHTML = output;
                     handleLoginForm();
                 });
+                dust.render('partials/about', {}, (err, output) => {
+                  const contentDiv = document.getElementById("content");
+                  contentDiv.innerHTML = output;
+                })
+
             }
         });
     });

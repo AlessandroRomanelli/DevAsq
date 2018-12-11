@@ -1,6 +1,7 @@
 function handleRoomForms() {
     const createRoom = document.getElementById('createRoom');
     const createRoomButton = document.getElementById('createRoomButton');
+    if (!createRoom || !createRoomButton) return
     createRoomButton.addEventListener('click', (event) => {
         event.preventDefault();
         const roomName = createRoom.querySelector('input[name="roomName"]').value;
