@@ -27,7 +27,7 @@ function sortName() {
         if (entry.id) {
             id = `id="${entry.id}"`;
         }
-        if (entry.dataset.name) {
+        if (entry.dataset && entry.dataset.name) {
             dataName = `data-name="${entry.dataset.name}"`
         }
         result += `<tr ${id} ${dataName}>${entry.innerHTML}</tr>`;
@@ -189,5 +189,18 @@ function insertInSorted() {
     socket.on('disconnect', (reason) => {
         console.log(reason);
         socket.emit('homePage.leaveRoom');
+    });
+
+    socket.on('room.accessResponse', (data) => {
+        console.log("response received from the server", data);
+        const { response, roomName, userID } = data;
+        if (`${user._id}` !== `${userID}`) {
+            return;
+        }
+        if (response === 'true') {
+            window.location.pathname = `/room/${roomName}`;
+        } else {
+            handleError({data: 'You are banned'}, 'joinRoomButton');
+        }
     });
 }());

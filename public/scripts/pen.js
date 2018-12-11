@@ -131,6 +131,23 @@ function init() {
         window.location.pathname = '/';
     });
 
+    socket.on('room.isAllowed', (data) => {
+        console.log("creator received request to enter", data);
+        const { userID } = data;
+        if (app instanceof CreatorApp) {
+            let response = 'true';
+            if (app.users[userID]) {
+                response = `${app.users[userID].state !== 'banned'}`
+            }
+            console.log("sending request to enter");
+            socket.emit('room.accessResponse', {
+                userID,
+                response,
+                roomName: app.room.name,
+            });
+        }
+    });
+
     socket.on('pen.resolveHelp', () => {
         console.log('Creator resolved help');
         app.resolveHelp();

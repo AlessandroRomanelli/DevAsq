@@ -49,7 +49,9 @@ function handleRoomForms() {
             password,
         })).then((res) => {
             if (res.status === 200 && roomName !== '') {
-                window.location.pathname = `/room/${roomName}`;
+                console.log("requesting permission to enter", roomName);
+                console.log(user);
+                socket.emit('room.isAllowed', {roomName, userID: user._id});
                 return;
             }
             let err;
