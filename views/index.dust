@@ -15,16 +15,16 @@
             </div>
           </div>
           <script src="/scripts/fetch.js" charset="utf-8"></script>
-          <div class="manage-rooms">
-            {> "partials/rooms" /}
+          <div id="content">
+            {#loggedUser}
+              {> "partials/rooms" /}
+            {:else}
+              {> "partials/about" /}
+            {/loggedUser}
           </div>
-          {> "partials/roomExplorer" /}
         </div>
 
-        <footer class="index_footer">
-          <p>2018 &copy; All rights reserved to DevAsq++</p>
-        </footer>
-
+        {> "partials/footer" /}
 
 
         <script src="/scripts/dustjs/dust-core.min.js" charset="utf-8"></script>

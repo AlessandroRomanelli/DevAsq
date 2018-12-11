@@ -19,6 +19,8 @@ function init() {
 }
 
 function addExplorerListener() {
+    const table = document.getElementById('roomTable');
+    if (!table) return;
     const name = document.getElementById('name-sort');
     const population = document.getElementById('pop-sort');
 

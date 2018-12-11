@@ -1,29 +1,32 @@
-<div class="form-container">
-  <h1>New Room</h1>
-  <div id='createRoom' class='form'>
-    <fieldset>
-      <input type="text" name="roomName" placeholder="Room Name">
-    </fieldset>
-    <fieldset>
-      <input type="password" name="password" placeholder="Password (Optional)">
-    </fieldset>
-    <fieldset class="submit">
-      <input id='createRoomButton' type="submit" value="Create">
-    </fieldset>
+<div class="manage-rooms">
+  <div class="form-container">
+    <h1>New Room</h1>
+    <div id='createRoom' class='form'>
+      <fieldset>
+        <input type="text" name="roomName" placeholder="Room Name">
+      </fieldset>
+      <fieldset>
+        <input type="password" name="password" placeholder="Password (Optional)">
+      </fieldset>
+      <fieldset class="submit">
+        <input id='createRoomButton' type="submit" value="Create">
+      </fieldset>
+    </div>
+  </div>
+  <div class="separator"></div>
+  <div class="form-container">
+    <h1>Join Room</h1>
+    <div id='joinRoom' class='form'>
+      <fieldset>
+        <input type="text" name="roomName" placeholder="Room Name">
+      </fieldset>
+      <fieldset>
+        <input type="password" name="password" placeholder="Password (Optional)">
+      </fieldset>
+      <fieldset class="submit">
+        <input id='joinRoomButton' type="submit" value="Join">
+      </fieldset>
+    </div>
   </div>
 </div>
-<div class="separator"></div>
-<div class="form-container">
-  <h1>Join Room</h1>
-  <div id='joinRoom' class='form'>
-    <fieldset>
-      <input type="text" name="roomName" placeholder="Room Name">
-    </fieldset>
-    <fieldset>
-      <input type="password" name="password" placeholder="Password (Optional)">
-    </fieldset>
-    <fieldset class="submit">
-      <input id='joinRoomButton' type="submit" value="Join">
-    </fieldset>
-  </div>
-</div>
+{> "partials/roomExplorer" /}
