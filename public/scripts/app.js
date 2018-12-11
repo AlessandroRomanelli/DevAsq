@@ -545,7 +545,9 @@ class CreatorApp extends App {
         console.log('User: ', user, ' left the room');
         console.log(this.room.users);
         // delete this.users[user];
-        this.users[user].state = 'disconnected';
+        if (this.users[user].state !== 'banned') {
+            this.users[user].state = 'disconnected';
+        }
         console.log(this.room.users);
         socket.emit('homePage.updatePopulation', {
             roomName: this.room.name,
@@ -677,15 +679,48 @@ class CreatorApp extends App {
         users.forEach((user) => {
             const preview = user.querySelector('img#preview-icon');
             const image = user.querySelector('img.user-icon');
+            const kickBanMenu = user.querySelector('.user-remove');
+            const kick = user.querySelector('.kick');
+            const ban = user.querySelector('.ban');
             const sharePen = user.querySelector('button#share-pen');
             const loadPen = user.querySelector('button#load-pen');
             const id = user.id;
             const { pens } = this.users[id];
+
             image.onclick = ((event) => {
                 if (this.users[id].ping) {
                     this.signalHelp(id);
                 }
                 socket.emit('pen.resolveHelp', { id });
+            });
+            kickBanMenu.onclick = ((event) => {
+                kickBanMenu.classList.toggle('open');
+            });
+            kick.onclick = ((event) => {
+                event.preventDefault();
+                this.setModalContent(`kick ${this.users[id].user.username}`,
+                    (() => {
+                        socket.emit('user.kick', {userID: id});
+                        console.log("sending kick request", id);
+                    }),
+                    (() => {
+                        const modal = document.getElementById('confirm-modal');
+                        modal.classList.toggle('hidden');
+                    })
+                );
+            });
+            ban.onclick = ((event) => {
+                event.preventDefault();
+                this.setModalContent(`ban ${this.users[id].user.username}`,
+                    (() => {
+                        this.users[id].state = 'banned';
+                        socket.emit('user.kick', {userID: id});
+                    }),
+                    (() => {
+                        const modal = document.getElementById('confirm-modal');
+                        modal.classList.toggle('hidden');
+                    })
+                );
             });
             sharePen.onclick = ((event) => {
                 event.preventDefault();
@@ -719,6 +754,18 @@ class CreatorApp extends App {
                 loadModalPen.onclick = loadPen.onclick;
             });
         });
+    }
+
+    setModalContent(message, confirmListener, cancelListener) {
+        const modal = document.getElementById('confirm-modal');
+        const paragraph = modal.querySelector('p');
+        const confirm = modal.querySelector('.confirm');
+        const cancel = modal.querySelector('.cancel');
+        modal.classList.toggle('hidden');
+
+        paragraph.innerHTML = `Are you sure you want to ${message}?`;
+        confirm.onclick = confirmListener;
+        cancel.onclick = cancelListener;
     }
 
     setPenContentIntoPen(pen, penToModify, options) {
