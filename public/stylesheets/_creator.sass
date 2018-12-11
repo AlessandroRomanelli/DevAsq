@@ -284,7 +284,7 @@
       .current-pen
         display: flex
         justify-content: center
-        align-items: space-between
+        align-items: center
         span
           &:last-of-type
             margin-left: 0.25em
@@ -296,6 +296,21 @@
             cursor: pointer
             filter: grayscale(0) brightness(1)
             transform: scale(1.1)
+        select
+          color: $primary-color
+          background: transparent
+          border: 1px solid transparent
+          font-size: 1em
+          padding: 5px
+          transition: 0.2s ease-in-out
+          margin-right: 1em
+          outline: 0
+          &:hover
+            cursor: pointer
+            background: transparentize($primary-color, 0.8)
+            border-color: $primary-color
+
+
       .pen-actions
         margin-top: 0.5em
         display: flex
