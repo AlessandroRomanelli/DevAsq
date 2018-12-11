@@ -54,8 +54,8 @@ function addExplorerListener() {
                     }
                 }).catch((err) => {
                     console.error(err);
-                    // TODO: Implement error handling
-                    handleError();
+                    const button = link.parentNode;
+                    handleError(err, button);
                 });
         });
     });
