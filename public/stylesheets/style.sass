@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Inconsolata|Open+Sans')
+@import url('https://fonts.googleapis.com/css?family=Inconsolata|Open+Sans:300,400')
 
 $font-stack-editor:    Inconsolata, monospace
 $font-stack: 'Open Sans', sans-serif
@@ -19,6 +19,7 @@ body
   color: white
   font: 100% $font-stack
   background-color: $color-background
+
 // INDEX STYLE
 
 hr
@@ -100,13 +101,6 @@ nav.menu
 .hidden
   display: none
 
-footer
-  text-align: center
-  border-top: 1px solid $light
-
-
-// ROOM BROWSER
-
 #roomTable a
   text-decoration: none
   color: white
@@ -114,4 +108,5 @@ footer
 @import login
 @import tab
 @import creator
+@import footer
 @import browser

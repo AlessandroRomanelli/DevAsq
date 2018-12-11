@@ -21,10 +21,7 @@
           {> "partials/roomExplorer" /}
         </div>
 
-        <footer class="index_footer">
-          <p>2018 &copy; All rights reserved to DevAsq++</p>
-        </footer>
-
+        {> "partials/footer" /}
 
 
         <script src="/scripts/dustjs/dust-core.min.js" charset="utf-8"></script>

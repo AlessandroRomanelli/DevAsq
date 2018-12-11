@@ -1,0 +1,9 @@
+<footer class="index_footer">
+  <span id="version"> &copy 2018 </span>
+  <span id="team-info">
+    <p id="team">Dream Team</p>
+    <p id="team-members"> Cristian Buratti, Diego Carlino, Sara Mangialavori, Alessandro Romanelli, Alessandra Vicini</p>
+  </span>
+  <span> <img id="usi_logo" src="/images/usi.png" alt="usi_logo"> </span>
+
+</footer>
