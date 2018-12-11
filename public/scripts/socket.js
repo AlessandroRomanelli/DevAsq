@@ -27,7 +27,7 @@ function sortName() {
         if (entry.id) {
             id = `id="${entry.id}"`;
         }
-        if (entry.dataset.name) {
+        if (entry.dataset && entry.dataset.name) {
             dataName = `data-name="${entry.dataset.name}"`
         }
         result += `<tr ${id} ${dataName}>${entry.innerHTML}</tr>`;

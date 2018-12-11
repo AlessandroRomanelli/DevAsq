@@ -10,17 +10,9 @@ Array.prototype.last = function () {
     return this[this.length - 1];
 };
 
-function init() {
-    handleRoomForms();
-    handleLoginForm();
-    handleLogout();
-
-    addExplorerListener();
-}
-
 function addExplorerListener() {
-    const table = document.getElementById('roomTable')
-    if (!table) return
+    const table = document.getElementById('roomTable');
+    if (!table) return;
     const row = table.querySelector('tr');
     // const name = row.querySelector('th');
     // const population = row.querySelectorAll('th')[1];
@@ -67,4 +59,11 @@ function addExplorerListener() {
                 });
         });
     });
+}
+
+function init() {
+    handleRoomForms();
+    handleLoginForm();
+    handleLogout();
+    addExplorerListener();
 }
