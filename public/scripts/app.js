@@ -711,6 +711,7 @@ class CreatorApp extends App {
     }
 
     addSingleUserListener(userID) {
+        const roomSettings = document.getElementById('room-settings');
         const user = document.getElementById(userID);
         const preview = user.querySelector('img#preview-icon');
         const image = user.querySelector('img.user-icon');
@@ -732,6 +733,15 @@ class CreatorApp extends App {
         kickBanMenu.onclick = ((event) => {
             kickBanMenu.classList.toggle('open');
         });
+        roomSettings.addEventListener('click', (event) => {
+            console.log('Clicking content');
+            const kickBanMenu = document.getElementById(userID).querySelector('.user-remove');
+            if (!(kickBanMenu.contains(event.target)) && kickBanMenu.classList.contains('open')) {
+                kickBanMenu.classList.remove('open');
+            }
+        });
+
+
         kick.onclick = ((event) => {
             event.preventDefault();
             this.setModalContent(`kick ${this.users[id].user.username}`,
