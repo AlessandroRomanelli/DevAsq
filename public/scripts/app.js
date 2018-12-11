@@ -603,7 +603,7 @@ class CreatorApp extends App {
         console.log(this.users[id]);
         dust.render('partials/user', this.users[id], (err, out) => {
             let userDiv = document.getElementById(id);
-            let previousSelected = "";
+            let previousSelected = '';
             if (userDiv) {
                 userDiv.outerHTML = out;
                 previousSelected = `${userDiv.querySelector('select').selectedOptions[0].id}`;
@@ -617,7 +617,7 @@ class CreatorApp extends App {
 
             let index = -1;
 
-            if (oldPen && previousSelected !== "" && `${oldPen.id}` !== previousSelected) {
+            if (oldPen && previousSelected !== '' && `${oldPen.id}` !== previousSelected) {
                 index = this.findIDInUserPen(previousSelected, this.users[id].pens);
             } else {
                 index = this.findIDInUserPen(newPen.id, this.users[id].pens);
@@ -957,11 +957,15 @@ class CreatorApp extends App {
 
         sharePublic.classList.add('hidden');
         sharePublic.onclick = ((event) => {
+            function parseBoolean(string) {
+                return string === 'true';
+            }
             if (event.target.id !== 'share-public') return;
             const { html, css, js } = sharePublic.dataset;
             const options = {
-                html, css, js,
+                html: parseBoolean(html), css: parseBoolean(css), js: parseBoolean(js),
             };
+
             this.setPenContentIntoPen(this.getCurrentPen(), app.publicPen, options);
             this.switchPen(0);
         });
