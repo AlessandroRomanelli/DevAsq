@@ -10,16 +10,15 @@ Array.prototype.last = function () {
     return this[this.length - 1];
 };
 
+let app;
 
 let socket;
-let app;
 
 function init() {
     handleLoginForm();
     handleLogout();
 
     socket = io();
-
 
     if (room.creator === user._id) {
         app = new CreatorApp(room, user._id);
@@ -31,8 +30,17 @@ function init() {
     startParsing(app);
 
     socket.on('connect', () => {
+        console.log('Room page socket connected');
         socket.emit('settings.bindID', { id: user._id });
-        socket.emit('settings.joinRoom', { roomName: app.room.name });
+
+        console.log(app.room);
+
+        socket.emit('settings.joinRoom', {
+            roomName: app.room.name,
+            // population: Object.keys(app.room.users).length-1,
+            // passworded: app.room.isPassworded
+        });
+
         socket.emit('settings.notifyCreator', { roomName: app.room.name, user });
     });
 
@@ -43,6 +51,7 @@ function init() {
 
     socket.on('disconnect', (reason) => {
         console.log(reason);
+        socket.emit('settings.leaveRoom');
     });
 
     socket.on('pen.update', (data) => {
@@ -75,6 +84,12 @@ function init() {
         }
     });
 
+    socket.on('settings.userLeft', (user) => {
+        if (app instanceof CreatorApp) {
+            app.userDisconnected(user);
+        }
+    });
+
     socket.on('creator.updatePens', (data) => {
         const { id, pen, rows, difference, positions } = data;
         if (app instanceof CreatorApp) {
@@ -101,6 +116,19 @@ function init() {
         if (app instanceof CreatorApp) {
             app.signalHelp(id);
         }
+    });
+
+    socket.on('creator.sendRoomInformation', () => {
+        if (app instanceof CreatorApp) {
+            socket.emit('homePage.updatePopulation', {
+                roomName: app.room.name,
+                population: `${Object.values(app.countActive()).length}`
+            });
+        }
+    });
+
+    socket.on('room.delete', () => {
+        window.location.pathname = '/';
     });
 
     socket.on('pen.resolveHelp', () => {

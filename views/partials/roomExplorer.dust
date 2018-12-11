@@ -1,0 +1,12 @@
+<div id='room-browser'>
+  <h1 id="room-browser-title" class="hidden"> Room Browser</h1>
+
+  <table id="roomTable" class="hidden">
+      <tr>
+          <th> Name <span id="name-sort" class="sort-by active">▼</span></th>
+          <th> <img src="/images/user.png" width="15" height="15" alt=""><span id="pop-sort" class="sort-by">▼</span></th>
+          <th> Password </th>
+          <th>  </th>
+      </tr>
+  </table>
+</div>

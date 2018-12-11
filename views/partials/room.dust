@@ -1,0 +1,6 @@
+<tr id="room_{name}" data-name="{name}">
+    <td>{name}</td>
+    <td>{users}</td>
+    <td><input type="password" class="passworded" placeholder="Optional"></td>
+    <td><a href="">Join</a></td>
+</tr>

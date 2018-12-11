@@ -110,14 +110,60 @@ io.on('connection', (socket) => {
         console.log('client disconnected');
     });
 
+    socket.on('disconnecting', (reason) => {
+        console.log('Deleting user from the server storage and notify all users');
+        let userID = connectionMap.getUser(socket.id);
+
+        if (Object.keys(socket.rooms).length > 1) {
+            let roomName = Object.keys(socket.rooms)[1];
+            let room = roomStorage[roomName];
+            if (room) {
+                if (userID === room.creator) {
+                    socket.to(roomName).emit('room.delete', roomName);
+                    socket.to('homePage').emit('homePage.roomDelete', {roomName});
+                    delete roomStorage[roomName];
+                } else {
+                    socket.to(connectionMap.getSocket(room.creator)).emit('settings.userLeft', userID);
+                    console.log(room.users);
+                }
+            }
+        }
+    });
+
     socket.on('settings.bindID', (user) => {
         console.log(user);
         connectionMap.registerUser(user.id, socket.id);
     });
 
+    socket.on('homePage.joinRoom', () => {
+        socket.join('homePage');
+        for (const key in roomStorage) {
+            socket.to(getCreatorSocket(key)).emit('creator.sendRoomInformation');
+        }
+    });
+
+    socket.on('homePage.updatePopulation', (data) => {
+        const { roomName, population } = data;
+        console.log(roomName, "Population:", population);
+        if (!roomName || !population) return;
+        socket.to('homePage').emit('homePage.updateRoomCounter', {
+            population, roomName
+        });
+    });
+
     socket.on('settings.joinRoom', (data) => {
-        console.log(data.roomName);
+        console.log(data);
         socket.join(data.roomName);
+        console.log(socket.id);
+        console.log(getCreatorSocket(data.roomName));
+        if (`${socket.id}` === `${getCreatorSocket(data.roomName)}`) {
+            socket.to('homePage').emit('homePage.updateRoomCounter', { roomName: data.roomName });
+        }
+        // socket.to('homePage').emit('homepage.updateRoomCounter', {
+        //     population: data.population,
+        //     roomName: data.roomName,
+        //     passworded: data.passworded
+        // });
     });
 
     socket.on('settings.notifyCreator', (data) => {

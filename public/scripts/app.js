@@ -526,12 +526,31 @@ class CreatorApp extends App {
     }
 
     userConnected(user) {
+        console.log('User: ', user._id, ' joined the room');
         this.users[user._id] = {
             user,
             currentPen: this.publicPen,
             pens: [],
             ping: false,
+            state: 'connected'
         };
+        socket.emit('homePage.updatePopulation', {
+            roomName: this.room.name,
+            population: `${Object.values(this.countActive()).length}`
+        });
+        this.updateUI();
+    }
+
+    userDisconnected(user) {
+        console.log('User: ', user, ' left the room');
+        console.log(this.room.users);
+        // delete this.users[user];
+        this.users[user].state = 'disconnected';
+        console.log(this.room.users);
+        socket.emit('homePage.updatePopulation', {
+            roomName: this.room.name,
+            population: `${Object.values(this.countActive()).length}`
+        });
         this.updateUI();
     }
 
@@ -609,11 +628,25 @@ class CreatorApp extends App {
         document.getElementById(id).classList.toggle('help-needed');
     }
 
+    countActive() {
+        const connectedUsers = {};
+        for (let key in this.users) {
+            if (this.users[key].state === 'connected') {
+                connectedUsers[key] = this.users[key];
+            }
+        }
+        return connectedUsers;
+    }
+
     updateUI() {
         const participants = document.getElementById('participants');
-        participants.innerHTML = `${Object.keys(this.users).length + 1}`;
+        // `${Object.keys(this.users).length}`;
+        const connectedUsers = this.countActive();
+        const count = Object.values(connectedUsers).length;
+        participants.innerHTML = `${count}`;
+
         const roomSettings = document.getElementById('room-settings');
-        dust.render('partials/creator', { users: Object.values(this.users) }, ((err, out) => {
+        dust.render('partials/creator', { users: Object.values(connectedUsers) }, ((err, out) => {
             roomSettings.innerHTML = out;
             this.addTogglerListener();
             this.addUsersPing();
@@ -790,7 +823,7 @@ class CreatorApp extends App {
 
     setupRoomInfo() {
         const participants = document.getElementById('participants');
-        participants.innerHTML = '1';
+        participants.innerHTML = '0';
 
         const roomName = document.getElementById('room-name');
         roomName.innerHTML = this.room.name;
@@ -799,6 +832,7 @@ class CreatorApp extends App {
         raiseHand.parentNode.removeChild(raiseHand);
 
         const sharePublic = document.getElementById('share-public');
+
         sharePublic.classList.add('hidden');
         sharePublic.onclick = ((event) => {
             if (event.target.id !== 'share-public') return;
