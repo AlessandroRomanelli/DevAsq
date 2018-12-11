@@ -91,13 +91,26 @@ function sortPopulation() {
 }
 
 function insertInSorted() {
-    const previousValue = currentSort;
-    if (currentSort === 'nameUp' || currentSort === 'nameDown') {
-        sortName();
-    } else {
-        sortPopulation();
+    switch (currentSort) {
+        case 'nameUp':
+            currentSort = 'nameDown';
+            sortName();
+            break;
+        case 'nameDown':
+            currentSort = 'nameUp';
+            sortName();
+            break;
+        case 'populationUp':
+            currentSort = 'populationDown';
+            sortPopulation();
+            break;
+        case 'populationDown':
+            currentSort = 'populationUp';
+            sortPopulation();
+            break;
+        default:
+            break;
     }
-    currentSort = previousValue;
 }
 
 (function () {
