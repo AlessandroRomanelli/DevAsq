@@ -840,11 +840,11 @@ class CreatorApp extends App {
         const toggler = roomSettings.querySelector('.toggler');
         const content = document.getElementById('content');
 
-        content.onclick = (e) => {
+        content.addEventListener('click', () => {
             if (!(roomSettings.classList.contains('hidden'))) {
                 roomSettings.classList.add('hidden');
             }
-        };
+        });
 
         toggler.onclick = (event) => {
             roomSettings.classList.toggle('hidden');
@@ -867,29 +867,25 @@ class CreatorApp extends App {
     }
 
     handleShareOptions(checkboxs) {
-        function encodeOptions() {
-            let encoded = 0;
-            for (let i = 1; i < checkboxs.length; i++) {
-                const checkbox = checkboxs[i];
-                if (checkbox.checked) {
-                    encoded += 2 ** (i - 1);
-                }
-            }
-            const shareButton = document.getElementById('share-public');
-            shareButton.setAttribute('data-encoded-options', encoded);
+        const share = document.getElementById('share-public');
+        function updateShare() {
+            share.setAttribute('data-html', checkboxs[1].checked);
+            share.setAttribute('data-css', checkboxs[2].checked);
+            share.setAttribute('data-js', checkboxs[3].checked);
         }
+
         checkboxs[0].addEventListener('input', (event) => {
             for (let i = 1; i < checkboxs.length; i++) {
                 const checkbox = checkboxs[i];
                 checkbox.checked = event.target.checked;
             }
-            encodeOptions();
+            updateShare();
         });
+
         for (let i = 1; i < checkboxs.length; i++) {
             const checkbox = checkboxs[i];
             checkbox.addEventListener('input', (event) => {
-                console.log('Checkbox activated!');
-                encodeOptions();
+                updateShare();
             });
         }
     }
@@ -909,9 +905,22 @@ class CreatorApp extends App {
         sharePublic.classList.add('hidden');
         sharePublic.onclick = ((event) => {
             if (event.target.id !== 'share-public') return;
-            const decodedOptions = this.decodeSharingOptions(parseInt(event.target.getAttribute('data-encoded-options')));
-            this.setPenContentIntoPen(this.getCurrentPen(), app.publicPen, decodedOptions);
+            const { html, css, js } = sharePublic.dataset;
+            const options = {
+                html, css, js,
+            };
+            this.setPenContentIntoPen(this.getCurrentPen(), app.publicPen, options);
             this.switchPen(0);
+        });
+
+        const content = document.getElementById('content');
+        content.addEventListener('click', (event) => {
+            const sharePublic = document.getElementById('share-public');
+            if (sharePublic.classList.contains('open')) {
+                if (!sharePublic.contains(event.target)) {
+                    sharePublic.classList.remove('open');
+                }
+            }
         });
 
         const shareToggle = document.getElementById('share-toggler');
