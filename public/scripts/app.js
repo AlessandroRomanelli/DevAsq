@@ -538,7 +538,7 @@ class CreatorApp extends App {
             roomName: this.room.name,
             population: `${Object.values(this.countActive()).length}`
         });
-        this.updateUI();
+        this.updateUserUI(user._id, this.publicPen);
     }
 
     userDisconnected(user) {
@@ -553,6 +553,9 @@ class CreatorApp extends App {
             roomName: this.room.name,
             population: `${Object.values(this.countActive()).length}`
         });
+
+        document.getElementById(user).outerHTML = '';
+
         this.updateUI();
     }
 
@@ -589,8 +592,46 @@ class CreatorApp extends App {
     }
 
     updateUserCurrentPen(userID, newPen) {
+        const oldPen = this.users[userID].currentPen;
         this.users[userID].currentPen = newPen;
-        this.updateUI();
+        this.updateUserUI(userID, newPen, oldPen);
+        // this.updateUI();
+    }
+
+
+    updateUserUI(id, newPen, oldPen) {
+        console.log(this.users[id]);
+        dust.render('partials/user', this.users[id], (err, out) => {
+            let userDiv = document.getElementById(id);
+            let previousSelected = "";
+            if (userDiv) {
+                userDiv.outerHTML = out;
+                previousSelected = `${userDiv.querySelector('select').selectedOptions[0].id}`;
+            } else {
+                const roomSettings = document.getElementById('users');
+                const div = document.createElement("div");
+                roomSettings.appendChild(div);
+                div.outerHTML = out;
+            }
+
+
+            let index = -1;
+
+            if (oldPen && previousSelected !== "" && `${oldPen.id}` !== previousSelected) {
+                index = this.findIDInUserPen(previousSelected, this.users[id].pens);
+            } else {
+                index = this.findIDInUserPen(newPen.id, this.users[id].pens);
+            }
+
+            console.log('index', index);
+
+            userDiv = document.getElementById(id);
+            userDiv.querySelector('select').options.selectedIndex = index + 1;
+            if (this.users[id].ping) {
+                userDiv.classList.add("help-needed");
+            }
+            this.addSingleUserListener(id);
+        });
     }
 
     removeUserPen(userID, pen) {
@@ -647,116 +688,120 @@ class CreatorApp extends App {
         const count = Object.values(connectedUsers).length;
         participants.innerHTML = `${count}`;
 
-        const roomSettings = document.getElementById('room-settings');
-        dust.render('partials/creator', { users: Object.values(connectedUsers) }, ((err, out) => {
-            roomSettings.innerHTML = out;
-            this.addTogglerListener();
-            this.addUsersPing();
-            this.addUsersListener();
-        }));
-    }
-
-    addUsersPing() {
-        for (const user in this.users) {
-            if (this.users[user].ping) {
-                this.signalHelp(user);
-            }
+        for (const key in connectedUsers) {
+            this.updateUserUI(key, this.users[key].currentPen);
         }
     }
 
-    addUsersListener() {
-        function findIDInUserPen(currentPenID, pens) {
-            let index = -1;
-            for (let i = 0; i < pens.length; i++) {
-                if (pens[i].id === currentPenID) {
-                    index = i;
-                    break;
-                }
+    findIDInUserPen(currentPenID, pens) {
+        let index = -1;
+        for (let i = 0; i < pens.length; i++) {
+            if (`${pens[i].id}` === `${currentPenID}`) {
+                index = i;
+                break;
             }
-            return index;
         }
-        const users = document.getElementById('users').childNodes;
-        users.forEach((user) => {
-            const preview = user.querySelector('img#preview-icon');
-            const image = user.querySelector('img.user-icon');
-            const kickBanMenu = user.querySelector('.user-remove');
-            const kick = user.querySelector('.kick');
-            const ban = user.querySelector('.ban');
-            const sharePen = user.querySelector('button#share-pen');
-            const loadPen = user.querySelector('button#load-pen');
-            const id = user.id;
-            const { pens } = this.users[id];
+        return index;
+    }
 
-            image.onclick = ((event) => {
-                if (this.users[id].ping) {
-                    this.signalHelp(id);
-                }
-                socket.emit('pen.resolveHelp', { id });
-            });
-            kickBanMenu.onclick = ((event) => {
-                kickBanMenu.classList.toggle('open');
-            });
-            kick.onclick = ((event) => {
-                event.preventDefault();
-                this.setModalContent(`kick ${this.users[id].user.username}`,
-                    (() => {
-                        const modal = document.getElementById('confirm-modal');
-                        modal.classList.toggle('hidden');
-                        socket.emit('user.kick', {userID: id});
-                        console.log("sending kick request", id);
-                    }),
-                    (() => {
-                        const modal = document.getElementById('confirm-modal');
-                        modal.classList.toggle('hidden');
-                    })
-                );
-            });
-            ban.onclick = ((event) => {
-                event.preventDefault();
-                this.setModalContent(`ban ${this.users[id].user.username}`,
-                    (() => {
-                        const modal = document.getElementById('confirm-modal');
-                        modal.classList.toggle('hidden');
-                        this.users[id].state = 'banned';
-                        socket.emit('user.kick', {userID: id});
-                    }),
-                    (() => {
-                        const modal = document.getElementById('confirm-modal');
-                        modal.classList.toggle('hidden');
-                    })
-                );
-            });
-            sharePen.onclick = ((event) => {
-                event.preventDefault();
-                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
-                if (index === -1) {
-                    return;
-                }
-                this.setPenContentIntoPen(pens[index], this.publicPen);
-            });
-            loadPen.onclick = ((event) => {
-                event.preventDefault();
-                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
-                if (index === -1 || this.indexOfPenInLinked(pens[index]) !== -1) {
-                    return;
-                }
-                this.loadRemotePen(pens[index], id);
-            });
-            preview.onclick = ((event) => {
-                const modal = document.getElementById('preview-modal');
-                const shareModalPen = document.getElementById('modal-share');
-                const loadModalPen = document.getElementById('modal-load');
-                const iFrame = modal.querySelector('iframe#preview-iframe');
+    addSingleUserListener(userID) {
+        const user = document.getElementById(userID);
+        const preview = user.querySelector('img#preview-icon');
+        const image = user.querySelector('img.user-icon');
+        const kickBanMenu = user.querySelector('.user-remove');
+        const kick = user.querySelector('.kick');
+        const ban = user.querySelector('.ban');
+        const sharePen = user.querySelector('button#share-pen');
+        const loadPen = user.querySelector('button#load-pen');
+        const select = document.querySelector('select');
+        const id = user.id;
+        const { pens } = this.users[id];
 
-                const index = findIDInUserPen(this.users[id].currentPen.id, pens);
-                if (index === -1) {
-                    return;
-                }
-                modal.classList.toggle('hidden');
-                iFrame.src = `/preview/${this.room.name}?penID=${pens[index].id}&userID=${id}`;
-                shareModalPen.onclick = sharePen.onclick;
-                loadModalPen.onclick = loadPen.onclick;
-            });
+        image.onclick = ((event) => {
+            if (this.users[id].ping) {
+                this.signalHelp(id);
+            }
+            socket.emit('pen.resolveHelp', { id });
+        });
+        kickBanMenu.onclick = ((event) => {
+            kickBanMenu.classList.toggle('open');
+        });
+        kick.onclick = ((event) => {
+            event.preventDefault();
+            this.setModalContent(`kick ${this.users[id].user.username}`,
+                (() => {
+                    const modal = document.getElementById('confirm-modal');
+                    modal.classList.toggle('hidden');
+                    socket.emit('user.kick', {userID: id});
+                    console.log("sending kick request", id);
+                }),
+                (() => {
+                    const modal = document.getElementById('confirm-modal');
+                    modal.classList.toggle('hidden');
+                })
+            );
+        });
+        ban.onclick = ((event) => {
+            event.preventDefault();
+            this.setModalContent(`ban ${this.users[id].user.username}`,
+                (() => {
+                    const modal = document.getElementById('confirm-modal');
+                    modal.classList.toggle('hidden');
+                    this.users[id].state = 'banned';
+                    socket.emit('user.kick', {userID: id});
+                }),
+                (() => {
+                    const modal = document.getElementById('confirm-modal');
+                    modal.classList.toggle('hidden');
+                })
+            );
+        });
+        sharePen.onclick = ((event) => {
+            event.preventDefault();
+            // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+            let selectedPen = select.selectedOptions[0].id;
+            if (selectedPen === "") {
+                selectedPen = this.publicPen.id;
+            }
+            const index = this.findIDInUserPen(selectedPen, pens);
+            if (index === -1) {
+                return;
+            }
+            this.setPenContentIntoPen(pens[index], this.publicPen);
+        });
+        loadPen.onclick = ((event) => {
+            event.preventDefault();
+            // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+            let selectedPen = select.selectedOptions[0].id;
+            if (selectedPen === "") {
+                selectedPen = this.publicPen.id;
+            }
+            const index = this.findIDInUserPen(selectedPen, pens);
+            if (index === -1 || this.indexOfPenInLinked(pens[index]) !== -1) {
+                return;
+            }
+            this.loadRemotePen(pens[index], id);
+        });
+        preview.onclick = ((event) => {
+            const modal = document.getElementById('preview-modal');
+            const shareModalPen = document.getElementById('modal-share');
+            const loadModalPen = document.getElementById('modal-load');
+            const iFrame = modal.querySelector('iframe#preview-iframe');
+
+            // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+            let selectedPen = select.selectedOptions[0].id;
+            if (selectedPen === "") {
+                selectedPen = this.publicPen.id;
+            }
+            const index = this.findIDInUserPen(selectedPen, pens);
+
+            if (index === -1) {
+                return;
+            }
+            modal.classList.toggle('hidden');
+            iFrame.src = `/preview/${this.room.name}?penID=${pens[index].id}&userID=${id}`;
+            shareModalPen.onclick = sharePen.onclick;
+            loadModalPen.onclick = loadPen.onclick;
         });
     }
 
