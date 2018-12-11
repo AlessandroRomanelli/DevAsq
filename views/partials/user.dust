@@ -9,12 +9,15 @@
   <p class='user-name'>{user.username}</p>
   <div class='current-pen'>
     <span>Pen:</span>
-    <select>
-      <option value="Public"> Public </option>
-      {#pens}
-        <option value="{title}" id="{id}"> {title} </option>
-      {/pens}
-    </select>
+    <div class="custom-select">
+      <select>
+        <option> Public </option>
+        {#pens}
+          <option id="{id}"> {title} </option>
+        {/pens}
+      </select>
+    </div>
+    {!<span class='user-current-pen'>{currentPen.title}</span>!}
     <img id="preview-icon" src="/images/preview.png">
   </div>
   <div class="pen-actions">
