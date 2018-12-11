@@ -15,10 +15,13 @@
             </div>
           </div>
           <script src="/scripts/fetch.js" charset="utf-8"></script>
-          <div class="manage-rooms">
-            {> "partials/rooms" /}
+          <div id="content">
+            {#loggedUser}
+              {> "partials/rooms" /}
+            {:else}
+              {> "partials/about" /}
+            {/loggedUser}
           </div>
-          {> "partials/roomExplorer" /}
         </div>
 
         {> "partials/footer" /}

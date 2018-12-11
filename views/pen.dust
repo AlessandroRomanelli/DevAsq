@@ -6,75 +6,78 @@
     </head>
     <body onload="init()">
       {> "partials/menu" /}
-      <div id="room-info">
-        <span>Name: <span id="room-name" class="info"></span></span>
-        <span id="raise-hand" class="info">Ask for help</span>
-        <span>Participants: <span id="participants" class="info"></span></span>
-        <span id="share-public" data-encoded-options="7">Share <button id='share-toggler'>▼</button>
-          <div id="share-options">
-            <div class="option-container">
-              <span>ALL</span>
-              <label class="switch" for="all">
-                <input type="checkbox" name="all" checked><span class="slider"></span>
-              </label>
+      <div id="content">
+        <div id="room-info">
+          <span>Name: <span id="room-name" class="info"></span></span>
+          <span id="raise-hand" class="info">Ask for help</span>
+          <span>Participants: <span id="participants" class="info"></span></span>
+          <span id="share-public" data-encoded-options="7">Share <button id='share-toggler'>▼</button>
+            <div id="share-options">
+              <div class="option-container">
+                <span>ALL</span>
+                <label class="switch" for="all">
+                  <input type="checkbox" name="all" checked><span class="slider"></span>
+                </label>
+              </div>
+              <div class="option-container">
+                <span>HTML</span>
+                <label class="switch" for="html">
+                  <input type="checkbox" name="html" checked><span class="slider"></span>
+                </label>
+              </div>
+              <div class="option-container">
+                <span>CSS</span>
+                <label class="switch" for="css">
+                  <input type="checkbox" name="css" checked><span class="slider"></span>
+                </label>
+              </div>
+              <div class="option-container">
+                <span>JS</span>
+                <label class="switch" for="js">
+                  <input type="checkbox" name="js" checked><span class="slider"></span>
+                </label>
+              </div>
             </div>
-            <div class="option-container">
-              <span>HTML</span>
-              <label class="switch" for="html">
-                <input type="checkbox" name="html" checked><span class="slider"></span>
-              </label>
+          </span>
+        </div>
+        <ul id="tabs" class="container">
+          <li id='newTab' class="switchTab">
+            <img src="/images/plus.png">
+          </li>
+        </ul>
+        <div id="pens" class="container">
+          <div class="controls">
+            <div class="pen">
+              <h1>HTML</h1>
+              <div id="htmlPen" class="codePane"></div>
             </div>
-            <div class="option-container">
-              <span>CSS</span>
-              <label class="switch" for="css">
-                <input type="checkbox" name="css" checked><span class="slider"></span>
-              </label>
+            <div class="pen">
+              <h1>CSS</h1>
+              <div id="cssPen" class="codePane"></div>
             </div>
-            <div class="option-container">
-              <span>JS</span>
-              <label class="switch" for="js">
-                <input type="checkbox" name="js" checked><span class="slider"></span>
-              </label>
+            <div class="pen">
+              <h1>JS</h1>
+              <div id="jsPen" class="codePane"></div>
             </div>
           </div>
-        </span>
-      </div>
-      <ul id="tabs" class="container">
-        <li id='newTab' class="switchTab">
-          <img src="/images/plus.png">
-        </li>
-      </ul>
-      <div id="pens" class="container">
-        <div class="controls">
-          <div class="pen">
-            <h1>HTML</h1>
-            <div id="htmlPen" class="codePane"></div>
-          </div>
-          <div class="pen">
-            <h1>CSS</h1>
-            <div id="cssPen" class="codePane"></div>
-          </div>
-          <div class="pen">
-            <h1>JS</h1>
-            <div id="jsPen" class="codePane"></div>
+          <div class="preview">
+            <iframe id="iFrame" src="/preview.html"></iframe>
           </div>
         </div>
-        <div class="preview">
-          <iframe id="iFrame" src="/preview.html"></iframe>
+        <div id="room-settings" class='hidden'>
+          {> "partials/creator" /}
         </div>
-      </div>
-      <div id="room-settings" class='hidden'>
-        {> "partials/creator" /}
-      </div>
-      <div id='preview-modal' class="modal hidden">
-        <div class="container">
-          <div id="close-modal"></div>
-          <iframe id='preview-iframe'></iframe>
-          <div id='preview-loaders' class="">
-            <button id='modal-share' type="button" name="button">Share pen</button>
-            <button id='modal-load' type="button" name="button">Load pen</button>
+        <div id='preview-modal' class="modal hidden">
+          <div class="container">
+            <div id="close-modal"></div>
+            <iframe id='preview-iframe'></iframe>
+            <div id='preview-loaders' class="">
+              <button id='modal-share' type="button" name="button">Share pen</button>
+              <button id='modal-load' type="button" name="button">Load pen</button>
+            </div>
           </div>
         </div>
+
       </div>
 
       {> "partials/footer" /}

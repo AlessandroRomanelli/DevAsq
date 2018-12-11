@@ -11,7 +11,12 @@ $default-margin: 30px
 *
   box-sizing: border-box
 
+body, html
+  min-height: 100vh
+
 body
+  display: grid
+  grid-template-rows: auto 1fr auto
   position: relative
   overflow-x: hidden
   margin: 0

@@ -19,7 +19,9 @@ function init() {
 }
 
 function addExplorerListener() {
-    const row = document.getElementById('roomTable').querySelector('tr');
+    const table = document.getElementById('roomTable')
+    if (!table) return
+    const row = table.querySelector('tr');
     // const name = row.querySelector('th');
     // const population = row.querySelectorAll('th')[1];
     const name = document.getElementById('name-sort');
