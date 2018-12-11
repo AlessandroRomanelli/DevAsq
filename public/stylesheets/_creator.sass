@@ -321,6 +321,7 @@
   background: transparentize(black, 0.33)
   z-index: 1000
   transition: 0.5s ease-in-out
+  pointer-events: all
   .container
     position: absolute
     top: 50%
@@ -339,6 +340,7 @@
     background: white
   &.hidden
     opacity: 0
+    pointer-events: none
 
 #confirm-modal
   .container
