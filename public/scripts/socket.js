@@ -1,16 +1,15 @@
 let socket;
-let currentSort = 'nameUp';
+let currentSort = 'nameDown';
 
 function sortName() {
     const roomTable = document.getElementById('roomTable').childNodes[0];
     let entries = Array.prototype.slice.call(roomTable.childNodes);
     const headers = entries.splice(0, 1);
 
-    const name = document.getElementById('name-sort');
 
     entries.sort((first, second) => {
-        const firstText = first.firstChild.innerText;
-        const secondText = second.firstChild.innerText;
+        const firstText = first.firstChild.innerText.toLowerCase();
+        const secondText = second.firstChild.innerText.toLowerCase();
         if (currentSort === 'nameUp') {
             return (firstText < secondText) ? -1 : 1;
         }
@@ -36,13 +35,18 @@ function sortName() {
     result += "</tbody>";
 
     roomTable.innerHTML = result;
+    const pop = document.getElementById('pop-sort');
+    const name = document.getElementById('name-sort');
+    pop.classList.remove('active');
+    pop.classList.remove('inverse');
+    name.classList.add('active');
 
     if (currentSort === 'nameUp') {
         currentSort = 'nameDown';
-        name.classList.add('invert');
+        name.classList.remove('inverse');
     } else {
         currentSort = 'nameUp';
-        name.classList.remove('invert');
+        name.classList.add('inverse');
     }
 
     addExplorerListener();
@@ -56,9 +60,17 @@ function sortPopulation() {
     entries.sort((first, second) => {
         const firstText = first.childNodes[1].innerText;
         const secondText = second.childNodes[1].innerText;
+        const firstTextName = first.firstChild.innerText.toLowerCase();
+        const secondTextName = second.firstChild.innerText.toLowerCase();
+
+        if (firstText === secondText) {
+            return (firstTextName < secondTextName) ? -1 : 1;
+        }
+
         if (currentSort === 'populationUp') {
             return (firstText < secondText) ? -1 : 1;
         }
+
         return (firstText > secondText) ? -1 : 1;
     });
 
@@ -80,11 +92,18 @@ function sortPopulation() {
 
     console.log(currentSort);
     roomTable.innerHTML = result;
+    const pop = document.getElementById('pop-sort');
+    const name = document.getElementById('name-sort');
+    name.classList.remove('active');
+    name.classList.remove('inverse');
+    pop.classList.add('active');
 
     if (currentSort === 'populationUp') {
         currentSort = 'populationDown';
+        pop.classList.remove('inverse');
     } else {
         currentSort = 'populationUp';
+        pop.classList.add('inverse');
     }
 
     addExplorerListener();
