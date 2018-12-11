@@ -118,6 +118,7 @@ function init() {
         console.log(id);
         if (app instanceof CreatorApp) {
             app.signalHelp(id);
+            app.updateRoomSettings();
         }
     });
 
@@ -135,14 +136,14 @@ function init() {
     });
 
     socket.on('room.isAllowed', (data) => {
-        console.log("creator received request to enter", data);
+        console.log('creator received request to enter', data);
         const { userID } = data;
         if (app instanceof CreatorApp) {
             let response = 'true';
             if (app.users[userID]) {
-                response = `${app.users[userID].state !== 'banned'}`
+                response = `${app.users[userID].state !== 'banned'}`;
             }
-            console.log("sending request to enter");
+            console.log('sending request to enter');
             socket.emit('room.accessResponse', {
                 userID,
                 response,

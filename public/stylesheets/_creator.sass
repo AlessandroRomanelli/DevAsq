@@ -161,6 +161,9 @@
   z-index: 1000
   transition: 0.5s all ease-in-out
 
+  &.hidden.help-needed .toggler
+    animation: glow-box 0.8s ease-in-out infinite both
+
   .toggler
     display: flex
     align-items: center
@@ -476,3 +479,13 @@
     -webkit-transform: translate(-50%, -50%) scale(3.0)
     transform: translate(-50%, -50%) scale(3.0)
     opacity: 0
+
+@keyframes glow-box
+  0%
+    box-shadow: 0 0 10px -5px $primary-color
+
+  80%
+    box-shadow: 0 0 20px 10px transparentize($primary-color, 0.5)
+
+  100%
+    box-shadow: 0 0 30px 10px transparent

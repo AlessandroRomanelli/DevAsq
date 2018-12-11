@@ -532,11 +532,11 @@ class CreatorApp extends App {
             currentPen: this.publicPen,
             pens: [],
             ping: false,
-            state: 'connected'
+            state: 'connected',
         };
         socket.emit('homePage.updatePopulation', {
             roomName: this.room.name,
-            population: `${Object.values(this.countActive()).length}`
+            population: `${Object.values(this.countActive()).length}`,
         });
         this.updateUI();
     }
@@ -551,7 +551,7 @@ class CreatorApp extends App {
         console.log(this.room.users);
         socket.emit('homePage.updatePopulation', {
             roomName: this.room.name,
-            population: `${Object.values(this.countActive()).length}`
+            population: `${Object.values(this.countActive()).length}`,
         });
         this.updateUI();
     }
@@ -632,7 +632,7 @@ class CreatorApp extends App {
 
     countActive() {
         const connectedUsers = {};
-        for (let key in this.users) {
+        for (const key in this.users) {
             if (this.users[key].state === 'connected') {
                 connectedUsers[key] = this.users[key];
             }
@@ -642,7 +642,6 @@ class CreatorApp extends App {
 
     updateUI() {
         const participants = document.getElementById('participants');
-        // `${Object.keys(this.users).length}`;
         const connectedUsers = this.countActive();
         const count = Object.values(connectedUsers).length;
         participants.innerHTML = `${count}`;
@@ -653,7 +652,23 @@ class CreatorApp extends App {
             this.addTogglerListener();
             this.addUsersPing();
             this.addUsersListener();
+            this.updateRoomSettings();
         }));
+    }
+
+    updateRoomSettings() {
+        const roomSettings = document.getElementById('room-settings');
+        const users = Object.keys(this.users);
+        let count = 0;
+        for (let i = 0; i < users.length; i++) {
+            const user = this.users[users[i]];
+            if (user.ping === true) count++;
+        }
+        if (count > 0) {
+            roomSettings.classList.add('help-needed');
+        } else {
+            roomSettings.classList.remove('help-needed');
+        }
     }
 
     addUsersPing() {
@@ -690,6 +705,7 @@ class CreatorApp extends App {
             image.onclick = ((event) => {
                 if (this.users[id].ping) {
                     this.signalHelp(id);
+                    this.updateRoomSettings();
                 }
                 socket.emit('pen.resolveHelp', { id });
             });
@@ -702,14 +718,13 @@ class CreatorApp extends App {
                     (() => {
                         const modal = document.getElementById('confirm-modal');
                         modal.classList.toggle('hidden');
-                        socket.emit('user.kick', {userID: id});
-                        console.log("sending kick request", id);
+                        socket.emit('user.kick', { userID: id });
+                        console.log('sending kick request', id);
                     }),
                     (() => {
                         const modal = document.getElementById('confirm-modal');
                         modal.classList.toggle('hidden');
-                    })
-                );
+                    }));
             });
             ban.onclick = ((event) => {
                 event.preventDefault();
@@ -718,13 +733,12 @@ class CreatorApp extends App {
                         const modal = document.getElementById('confirm-modal');
                         modal.classList.toggle('hidden');
                         this.users[id].state = 'banned';
-                        socket.emit('user.kick', {userID: id});
+                        socket.emit('user.kick', { userID: id });
                     }),
                     (() => {
                         const modal = document.getElementById('confirm-modal');
                         modal.classList.toggle('hidden');
-                    })
-                );
+                    }));
             });
             sharePen.onclick = ((event) => {
                 event.preventDefault();
