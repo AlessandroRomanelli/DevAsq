@@ -40,11 +40,13 @@
             </div>
           </span>
         </div>
-        <ul id="tabs" class="container">
-          <li id='newTab' class="switchTab">
-            <img src="/images/plus.png">
-          </li>
-        </ul>
+        <div class="tabs-container">
+          <ul id="tabs" class="container">
+            <li id='newTab' class="switchTab">
+              <img src="/images/plus.png">
+            </li>
+          </ul>
+        </div>
         <div id="pens" class="container">
           <div class="controls">
             <div class="pen">
