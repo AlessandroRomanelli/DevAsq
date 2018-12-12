@@ -507,6 +507,28 @@ class App {
             pens.classList.remove('centerLayout');
             pens.classList.add('rightLayout');
         });
+
+        pens.querySelector('div').childNodes.forEach((pen) => {
+           const btns = pen.querySelectorAll('button');
+           btns[0].addEventListener('click', (event) => {
+               event.target.parentNode.parentNode.classList.add('max');
+               event.target.parentNode.parentNode.classList.remove('min');
+               pens.querySelector('div').childNodes.forEach((checkPen) => {
+                   if (checkPen !== pen) {
+                       checkPen.classList.remove('max');
+                       checkPen.classList.add('min');
+                   }
+               });
+           });
+           btns[1].addEventListener('click', (event) => {
+               event.target.parentNode.parentNode.classList.remove('max');
+               event.target.parentNode.parentNode.classList.add('min');
+           });
+           btns[2].addEventListener('click', (event) => {
+               event.target.parentNode.parentNode.classList.remove('max');
+               event.target.parentNode.parentNode.classList.remove('min');
+           });
+        });
     }
 
     indexOfPen(pen) {

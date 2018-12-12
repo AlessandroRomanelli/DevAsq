@@ -53,15 +53,27 @@
         <div id="pens" class="container centerLayout">
           <div class="controls">
             <div class="pen">
-              <h1>HTML</h1>
+              <h1> HTML
+                <button> Maximize </button>
+                <button> Minimize </button>
+                <button> Normal </button>
+              </h1>
               <div id="htmlPen" class="codePane"></div>
             </div>
             <div class="pen">
-              <h1>CSS</h1>
+              <h1> CSS
+                <button> Maximize </button>
+                <button> Minimize </button>
+                <button> Normal </button>
+              </h1>
               <div id="cssPen" class="codePane"></div>
             </div>
             <div class="pen">
-              <h1>JS</h1>
+              <h1> JS
+                <button> Maximize </button>
+                <button> Minimize </button>
+                <button> Normal </button>
+              </h1>
               <div id="jsPen" class="codePane"></div>
             </div>
           </div>
