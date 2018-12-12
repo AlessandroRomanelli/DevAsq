@@ -1,21 +1,20 @@
 .tabs-container
   position: relative
-  overflow-x: scroll
-  width: calc(100vw - 325px)
-  margin-left: auto
+  overflow-x: auto
+  overflow-y: hidden
+  width: 100vw
   display: flex
-  margin-left: auto
   &::after
     content: ''
-    position: fixed
+    position: absolute
     width: 40px
     height: 100%
-    left: 29%
+    left: 0
     background: linear-gradient(90deg, $color-background 20%, transparent)
     // box-shadow: inset 20px 0 15px -10px $color-background
   &::-webkit-scrollbar
     display: none
-  
+
 
 #pens.container
   position: relative
@@ -83,6 +82,7 @@
   padding-right: 1em
   border-bottom: 1px solid lighten($color-background, 20%)
   li.switchTab
+    flex: 0 0 auto
     display: flex
     align-items: center
     justify-content: center
