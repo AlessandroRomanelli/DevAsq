@@ -4,17 +4,18 @@
   overflow-y: hidden
   width: 100vw
   display: flex
+
   &::after
-    content: ''
+    content: ""
     position: absolute
     width: 40px
     height: 100%
     left: 0
     background: linear-gradient(90deg, $color-background 20%, transparent)
     // box-shadow: inset 20px 0 15px -10px $color-background
+
   &::-webkit-scrollbar
     display: none
-
 
 #pens.container
   position: relative
@@ -28,26 +29,127 @@
   .controls
     padding: 1em
     grid-area: controls
-    width: 100%
-    height: 350px
     display: grid
     background: $dark
-    grid-template-areas: "html css js"
-    grid-template-columns: 1fr 1fr 1fr
 
   .pen
-    height: 90%
+    height: 100%
+    &:nth-child(1)
+      grid-area: html
+
+    &:nth-child(2)
+      grid-area: css
+
+    &:nth-child(3)
+      grid-area: js
+
+    .header
+      display: flex
+      align-items: center
+      justify-content: flex-start
+
     h1
       margin: 0
+      margin-right: 1em
 
-  #htmlPen
-    grid-area: html
+  .pen .pen-layout
+    display: flex
+    align-items: center
 
-  #cssPen
-    grid-area: css
+    button
+      width: 20px
+      height: 20px
+      padding: 0
+      border: none
+      outline: 0
+      color: white
+      transition: 0.2s all ease-in-out
+      filter: grayscale(1) brightness(2)
+      opacity: 0.5
+      background-size: cover !important
+      &:nth-child(1)
+        background: url('../images/maximize.png') no-repeat center
+      &:nth-child(2)
+        background: url('../images/cross.png') no-repeat center
+      &:nth-child(3)
+        background: url('../images/minimize.png') no-repeat center
 
-  #jsPen
-    grid-area: js
+      &:not(:first-child)
+        margin-left: 1em
+      &:hover, &.active
+        cursor: pointer
+        color: $primary-color
+        filter: grayscale(0) brightness(1)
+        opacity: 1
+      &.active
+        opacity: 0.8
+        &:hover
+          cursor: auto
+
+  &.leftLayout, &.rightLayout
+    grid-template-rows: 100vh
+    .controls
+      grid-template-areas: "html" "css" "js"
+      grid-template-columns: 1fr
+    .pen:not(:first-child)
+      padding: 0.5em 0
+    .preview
+      height: 100%
+
+    &.html .controls
+      grid-template-rows: 1fr 75px 75px
+    &.css .controls
+      grid-template-rows: 75px 1fr 75px
+    &.js .controls
+      grid-template-rows: 75px 75px 1fr
+    &.htmlcss .controls
+      grid-template-rows: 1fr 1fr 75px
+    &.htmljs .controls
+      grid-template-rows: 1fr 75px 1fr
+    &.cssjs .controls
+      grid-template-rows: 75px 1fr 1fr
+    &.none .controls
+      grid-template-rows: 75px 75px 75px 1fr
+
+  &.leftLayout
+    grid-template-areas: "controls preview"
+    grid-template-columns: 1fr 2fr
+
+  &.centerLayout
+    grid-template-areas: "controls" "preview"
+
+    .controls
+      width: 100%
+      height: 350px
+      grid-template-areas: "html css js"
+      grid-template-columns: 1fr 1fr 1fr
+
+    &.html .controls
+      grid-template-columns: 1fr 75px 75px
+
+    &.css .controls
+      grid-template-columns: 75px 1fr 75px
+
+    &.js .controls
+      grid-template-columns: 75px 75px 1fr
+
+    &.htmljs .controls
+      grid-template-columns: 1fr 75px 1fr
+
+    &.htmlcss .controls
+      grid-template-columns: 1fr 1fr 75px
+
+    &.cssjs .controls
+      grid-template-columns: 75px 1fr 1fr
+
+    &.none .controls
+      grid-template-columns: 75px 75px 75px 1fr
+
+  &.rightLayout
+    grid-template-areas: "preview controls"
+    grid-template-columns: 2fr 1fr
+
+
 
   .preview
     grid-area: preview
@@ -61,9 +163,20 @@
     border: none
     overflow: hidden
 
-  .codePane
-    height: 100%
-    border: 1px solid black
+  .pen
+    .codePane
+      height: calc(100% - 43px)
+      border: 1px solid black
+    &.min
+      position: relative
+      width: 50px
+      .codePane
+        display: none
+  &.centerLayout .pen.min .header
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%) rotate(270deg)
 
 //top - bar with panes to switch
 
@@ -81,6 +194,7 @@
   margin-left: auto
   padding-right: 1em
   border-bottom: 1px solid lighten($color-background, 20%)
+
   li.switchTab
     flex: 0 0 auto
     display: flex
@@ -103,31 +217,37 @@
     color: gray
     letter-spacing: 1px
     transition: 0.2s all ease-in-out
+
     &:not(.locked) span
       margin: 0
       margin-left: 1em
+
     &.locked
       &::after
         color: $primary-color
         position: absolute
         top: 50%
         left: 50%
-        content: 'Locked'
+        content: "Locked"
         text-transform: uppercase
         opacity: 1
         font-size: 0.5em
         letter-spacing: 2px
         opacity: 0.5
+
         // background: url('../images/lock-icon.png') no-repeat center
         // background-size: cover
         transform: translate(-50%, -15%)
         overflow: visible
         transition: 0.2s ease-in-out
+
       &:hover::after, &.active::after
         opacity: 1
+
     span
       outline: none
       margin: 0 1em
+
     .closeButton
       position: relative
       bottom: -1px
@@ -138,35 +258,39 @@
       width: 15px
       height: 15px
       border: none
-      background: url('../images/cross.png') no-repeat center
+      background: url("../images/cross.png") no-repeat center
       background-size: cover
       filter: grayscale(1) brightness(2)
       opacity: 0
       outline: none
       transition: 0.2s ease-in-out
+
       &:hover
         filter: grayscale(0) brightness(1)
 
-
     &.shared .closeButton
-      background: url('../images/link.png') no-repeat center
+      background: url("../images/link.png") no-repeat center
       background-size: cover
       opacity: 0.5
       transition: 0.2s ease-in-out
+
       &:hover
-        background: url('../images/broken-link.png') no-repeat center
+        background: url("../images/broken-link.png") no-repeat center
         background-size: cover
         opacity: 1
 
     &:hover .closeButton
       opacity: 0.85
       cursor: pointer
+
     &.active
       color: white
       background: $dark
       border-bottom: 0
+
       .closeButton
         opacity: 1
+
     &:hover
       cursor: pointer
 
@@ -174,10 +298,10 @@
       background: linear-gradient(to top, $dark 25%, lighten($dark, 10%) 100%)
       border-bottom-color: transparent
       box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 $color-background
+
       // text-shadow: 0 1px $color-background
       color: white
       transition: 0.2s all ease-in-out
-
 
     &:last-of-type
       min-width: 50px
@@ -186,11 +310,13 @@
   display: flex
   justify-content: center
   align-items: center
+
   img
     width: 13px
     height: 13px
     filter: grayscale(1) brightness(2)
     transition: 0.2s ease-in-out
+
     &:hover
       filter: grayscale(0) brightness(1)
 

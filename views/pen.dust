@@ -8,40 +8,45 @@
       {> "partials/menu" /}
       <div id="content">
         <div id="room-info">
-          <span>Name: <span id="room-name" class="info"></span></span>
-          <span id="raise-hand" class="info">Ask for help</span>
-          <span>Participants: <span id="participants" class="info"></span></span>
-          <span id="share-public" data-html="true" data-css="true" data-js="true">Share <button id='share-toggler'>▼</button>
-            <div id="share-options">
-              <div class="option-container">
-                <span>ALL</span>
-                <label class="switch" for="all">
-                  <input type="checkbox" name="all" checked><span class="slider"></span>
-                </label>
+          <span class='info'>
+            <span>Name: <span id="room-name" class="info"></span></span>
+            <span id="raise-hand" class="info">Ask for help</span>
+            <span>Participants: <span id="participants" class="info"></span></span>
+            <span id="share-public" data-html="true" data-css="true" data-js="true">Share <button id='share-toggler'>▼</button>
+              <div id="share-options">
+                <div class="option-container">
+                  <span>ALL</span>
+                  <label class="switch" for="all">
+                    <input type="checkbox" name="all" checked><span class="slider"></span>
+                  </label>
+                </div>
+                <div class="option-container">
+                  <span>HTML</span>
+                  <label class="switch" for="html">
+                    <input type="checkbox" name="html" checked><span class="slider"></span>
+                  </label>
+                </div>
+                <div class="option-container">
+                  <span>CSS</span>
+                  <label class="switch" for="css">
+                    <input type="checkbox" name="css" checked><span class="slider"></span>
+                  </label>
+                </div>
+                <div class="option-container">
+                  <span>JS</span>
+                  <label class="switch" for="js">
+                    <input type="checkbox" name="js" checked><span class="slider"></span>
+                  </label>
+                </div>
               </div>
-              <div class="option-container">
-                <span>HTML</span>
-                <label class="switch" for="html">
-                  <input type="checkbox" name="html" checked><span class="slider"></span>
-                </label>
-              </div>
-              <div class="option-container">
-                <span>CSS</span>
-                <label class="switch" for="css">
-                  <input type="checkbox" name="css" checked><span class="slider"></span>
-                </label>
-              </div>
-              <div class="option-container">
-                <span>JS</span>
-                <label class="switch" for="js">
-                  <input type="checkbox" name="js" checked><span class="slider"></span>
-                </label>
-              </div>
-            </div>
+            </span>
           </span>
-          <button id="leftLayout"> Left </button>
-          <button id="centerLayout"> Center </button>
-          <button id="rightLayout"> Right </button>
+          <span class='layouts'>
+            Layout:
+            <button id="leftLayout">⇠</button>
+            <button class='active' id="centerLayout">⇡</button>
+            <button id="rightLayout">⇢</button>
+          </span>
         </div>
         <div class="tabs-container">
           <ul id="tabs" class="container">
@@ -53,27 +58,36 @@
         <div id="pens" class="container centerLayout">
           <div class="controls">
             <div class="pen">
-              <h1> HTML
-                <button> Maximize </button>
-                <button> Minimize </button>
-                <button> Normal </button>
-              </h1>
+              <div class='header'>
+                <h1> HTML </h1>
+                <span class='pen-layout'>
+                  <button></button>
+                  <button class='active'></button>
+                  <button></button>
+                </span>
+              </div>
               <div id="htmlPen" class="codePane"></div>
             </div>
             <div class="pen">
-              <h1> CSS
-                <button> Maximize </button>
-                <button> Minimize </button>
-                <button> Normal </button>
-              </h1>
+              <div class='header'>
+                <h1> CSS </h1>
+                <span class='pen-layout'>
+                  <button></button>
+                  <button class='active'></button>
+                  <button></button>
+                </span>
+              </div>
               <div id="cssPen" class="codePane"></div>
             </div>
             <div class="pen">
-              <h1> JS
-                <button> Maximize </button>
-                <button> Minimize </button>
-                <button> Normal </button>
-              </h1>
+              <div class='header'>
+                <h1> JS </h1>
+                <span class='pen-layout'>
+                  <button></button>
+                  <button class='active'></button>
+                  <button></button>
+                </span>
+              </div>
               <div id="jsPen" class="codePane"></div>
             </div>
           </div>
