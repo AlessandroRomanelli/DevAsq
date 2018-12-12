@@ -39,6 +39,9 @@
               </div>
             </div>
           </span>
+          <button id="leftLayout"> Left </button>
+          <button id="centerLayout"> Center </button>
+          <button id="rightLayout"> Right </button>
         </div>
         <div class="tabs-container">
           <ul id="tabs" class="container">
@@ -47,7 +50,7 @@
             </li>
           </ul>
         </div>
-        <div id="pens" class="container">
+        <div id="pens" class="container centerLayout">
           <div class="controls">
             <div class="pen">
               <h1>HTML</h1>

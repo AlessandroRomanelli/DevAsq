@@ -479,6 +479,34 @@ class App {
         });
         sharePublic.parentNode.removeChild(sharePublic);
         modal.parentNode.removeChild(modal);
+
+        this.setUpLayout();
+    }
+
+    setUpLayout() {
+        const leftLayout = document.getElementById('leftLayout');
+        const centerLayout = document.getElementById('centerLayout');
+        const rightLayout = document.getElementById('rightLayout');
+        const pens = document.getElementById('pens');
+
+        leftLayout.addEventListener('click', () => {
+            console.log('calledLeft');
+            pens.classList.add('leftLayout');
+            pens.classList.remove('centerLayout');
+            pens.classList.remove('rightLayout');
+        });
+        centerLayout.addEventListener('click', () => {
+            console.log('calledCenter');
+            pens.classList.remove('leftLayout');
+            pens.classList.add('centerLayout');
+            pens.classList.remove('rightLayout');
+        });
+        rightLayout.addEventListener('click', () => {
+            console.log('calledRight');
+            pens.classList.remove('leftLayout');
+            pens.classList.remove('centerLayout');
+            pens.classList.add('rightLayout');
+        });
     }
 
     indexOfPen(pen) {
@@ -998,6 +1026,7 @@ class CreatorApp extends App {
         this.handleShareOptions(checkboxs);
 
         this.setUpModalListeners();
+        this.setUpLayout();
     }
 
     setUpModalListeners() {
