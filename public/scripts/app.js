@@ -479,6 +479,105 @@ class App {
         });
         sharePublic.parentNode.removeChild(sharePublic);
         modal.parentNode.removeChild(modal);
+
+        this.setUpLayout();
+    }
+
+    setUpLayout() {
+        const leftLayout = document.getElementById('leftLayout');
+        const centerLayout = document.getElementById('centerLayout');
+        const rightLayout = document.getElementById('rightLayout');
+        const pens = document.getElementById('pens');
+
+        function updateActive(element) {
+            const buttons = element.parentNode.childNodes;
+            for (let i = 0; i < buttons.length; i++) {
+                const button = buttons[i];
+                if (button.classList) button.classList.remove('active');
+            }
+            element.classList.add('active');
+        }
+
+        leftLayout.addEventListener('click', (event) => {
+            console.log('calledLeft');
+            updateActive(event.target);
+            pens.classList.add('leftLayout');
+            pens.classList.remove('centerLayout');
+            pens.classList.remove('rightLayout');
+        });
+        centerLayout.addEventListener('click', (event) => {
+            console.log('calledCenter');
+            updateActive(event.target);
+            pens.classList.remove('leftLayout');
+            pens.classList.add('centerLayout');
+            pens.classList.remove('rightLayout');
+        });
+        rightLayout.addEventListener('click', (event) => {
+            console.log('calledRight');
+            updateActive(event.target);
+            pens.classList.remove('leftLayout');
+            pens.classList.remove('centerLayout');
+            pens.classList.add('rightLayout');
+        });
+
+        const penClasses = ['none', 'html', 'css', 'htmlcss', 'js', 'htmljs', 'cssjs', undefined];
+
+        function convertToClass(n) {
+            return penClasses[n];
+        }
+
+        function updatePensClass() {
+            const editors = document.querySelectorAll('#pens .pen');
+            let count = 0;
+            console.log(editors);
+            for (let i = 0; i < editors.length; i++) {
+                const editor = editors[i];
+                if (!editor.classList.contains('min')) {
+                    count += 2 ** i;
+                }
+            }
+            penClasses.forEach((className) => {
+                pens.classList.remove(className);
+            });
+            const newClass = convertToClass(count);
+            if (newClass) pens.classList.add(newClass);
+        }
+
+        pens.querySelector('div').childNodes.forEach((pen) => {
+            const btns = pen.querySelectorAll('button');
+            btns[0].addEventListener('click', (event) => {
+                const button = event.target;
+                updateActive(button);
+                button.parentNode.parentNode.parentNode.classList.add('max');
+                button.parentNode.parentNode.parentNode.classList.remove('min');
+                pens.querySelector('div').childNodes.forEach((checkPen, index) => {
+                    if (checkPen !== pen) {
+                        checkPen.classList.remove('max');
+                        checkPen.classList.add('min');
+                        const buttons = checkPen.querySelectorAll('.header button');
+                        buttons.forEach((button, index) => {
+                            button.classList.remove('active');
+                            if (index === 2) button.classList.add('active');
+                        });
+                    }
+                });
+                updatePensClass();
+            });
+            btns[1].addEventListener('click', (event) => {
+                const button = event.target;
+                updateActive(button);
+                button.parentNode.parentNode.parentNode.classList.remove('max');
+                button.parentNode.parentNode.parentNode.classList.remove('min');
+                updatePensClass();
+            });
+            btns[2].addEventListener('click', (event) => {
+                const button = event.target;
+                updateActive(button);
+                button.parentNode.parentNode.parentNode.classList.remove('max');
+                button.parentNode.parentNode.parentNode.classList.add('min');
+                updatePensClass();
+            });
+        });
     }
 
     indexOfPen(pen) {
@@ -687,7 +786,7 @@ class CreatorApp extends App {
         const participants = document.getElementById('participants');
         const connectedUsers = this.countActive();
         const count = Object.values(connectedUsers).length;
-        console.log("Count", count);
+        console.log('Count', count);
         participants.innerHTML = `${count}`;
         return connectedUsers;
     }
@@ -998,6 +1097,7 @@ class CreatorApp extends App {
         this.handleShareOptions(checkboxs);
 
         this.setUpModalListeners();
+        this.setUpLayout();
     }
 
     setUpModalListeners() {
