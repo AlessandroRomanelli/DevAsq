@@ -156,6 +156,18 @@ function init() {
         console.log('Creator resolved help');
         app.resolveHelp();
     });
+
+    socket.on('assistant.promotion', () => {
+        if (app instanceof App) {
+            console.log("You have been promoted!")
+        }
+    });
+
+    socket.on('assistant.degradation', () => {
+        if (app instanceof App) {
+            console.log("You have been degraded!")
+        }
+    })
 }
 
 

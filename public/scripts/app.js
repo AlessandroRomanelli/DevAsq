@@ -523,6 +523,7 @@ class CreatorApp extends App {
     constructor(room, id) {
         super(room, id);
         this.users = {};
+        this.assistants = [];
     }
 
     userConnected(user) {
@@ -736,6 +737,7 @@ class CreatorApp extends App {
         const ban = user.querySelector('.ban');
         const sharePen = user.querySelector('button#share-pen');
         const loadPen = user.querySelector('button#load-pen');
+        const promote = user.querySelector('button.promote');
         const select = document.querySelector('select');
         const id = user.id;
         const { pens } = this.users[id];
@@ -833,6 +835,17 @@ class CreatorApp extends App {
             shareModalPen.onclick = sharePen.onclick;
             loadModalPen.onclick = loadPen.onclick;
         });
+        promote.onclick = ((event) => {
+            event.preventDefault();
+            const index = this.assistants.indexOf(id);
+            if (index === -1) {
+                this.assistants.push(id);
+                socket.emit('assistant.promotion', {userID: id});
+            } else {
+                this.assistants.splice(index, 1);
+                socket.emit('assistant.degradation', {userID: id})
+            }
+        })
     }
 
     setModalContent(message, confirmListener, cancelListener) {

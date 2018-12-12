@@ -324,6 +324,18 @@ io.on('connection', (socket) => {
         const destination = connectionMap.getSocket(userID);
         socket.to(destination).emit('pen.sharedDeleted', penID);
     });
+
+    socket.on('assistant.promotion', (data) => {
+        const { userID } = data;
+        const socketID = connectionMap.getSocket(userID);
+        socket.to(socketID).emit('assistant.promotion')
+    });
+
+    socket.on('assistant.degradation', (data) => {
+        const { userID } = data;
+        const socketID = connectionMap.getSocket(userID);
+        socket.to(socketID).emit('assistant.degradation')
+    })
 });
 
 eventBus.on('event', (event) => {

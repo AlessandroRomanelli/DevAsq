@@ -5,6 +5,9 @@
       <button class="ban" type="button" name="button">Ban</button>
     </div>
   </div>
+  <div class="user-promote">
+    <button class="promote">Promote</button>
+  </div>
   <img class='user-icon' src="/images/user.png">
   <p class='user-name'>{user.username}</p>
   <div class='current-pen'>
