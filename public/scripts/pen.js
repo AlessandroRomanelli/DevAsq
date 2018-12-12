@@ -165,6 +165,10 @@ function handleModals() {
     for (let i = 0; i < modals.length; i++) {
         const modal = modals[i];
         modal.addEventListener('click', (event) => {
+            console.log(event.target);
+            if (!event.target) { return; }
+            if (!event.target.classList) { return; }
+            if (!event.target.classList.contains('modal')) { return; }
             event.target.classList.add('hidden');
         });
     }
