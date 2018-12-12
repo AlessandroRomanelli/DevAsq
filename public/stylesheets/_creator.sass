@@ -11,7 +11,7 @@
   text-transform: uppercase
   color: $primary-color
   z-index: 100
-  span
+  & > span, & > span > span
     display: flex
     align-items: center
     height: 25px
@@ -134,6 +134,7 @@
     background: mix($dark, red, 90%)
     transition: 0.4s ease-in-out
     border-radius: 17px
+    height: 16px
     &:before
       content: ''
       position: absolute
