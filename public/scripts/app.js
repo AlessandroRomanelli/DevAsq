@@ -539,6 +539,7 @@ class CreatorApp extends App {
             population: `${Object.values(this.countActive()).length}`,
         });
         this.updateUserUI(user._id, this.publicPen);
+        this.updateParticipantsCounter();
     }
 
     userDisconnected(user) {
@@ -682,11 +683,17 @@ class CreatorApp extends App {
         return connectedUsers;
     }
 
-    updateUI() {
+    updateParticipantsCounter() {
         const participants = document.getElementById('participants');
         const connectedUsers = this.countActive();
         const count = Object.values(connectedUsers).length;
+        console.log("Count", count);
         participants.innerHTML = `${count}`;
+        return connectedUsers;
+    }
+
+    updateUI() {
+        const connectedUsers = this.updateParticipantsCounter();
         for (const key in connectedUsers) {
             this.updateUserUI(key, this.users[key].currentPen);
         }
