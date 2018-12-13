@@ -336,9 +336,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('assistant.promotion', (data) => {
-        const { userID, users } = data;
+        const { userID, users, assistants, roomName } = data;
         const socketID = connectionMap.getSocket(userID);
-        socket.to(socketID).emit('assistant.promotion', {users});
+        socket.to(socketID).emit('assistant.promotion', {users, assistants});
+        socket.to(`${roomName}_moderators`).emit('moderator.removeUser', {userID});
     });
 
     socket.on('assistant.beingPromoted', (data) => {
@@ -355,7 +356,16 @@ io.on('connection', (socket) => {
     socket.on('assistant.beingDegraded', (data) => {
         const { roomName } = data;
         socket.leave(`${roomName}_moderators`);
-    })
+    });
+
+    socket.on('moderator.loadPen', (data) => {
+        socket.to(getCreatorSocket(data.roomName)).emit('creator.isLinked', data);
+    });
+
+    socket.on('moderator.isLinked', (data) => {
+        const { result, userID, pen, ownerID } = data;
+        socket.to(connectionMap.getSocket(userID)).emit('moderator.linkResponse', {result, pen, ownerID});
+    });
 });
 
 eventBus.on('event', (event) => {

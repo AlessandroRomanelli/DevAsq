@@ -158,8 +158,11 @@ function init() {
     });
 
     socket.on('assistant.promotion', (data) => {
-        const { users } = data;
-        delete users[app.userID];
+        const { users, assistants } = data;
+        // delete users[app.userID];
+        for (let i = 0; i < assistants.length; i++) {
+            delete users[assistants[i]];
+        }
         console.log(users);
         if (app instanceof App) {
             socket.emit('assistant.beingPromoted', {roomName: app.room.name});
@@ -168,12 +171,31 @@ function init() {
         }
     });
 
+    socket.on('moderator.removeUser', (data) => {
+        const userID = data.userID;
+        delete app.users[userID];
+        document.getElementById(userID).outerHTML = "";
+    });
+
+
     socket.on('assistant.degradation', () => {
         if (app instanceof App) {
             socket.emit('assistant.beingDegraded', {roomName: app.room.name});
             console.log("You have been degraded!")
         }
-    })
+    });
+
+    socket.on('creator.isLinked', (data) => {
+        const { pen, userID, ownerID } = data;
+        socket.emit('moderator.isLinked', {result: `${app.isLinked(pen)}`, userID, pen, ownerID});
+    });
+
+    socket.on('moderator.linkResponse', (data) => {
+        const { result, pen, ownerID } = data;
+        if (result === 'false') {
+            app.loadRemotePen(pen, ownerID);
+        }
+    });
 }
 
 

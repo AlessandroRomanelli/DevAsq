@@ -504,10 +504,10 @@ class App {
         return index;
     }
 
-    indexOfPenInLinked(pen) {
+    indexOfPenInLinked(pen, pens = this.pens) {
         let index = -1;
-        for (let i = 0; i < this.pens.length; i++) {
-            if (this.pens[i].link && this.pens[i].link.penID === pen.id) {
+        for (let i = 0; i < pens.length; i++) {
+            if (pens[i].link && pens[i].link.penID === pen.id) {
                 index = i;
                 break;
             }
@@ -692,19 +692,40 @@ class App {
                 this.setPenContentIntoPen(pens[index], this.publicPen);
             });
         }
-        loadPen.onclick = ((event) => {
-            event.preventDefault();
-            // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
-            let selectedPen = select.selectedOptions[0].id;
-            if (selectedPen === '') {
-                selectedPen = this.publicPen.id;
-            }
-            const index = this.findIDInUserPen(selectedPen, pens);
-            if (index === -1 || this.indexOfPenInLinked(pens[index]) !== -1) {
-                return;
-            }
-            this.loadRemotePen(pens[index], id);
-        });
+        if (this.role === 'creator') {
+            loadPen.onclick = ((event) => {
+                event.preventDefault();
+                // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                let selectedPen = select.selectedOptions[0].id;
+                if (selectedPen === '') {
+                    selectedPen = this.publicPen.id;
+                }
+
+                const index = this.findIDInUserPen(selectedPen, pens);
+                if (index === -1 || this.isLinked(pens[index])) {
+                    return;
+                }
+                this.loadRemotePen(pens[index], id);
+            });
+        } else {
+            loadPen.onclick = ((event) => {
+                let selectedPen = select.selectedOptions[0].id;
+                if (selectedPen === '') {
+                    selectedPen = this.publicPen.id;
+                }
+                const index = this.findIDInUserPen(selectedPen, pens);
+                if (index === -1) {
+                    return;
+                }
+                socket.emit('moderator.loadPen', {
+                    pen: pens[index],
+                    userID: this.userID,
+                    roomName: this.room.name,
+                    ownerID: id
+                });
+            });
+        }
+
         preview.onclick = ((event) => {
             const modal = document.getElementById('preview-modal');
             const shareModalPen = document.getElementById('modal-share');
@@ -734,7 +755,12 @@ class App {
                 const index = this.assistants.indexOf(id);
                 if (index === -1) {
                     this.assistants.push(id);
-                    socket.emit('assistant.promotion', {userID: id, users: this.users});
+                    socket.emit('assistant.promotion', {
+                        userID: id,
+                        users: this.users,
+                        assistants: this.assistants,
+                        roomName: this.room.name
+                    });
                 } else {
                     this.assistants.splice(index, 1);
                     socket.emit('assistant.degradation', {userID: id})
@@ -1129,5 +1155,20 @@ class CreatorApp extends App {
         super(room, id, 'creator');
         this.users = {};
         this.assistants = [];
+    }
+
+    isLinked(pen) {
+        if (this.indexOfPenInLinked(pen) !== -1) {
+            return true;
+        } else {
+            for (let i = 0; i < this.assistants.length; i++) {
+                const assistant = this.assistants[i];
+                const assistantPens = this.users[assistant].pens;
+                if (this.indexOfPenInLinked(pen, assistantPens) !== -1) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
