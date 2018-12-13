@@ -681,7 +681,8 @@ class App {
         span.innerHTML = 'Ask for help';
         span.id = 'raise-hand';
         span.classList.add('info');
-        document.getElementById('room-info').appendChild(span);
+        const roomInfo = document.getElementById('room-info').querySelector('.info');
+        roomInfo.appendChild(span);
         for (let i = this.pens.length - 1; i >= 0; i--) {
             if (this.pens[i].link) {
                 this.deletePen(i);
