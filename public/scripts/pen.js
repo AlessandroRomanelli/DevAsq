@@ -31,10 +31,8 @@ function init() {
     startParsing(app);
 
     socket.on('connect', () => {
-        console.log('Room page socket connected');
         socket.emit('settings.bindID', { id: user._id });
 
-        console.log(app.room);
 
         socket.emit('settings.joinRoom', {
             roomName: app.room.name,
@@ -46,22 +44,18 @@ function init() {
     });
 
     socket.on('reconnect', (attemptNumber) => {
-        console.log('Socket reconnected!', 'ok');
         socket.emit('settings.bindID', { id: user._id });
     });
 
     socket.on('disconnect', (reason) => {
-        console.log(reason);
         socket.emit('settings.leaveRoom');
     });
 
     socket.on('pen.update', (data) => {
-        console.log(data);
         app.updatePen(data.pen, data.positions, data.difference, data.rows);
     });
 
     socket.on('pen.updatePreview', (data) => {
-        console.log('updating the preview');
         if (app.indexOfPen(data.pen) === app.currentPen) {
             app.changeAcesContent(data.positions, true);
         } else if (app.indexOfPenInLinked(data.pen) === app.currentPen) {
@@ -122,7 +116,6 @@ function init() {
     });
 
     socket.on('creator.helpNeeded', (id) => {
-        console.log(id);
         if (app instanceof CreatorApp || app.role === 'moderator') {
             app.signalHelp(id);
             app.updateRoomSettings();
@@ -143,14 +136,12 @@ function init() {
     });
 
     socket.on('room.isAllowed', (data) => {
-        console.log('creator received request to enter', data);
         const { userID } = data;
         if (app instanceof CreatorApp) {
             let response = 'true';
             if (app.users[userID]) {
                 response = `${app.users[userID].state !== 'banned'}`;
             }
-            console.log('sending request to enter');
             socket.emit('room.accessResponse', {
                 userID,
                 response,
@@ -160,7 +151,6 @@ function init() {
     });
 
     socket.on('pen.resolveHelp', (data) => {
-        console.log('Creator resolved help');
         app.resolveHelp(data && data.id);
     });
 
@@ -170,10 +160,8 @@ function init() {
         for (let i = 0; i < assistants.length; i++) {
             delete users[assistants[i]];
         }
-        console.log(users);
         if (app instanceof App) {
             socket.emit('assistant.beingPromoted', {roomName: app.room.name});
-            console.log("You have been promoted!");
             app.receivePromotion(users);
         }
     });
@@ -188,7 +176,6 @@ function init() {
     socket.on('assistant.degradation', () => {
         if (app instanceof App) {
             socket.emit('assistant.beingDegraded', {roomName: app.room.name});
-            console.log("You have been degraded!")
             app.receiveDegradation()
         }
     });
@@ -200,10 +187,14 @@ function init() {
 
     socket.on('moderator.linkResponse', (data) => {
         const { result, pen, ownerID } = data;
-        console.log(data);
         if (result === 'false') {
             app.loadRemotePen(pen, ownerID);
         }
+    });
+
+    socket.on('moderators.linkedPenChanged', (data) => {
+        const pen = data.pen;
+        app.updateContentLinkedPen(pen);
     });
 
     socket.on('creator.moderatorEstablishedLink', (data) => {
@@ -222,11 +213,9 @@ function init() {
 
 function handleModals() {
     const modals = document.querySelectorAll('.modal');
-    console.log(modals);
     for (let i = 0; i < modals.length; i++) {
         const modal = modals[i];
         modal.addEventListener('click', (event) => {
-            console.log(event.target);
             if (!event.target) { return; }
             if (!event.target.classList) { return; }
             if (!event.target.classList.contains('modal')) { return; }

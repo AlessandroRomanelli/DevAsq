@@ -406,6 +406,17 @@ io.on('connection', (socket) => {
         const { id, pen, roomName } = data;
         socket.to(getCreatorSocket(roomName)).emit('creator.moderatorEstablishedLink', {id, pen});
     });
+
+    socket.on('moderators.linkedPenChanged', (data) => {
+        const { roomName, pen } = data;
+        socket.to(`${roomName}_moderators`).emit('moderators.linkedPenChanged', {pen});
+    });
+
+    socket.on('creator.linkedPenChanged', (data) => {
+        const { roomName, pen } = data;
+        socket.to(getCreatorSocket(roomName)).emit('moderators.linkedPenChanged', {pen});
+    });
+
 });
 
 eventBus.on('event', (event) => {
