@@ -284,6 +284,9 @@ io.on('connection', (socket) => {
         const pens = room.users[userID];
         const creatorSocket = connectionMap.getSocket(room.creator);
         console.log(pens);
+        if (!pens) {
+            return;
+        }
         for (let i = 0; i < pens.length; i++) {
             const pen = pens[i];
             if (pen.id === data.pen.id) {

@@ -1307,31 +1307,11 @@ class App {
         this.setUpModalListeners();
         this.setUpLayout();
     }
-}
-
-
-class CreatorApp extends App {
-    constructor(room, id) {
-        super(room, id, 'creator');
-        this.users = {};
-        this.assistants = [];
-    }
-
-    isLinked(pen) {
-        if (this.indexOfPenInLinked(pen) !== -1) {
-            return true;
-        }
-        for (let i = 0; i < this.assistants.length; i++) {
-            const assistant = this.assistants[i];
-            const assistantPens = this.users[assistant].pens;
-            if (this.indexOfPenInLinked(pen, assistantPens) !== -1) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     checkDiff(id, inputPenID) {
+        if (this.role === 'student') {
+            return;
+        }
         const diffProgress = document.getElementById(id).querySelector('.difference-progress');
         const select = document.getElementById(id).querySelector('select');
         const penID = select.selectedOptions[0].id;
@@ -1370,6 +1350,9 @@ class CreatorApp extends App {
     }
 
     checkSingleDiff(mainContent, secondContent) {
+        if (this.role === 'student') {
+            return;
+        }
         const differences = JsDiff.diffWords(mainContent, secondContent);
         console.log(differences);
         let added = 0;
@@ -1389,5 +1372,28 @@ class CreatorApp extends App {
             result = 0;
         }
         return result;
+    }
+}
+
+
+class CreatorApp extends App {
+    constructor(room, id) {
+        super(room, id, 'creator');
+        this.users = {};
+        this.assistants = [];
+    }
+
+    isLinked(pen) {
+        if (this.indexOfPenInLinked(pen) !== -1) {
+            return true;
+        }
+        for (let i = 0; i < this.assistants.length; i++) {
+            const assistant = this.assistants[i];
+            const assistantPens = this.users[assistant].pens;
+            if (this.indexOfPenInLinked(pen, assistantPens) !== -1) {
+                return true;
+            }
+        }
+        return false;
     }
 }
