@@ -17,8 +17,12 @@
         {/pens}
       </select>
     </div>
-    {!<span class='user-current-pen'>{currentPen.title}</span>!}
     <img id="preview-icon" src="/images/preview.png">
+  </div>
+  <div class="difference">
+    <p> Match </p>
+    <div class="difference-percentage"><div class="difference-progress"></div></div>
+    {! <progress value="100" max="100" class="difference-percentage"></progress> !}
   </div>
   <div class="pen-actions">
     <button id="share-pen" class="pen-loader" type="button" name="button">Share</button>
