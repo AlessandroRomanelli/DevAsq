@@ -114,7 +114,11 @@ function renderIFrame(app) {
             } else if (app.room.creator === app.userID) {
                 socket.emit('pen.preview', { pen: app.getCurrentPen(), positions });
             } else {
-                socket.emit('pen.preview', { pen: app.getCurrentPen(), userID: app.room.creator });
+                socket.emit('pen.preview', {
+                    pen: app.getCurrentPen(),
+                    userID: app.room.creator,
+                    moderators: `${roomName}_moderators`
+                });
             }
         });
     };

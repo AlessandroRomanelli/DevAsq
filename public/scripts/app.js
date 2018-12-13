@@ -707,6 +707,9 @@ class App {
                 }
                 this.loadRemotePen(pens[index], id);
             });
+            if (this.assistants.includes(id)) {
+                loadPen.onclick = null;
+            }
         } else {
             loadPen.onclick = ((event) => {
                 let selectedPen = select.selectedOptions[0].id;
@@ -755,6 +758,7 @@ class App {
                 const index = this.assistants.indexOf(id);
                 if (index === -1) {
                     this.assistants.push(id);
+                    loadPen.onclick = null;
                     socket.emit('assistant.promotion', {
                         userID: id,
                         users: this.users,

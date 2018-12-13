@@ -247,8 +247,9 @@ io.on('connection', (socket) => {
             return;
         }
 
-        if (room && `${room.creator}` === `${userID}` && data.pen.link) {
-            const creatorPens = room.users[room.creator];
+        if (room && data.pen.link) {
+            console.log("received Message");
+            const creatorPens = room.users[userID];
             for (let i = 0; i < creatorPens.length; i++) {
                 if (creatorPens[i].id === data.pen.id) {
                     creatorPens[i] = data.pen;
@@ -312,15 +313,49 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('moderator.updatePensOnServer', (data) => {
+        const { id, pens, roomName } = data;
+        const room = roomStorage[roomName];
+        for (let i = 0; i < room.users[id].length; i++) {
+            for (let j = 0; j < pens.length; j++) {
+                if (room.users[id][i].id === pens[j].id) {
+                    room.users[id][i].html = pens[j].html;
+                    room.users[id][i].css = pens[j].css;
+                    room.users[id][i].js = pens[j].js;
+                    room.users[id][i].title = pens[j].title;
+                }
+            }
+        }
+    });
+
     socket.on('pen.preview', (data) => {
         console.log(data.pen);
         let destination;
         try {
-            destination = data.roomName || connectionMap.getSocket(data.userID) || connectionMap.getSocket(data.pen.link.userID);
+            destination = data.roomName ||
+                connectionMap.getSocket(data.userID) ||
+                connectionMap.getSocket(data.pen.link.userID);
         } catch (e) {
             destination = undefined;
         }
-        socket.to(destination).emit('pen.updatePreview', {pen: data.pen, positions: data.positions});
+        if (data.userID) {
+            if (data.moderators) {
+                socket.to(data.moderators).emit('pen.updatePreview', {
+                    pen: data.pen,
+                    positions: data.positions
+                });
+            }
+            if (data.pen.link) {
+                socket.to(connectionMap.getSocket(data.pen.link.userID)).emit('pen.updatePreview', {
+                    pen: data.pen,
+                    positions: data.positions
+                })
+            }
+        }
+        socket.to(destination).emit('pen.updatePreview', {
+            pen: data.pen,
+            positions: data.positions
+        });
     });
 
     socket.on('pen.sharedCreated', (data) => {

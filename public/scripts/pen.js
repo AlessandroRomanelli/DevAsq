@@ -98,6 +98,13 @@ function init() {
         if (app instanceof CreatorApp || app.role === 'moderator') {
             app.updateUsers(id, pen, positions, difference, rows);
         }
+        if (app.role === 'moderator') {
+            socket.emit('moderator.updatePensOnServer', {
+                id: app.userID,
+                pens: app.pens,
+                roomName: app.room.name
+            })
+        }
     });
 
     socket.on('creator.switchPen', (data) => {
