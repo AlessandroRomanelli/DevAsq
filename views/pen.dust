@@ -127,6 +127,7 @@
       <script src="/scripts/dustjs/dust-core.min.js" charset="utf-8"></script>
       <script src="/scripts/views.js" charset="utf-8"></script>
       <script src="/scripts/fetch.js" charset="utf-8"></script>
+      <script src="/scripts/diffjs/diff.js"></script>
       <script src="/scripts/parser.js" charset="utf-8"></script>
       {?room}
       <script type="text/javascript">

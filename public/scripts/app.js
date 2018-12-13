@@ -685,6 +685,7 @@ class CreatorApp extends App {
             const storedPen = pens[i];
             if (storedPen.id === pen.id) {
                 pens[i] = pen;
+                this.checkDiff(userID, pen.id);
                 return;
             }
         }
@@ -730,6 +731,9 @@ class CreatorApp extends App {
             if (this.users[id].ping) {
                 userDiv.classList.add('help-needed');
             }
+
+            this.checkDiff(id);
+
             this.addSingleUserListener(id);
         });
     }
@@ -932,6 +936,22 @@ class CreatorApp extends App {
             shareModalPen.onclick = sharePen.onclick;
             loadModalPen.onclick = loadPen.onclick;
         });
+        select.onchange = ((event) => {
+            this.checkDiff(id);
+        });
+        // diff.onclick = ((event) => {
+        //     let selectedPen = select.selectedOptions[0].id;
+        //     if (selectedPen === '') {
+        //         selectedPen = this.publicPen.id;
+        //     }
+        //
+        //     let index = this.findIDInUserPen(selectedPen, pens);
+        //     if (index === -1) {
+        //         index = 0;
+        //     }
+        //     const pen = this.users[userID].pens[index];
+        //     this.checkDiff(pen);
+        // });
     }
 
     setModalContent(message, confirmListener, cancelListener) {
@@ -1019,13 +1039,6 @@ class CreatorApp extends App {
         };
     }
 
-    decodeSharingOptions(code) {
-        const html = [1, 3, 5, 7].includes(code);
-        const css = [2, 3, 6, 7].includes(code);
-        const js = [4, 5, 6, 7].includes(code);
-        return { html, css, js };
-    }
-
     handleShareOptions(checkboxs) {
         const share = document.getElementById('share-public');
         function updateShare() {
@@ -1111,5 +1124,65 @@ class CreatorApp extends App {
             sharePen.onclick = null;
             loadPen.onclick = null;
         });
+    }
+
+    checkDiff(id, inputPenID) {
+        const diffProgress = document.getElementById(id).querySelector('.difference-progress');
+        const select = document.getElementById(id).querySelector('select');
+        const penID = select.selectedOptions[0].id;
+        const index = this.findIDInUserPen(penID, this.users[id].pens);
+        const creatorPen = this.getCurrentPen();
+        const userPen = index === -1 ? this.publicPen : this.users[id].pens[index];
+
+        if (inputPenID && `${inputPenID}` !== `${userPen.id}`) {
+            return;
+        }
+
+        console.log(userPen);
+        console.log(creatorPen);
+        const htmlDiff = this.checkSingleDiff(creatorPen.html, userPen.html);
+        const cssDiff = this.checkSingleDiff(creatorPen.css, userPen.css);
+        const javascriptDiff = this.checkSingleDiff(creatorPen.js, userPen.js);
+        console.log(htmlDiff);
+        console.log(cssDiff);
+        console.log(javascriptDiff);
+        // const result = Math.round((htmlDiff + cssDiff + javascriptDiff) / 3 * 100);
+        const result = 100 - Math.round((htmlDiff + cssDiff + javascriptDiff) / 3 * 100);
+        if (result > 66) {
+            diffProgress.classList.add('green');
+            diffProgress.classList.remove('yellow');
+            diffProgress.classList.remove('red');
+        } else if (result <= 66 && result > 33) {
+            diffProgress.classList.remove('green');
+            diffProgress.classList.add('yellow');
+            diffProgress.classList.remove('red');
+        } else {
+            diffProgress.classList.remove('green');
+            diffProgress.classList.remove('yellow');
+            diffProgress.classList.add('red');
+        }
+        diffProgress.style.width = `${result}%`;
+    }
+
+    checkSingleDiff(mainContent, secondContent) {
+        const differences = JsDiff.diffWords(mainContent, secondContent);
+        console.log(differences);
+        let added = 0;
+        let removed = 0;
+        let equal = 0;
+        differences.forEach((difference) => {
+            if (difference.added) {
+                added += difference.value.length;
+            } else if (difference.removed) {
+                removed += difference.value.length;
+            } else {
+                equal += difference.value.length;
+            }
+        });
+        let result = (added + removed) / (added + removed + equal);
+        if (Number.isNaN(result)) {
+            result = 0;
+        }
+        return result;
     }
 }

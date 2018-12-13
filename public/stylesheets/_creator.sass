@@ -252,6 +252,25 @@
       padding: 1em
       margin: 1em
       transition: 0.2s ease-in-out
+      .difference
+        p
+          margin-bottom: 0
+        .difference-percentage
+          width: 100%
+          height: 10px
+          border-radius: 10px
+          background: $dark
+        .difference-progress
+          width: 100%
+          height: 100%
+          border-radius: 10px
+          transition: 0.5s ease-in-out
+          &.green
+            background: mix(green, white, 66%)
+          &.yellow
+            background: mix(yellow, white, 66%)
+          &.red
+            background: mix(red, white, 66%)
       .user-remove
         position: absolute
         height: 20px
