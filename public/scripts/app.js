@@ -15,8 +15,8 @@ class Pen {
 
 
 class App {
-    constructor(room, id) {
-        this.role = 'student';
+    constructor(room, id, role) {
+        this.role = role || 'student';
         this.room = room;
         this.userID = id;
         this.currentPen = 0;
@@ -51,6 +51,7 @@ class App {
 
         if (this.userID === this.room.creator) {
             const sharePublic = document.getElementById('share-public');
+            if (!sharePublic) {return}
             // sharePublic.querySelector('.info').innerHTML = this.getCurrentPen().title;
             if (this.currentPen === 0) {
                 sharePublic.classList.add('hidden');
@@ -470,6 +471,14 @@ class App {
     }
 
     setupRoomInfo() {
+        if (this.role === 'creator') {
+            this.setupRoomInfoCreator();
+        } else {
+            this.setupRoomInfoStudent();
+        }
+    }
+
+    setupRoomInfoStudent() {
         const participants = document.getElementById('participants');
         const roomName = document.getElementById('room-name');
         const raiseHand = document.getElementById('raise-hand');
@@ -535,6 +544,7 @@ class App {
         askForHelp.parentNode.removeChild(askForHelp);
         this.addTogglerListener();
         this.updateUI();
+        this.setUpModalListeners();
     }
 
     addTogglerListener() {
@@ -617,6 +627,10 @@ class App {
         const id = user.id;
         const { pens } = this.users[id];
 
+        if (this.role === 'moderator') {
+            promote.parentNode.removeChild(promote);
+            sharePen.parentNode.removeChild(sharePen);
+        }
         image.onclick = ((event) => {
             if (this.users[id].ping) {
                 this.signalHelp(id);
@@ -663,19 +677,21 @@ class App {
                     modal.classList.toggle('hidden');
                 }));
         });
-        sharePen.onclick = ((event) => {
-            event.preventDefault();
-            // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
-            let selectedPen = select.selectedOptions[0].id;
-            if (selectedPen === '') {
-                selectedPen = this.publicPen.id;
-            }
-            const index = this.findIDInUserPen(selectedPen, pens);
-            if (index === -1) {
-                return;
-            }
-            this.setPenContentIntoPen(pens[index], this.publicPen);
-        });
+        if (this.role === 'creator') {
+            sharePen.onclick = ((event) => {
+                event.preventDefault();
+                // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
+                let selectedPen = select.selectedOptions[0].id;
+                if (selectedPen === '') {
+                    selectedPen = this.publicPen.id;
+                }
+                const index = this.findIDInUserPen(selectedPen, pens);
+                if (index === -1) {
+                    return;
+                }
+                this.setPenContentIntoPen(pens[index], this.publicPen);
+            });
+        }
         loadPen.onclick = ((event) => {
             event.preventDefault();
             // const index = findIDInUserPen(this.users[id].currentPen.id, pens);
@@ -707,20 +723,24 @@ class App {
             }
             modal.classList.toggle('hidden');
             iFrame.src = `/preview/${this.room.name}?penID=${pens[index].id}&userID=${id}`;
-            shareModalPen.onclick = sharePen.onclick;
+            if (shareModalPen) {
+                shareModalPen.onclick = sharePen.onclick;
+            }
             loadModalPen.onclick = loadPen.onclick;
         });
-        promote.onclick = ((event) => {
-            event.preventDefault();
-            const index = this.assistants.indexOf(id);
-            if (index === -1) {
-                this.assistants.push(id);
-                socket.emit('assistant.promotion', {userID: id, users: this.users});
-            } else {
-                this.assistants.splice(index, 1);
-                socket.emit('assistant.degradation', {userID: id})
-            }
-        })
+        if (this.role === 'creator') {
+            promote.onclick = ((event) => {
+                event.preventDefault();
+                const index = this.assistants.indexOf(id);
+                if (index === -1) {
+                    this.assistants.push(id);
+                    socket.emit('assistant.promotion', {userID: id, users: this.users});
+                } else {
+                    this.assistants.splice(index, 1);
+                    socket.emit('assistant.degradation', {userID: id})
+                }
+            })
+        }
     }
 
     updateUI() {
@@ -837,13 +857,13 @@ class App {
 
 
     setUpModalListeners() {
-        if (this.role === 'student') {
-            return;
-        }
         const modal = document.getElementById('preview-modal');
         const closeModal = document.getElementById('close-modal');
         const sharePen = document.getElementById('modal-share');
         const loadPen = document.getElementById('modal-load');
+        if (this.role !== 'creator') {
+            sharePen.parentNode.removeChild(sharePen);
+        }
         closeModal.onclick = ((event) => {
             event.preventDefault();
             modal.classList.toggle('hidden');
@@ -921,6 +941,7 @@ class App {
             return;
         }
         console.log('User: ', user._id, ' joined the room');
+        console.log(this.users[user._id]);
         this.users[user._id] = {
             user,
             currentPen: this.publicPen,
@@ -934,6 +955,9 @@ class App {
         });
         this.updateUserUI(user._id, this.publicPen);
         this.updateParticipantsCounter();
+        if (this.assistants.includes(user._id)) {
+            socket.emit('assistant.promotion', {userID: user._id, users: this.users});
+        }
     }
 
     userDisconnected(user) {
@@ -955,6 +979,7 @@ class App {
         document.getElementById(user).outerHTML = '';
 
         this.updateUI();
+        this.updateParticipantsCounter();
     }
 
     updateUserCurrentPen(userID, newPen) {
@@ -1047,20 +1072,8 @@ class App {
             });
         }
     }
-}
 
-
-class CreatorApp extends App {
-    constructor(room, id) {
-        super(room, id);
-        this.role = 'creator';
-        this.users = {};
-        this.assistants = [];
-    }
-
-
-
-    setupRoomInfo() {
+    setupRoomInfoCreator() {
         const participants = document.getElementById('participants');
         participants.innerHTML = '0';
 
@@ -1107,5 +1120,14 @@ class CreatorApp extends App {
         this.handleShareOptions(checkboxs);
 
         this.setUpModalListeners();
+    }
+}
+
+
+class CreatorApp extends App {
+    constructor(room, id) {
+        super(room, id, 'creator');
+        this.users = {};
+        this.assistants = [];
     }
 }
