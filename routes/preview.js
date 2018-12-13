@@ -51,7 +51,7 @@ router.get('/:roomName', (req, res) => {
     const { roomName } = req.params;
     if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[roomName];
-    if (userID && (`${req.user._id}` !== `${room.creator}` && `${req.user._id}` !== `${userID}`)) return res.status(403).end();
+    // if (userID && (`${req.user._id}` !== `${room.creator}` && `${req.user._id}` !== `${userID}`)) return res.status(403).end();
     const user = userID || req.user._id;
     const pen = room.getUserPen(user, penID);
     const { html, css, js } = (penID) ? pen : room.publicPen;

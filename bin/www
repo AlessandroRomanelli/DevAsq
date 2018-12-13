@@ -124,6 +124,7 @@ io.on('connection', (socket) => {
                     delete roomStorage[roomName];
                 } else {
                     socket.to(connectionMap.getSocket(room.creator)).emit('settings.userLeft', userID);
+                    socket.to(`${room.name}_moderators`).emit('settings.userLeft', userID);
                     console.log(room.users);
                 }
             }
@@ -171,6 +172,7 @@ io.on('connection', (socket) => {
         const creatorSocket = getCreatorSocket(roomName);
         if (!creatorSocket) return;
         socket.to(creatorSocket).emit('settings.userJoined', user);
+        socket.to(`${roomName}_moderators`).emit('settings.userJoined', user);
     });
 
     socket.on('creator.helpNeeded', (data) => {
@@ -178,6 +180,7 @@ io.on('connection', (socket) => {
         const creatorSocket = getCreatorSocket(roomName);
         if (!creatorSocket) return;
         socket.to(creatorSocket).emit('creator.helpNeeded', id);
+        socket.to(`${roomName}_moderators`).emit('creator.helpNeeded', id)
     });
 
     socket.on('creator.broadcastPen', (data) => {
@@ -185,6 +188,7 @@ io.on('connection', (socket) => {
         const creatorSocket = getCreatorSocket(roomName);
         if (!creatorSocket) return;
         socket.to(creatorSocket).emit('creator.updatePens', { id, pen });
+        socket.to(`${roomName}_moderators`).emit('creator.updatePens', { id, pen });
     });
 
     socket.on('creator.switchPen', (data) => {
@@ -192,6 +196,7 @@ io.on('connection', (socket) => {
         const creatorSocket = getCreatorSocket(roomName);
         if (!creatorSocket) return;
         socket.to(creatorSocket).emit('creator.switchPen', { id, newPen });
+        socket.to(`${roomName}_moderators`).emit('creator.switchPen', { id, newPen });
     });
 
     socket.on('creator.deletedPen', (data) => {
@@ -199,6 +204,7 @@ io.on('connection', (socket) => {
         const creatorSocket = getCreatorSocket(roomName);
         if (!creatorSocket) return;
         socket.to(creatorSocket).emit('creator.deletedPen', { id, pen });
+        socket.to(`${roomName}_moderators`).emit('creator.deletedPen', { id, pen });
     });
 
     socket.on('pen.resolveHelp', (data) => {
@@ -290,13 +296,15 @@ io.on('connection', (socket) => {
                     }
                 }
                 if (pen.title !== 'Public') {
-                    socket.to(creatorSocket).emit('creator.updatePens', {
+                    const information = {
                         id: userID,
                         pen: pens[i],
                         difference: data.difference,
                         positions: data.positions,
                         rows: data.rows
-                    });
+                    };
+                    socket.to(creatorSocket).emit('creator.updatePens', information);
+                    socket.to(`${room.name}_moderators`).emit('creator.updatePens', information);
                 }
             }
         }
@@ -326,15 +334,25 @@ io.on('connection', (socket) => {
     });
 
     socket.on('assistant.promotion', (data) => {
-        const { userID } = data;
+        const { userID, users } = data;
         const socketID = connectionMap.getSocket(userID);
-        socket.to(socketID).emit('assistant.promotion')
+        socket.to(socketID).emit('assistant.promotion', {users});
+    });
+
+    socket.on('assistant.beingPromoted', (data) => {
+        const { roomName } = data;
+        socket.join(`${roomName}_moderators`);
     });
 
     socket.on('assistant.degradation', (data) => {
         const { userID } = data;
         const socketID = connectionMap.getSocket(userID);
         socket.to(socketID).emit('assistant.degradation')
+    });
+
+    socket.on('assistant.beingDegraded', (data) => {
+        const { roomName } = data;
+        socket.leave(`${roomName}_moderators`);
     })
 });
 

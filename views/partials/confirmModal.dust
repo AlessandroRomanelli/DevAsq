@@ -1,0 +1,9 @@
+<div id="confirm-modal" class="modal hidden">
+    <div class="container">
+        <p>Are you really sure you want to do this?</p>
+        <div class="choice-buttons">
+            <button class="cancel" type="button" name="button">Cancel</button>
+            <button class="confirm" type="button" name="button">Confirm</button>
+        </div>
+    </div>
+</div>

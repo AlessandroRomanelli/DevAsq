@@ -16,6 +16,7 @@ class Pen {
 
 class App {
     constructor(room, id) {
+        this.role = 'student';
         this.room = room;
         this.userID = id;
         this.currentPen = 0;
@@ -469,7 +470,6 @@ class App {
         const roomName = document.getElementById('room-name');
         const raiseHand = document.getElementById('raise-hand');
         const sharePublic = document.getElementById('share-public');
-        const modal = document.getElementById('preview-modal');
 
         participants.parentNode.parentNode.removeChild(participants.parentNode);
         roomName.innerHTML = this.room.name;
@@ -478,7 +478,6 @@ class App {
             this.askForHelp();
         });
         sharePublic.parentNode.removeChild(sharePublic);
-        modal.parentNode.removeChild(modal);
     }
 
     indexOfPen(pen) {
@@ -516,52 +515,55 @@ class App {
         }
         return index;
     }
-}
 
-
-class CreatorApp extends App {
-    constructor(room, id) {
-        super(room, id);
-        this.users = {};
-        this.assistants = [];
-    }
-
-    userConnected(user) {
-        console.log('User: ', user._id, ' joined the room');
-        this.users[user._id] = {
-            user,
-            currentPen: this.publicPen,
-            pens: [],
-            ping: false,
-            state: 'connected',
-        };
-        socket.emit('homePage.updatePopulation', {
-            roomName: this.room.name,
-            population: `${Object.values(this.countActive()).length}`,
+    receivePromotion(users) {
+        this.users = users;
+        this.role = 'moderator';
+        const confirmModal = document.getElementById('confirm-modal');
+        const roomSettings = document.createElement('div');
+        roomSettings.id = 'room-settings';
+        roomSettings.classList.add('hidden');
+        document.body.insertBefore(roomSettings, confirmModal);
+        dust.render('partials/creator', {}, (err, out) => {
+            roomSettings.innerHTML = out;
         });
-        this.updateUserUI(user._id, this.publicPen);
-        this.updateParticipantsCounter();
-    }
-
-    userDisconnected(user) {
-        console.log('User: ', user, ' left the room');
-        console.log(this.room.users);
-        // delete this.users[user];
-        if (this.users[user].state !== 'banned') {
-            this.users[user].state = 'disconnected';
-        }
-        console.log(this.room.users);
-        socket.emit('homePage.updatePopulation', {
-            roomName: this.room.name,
-            population: `${Object.values(this.countActive()).length}`,
-        });
-
-        document.getElementById(user).outerHTML = '';
-
+        const askForHelp = document.getElementById('raise-hand');
+        askForHelp.parentNode.removeChild(askForHelp);
+        this.addTogglerListener();
         this.updateUI();
     }
 
+    addTogglerListener() {
+        if (this.role === 'student') {
+            return;
+        }
+        const roomSettings = document.getElementById('room-settings');
+        const toggler = roomSettings.querySelector('.toggler');
+        const content = document.getElementById('content');
+
+        content.onclick = (() => {
+            if (!(roomSettings.classList.contains('hidden'))) {
+                roomSettings.classList.add('hidden');
+            }
+        });
+
+        toggler.onclick = (event) => {
+            roomSettings.classList.toggle('hidden');
+        };
+
+        toggler.onmouseenter = (event) => {
+            document.body.style.cursor = 'pointer';
+        };
+
+        toggler.onmouseleave = (event) => {
+            document.body.style.cursor = 'default';
+        };
+    }
+
     updateUsers(userID, pen, positions, difference, rows) {
+        if (this.role === 'student') {
+            return;
+        }
         const { pens } = this.users[userID];
 
         for (let i = 0; i < this.pens.length; i++) {
@@ -593,141 +595,10 @@ class CreatorApp extends App {
         this.users[userID].pens.push(pen);
     }
 
-    updateUserCurrentPen(userID, newPen) {
-        const oldPen = this.users[userID].currentPen;
-        this.users[userID].currentPen = newPen;
-        this.updateUserUI(userID, newPen, oldPen);
-        // this.updateUI();
-    }
-
-
-    updateUserUI(id, newPen, oldPen) {
-        console.log(this.users[id]);
-        dust.render('partials/user', this.users[id], (err, out) => {
-            let userDiv = document.getElementById(id);
-            let previousSelected = '';
-            if (userDiv) {
-                userDiv.outerHTML = out;
-                previousSelected = `${userDiv.querySelector('select').selectedOptions[0].id}`;
-            } else {
-                const roomSettings = document.getElementById('users');
-                const div = document.createElement('div');
-                roomSettings.appendChild(div);
-                div.outerHTML = out;
-            }
-
-
-            let index = -1;
-
-            if (oldPen && previousSelected !== '' && `${oldPen.id}` !== previousSelected) {
-                index = this.findIDInUserPen(previousSelected, this.users[id].pens);
-            } else {
-                index = this.findIDInUserPen(newPen.id, this.users[id].pens);
-            }
-
-            console.log('index', index);
-
-            userDiv = document.getElementById(id);
-            userDiv.querySelector('select').options.selectedIndex = index + 1;
-            if (this.users[id].ping) {
-                userDiv.classList.add('help-needed');
-            }
-            this.addSingleUserListener(id);
-        });
-    }
-
-    removeUserPen(userID, pen) {
-        const { pens } = this.users[userID];
-        let index = -1;
-        for (let i = 0; i < pens.length; i++) {
-            if (pens[i].id === pen.id) {
-                index = i;
-                break;
-            }
-        }
-
-        if (index === -1) {
+    addSingleUserListener(userID) {
+        if (this.role === 'student') {
             return;
         }
-
-        pens.splice(index, 1);
-
-        index = this.indexOfPenInLinked(pen);
-
-        while (index !== -1) {
-            if (index <= this.currentPen) {
-                this.currentPen--;
-            }
-            this.pens.splice(index, 1);
-            const deletedTab = document.querySelectorAll('.switchTab')[index];
-            deletedTab.parentNode.removeChild(deletedTab);
-            index = this.indexOfPenInLinked(pen);
-        }
-
-        this.setupTabsHandlers();
-        this.switchPen(this.currentPen);
-    }
-
-    signalHelp(id) {
-        this.users[id].ping = !this.users[id].ping;
-        document.getElementById(id).classList.toggle('help-needed');
-        this.updateRoomSettings();
-    }
-
-    countActive() {
-        const connectedUsers = {};
-        for (const key in this.users) {
-            if (this.users[key].state === 'connected') {
-                connectedUsers[key] = this.users[key];
-            }
-        }
-        return connectedUsers;
-    }
-
-    updateParticipantsCounter() {
-        const participants = document.getElementById('participants');
-        const connectedUsers = this.countActive();
-        const count = Object.values(connectedUsers).length;
-        console.log("Count", count);
-        participants.innerHTML = `${count}`;
-        return connectedUsers;
-    }
-
-    updateUI() {
-        const connectedUsers = this.updateParticipantsCounter();
-        for (const key in connectedUsers) {
-            this.updateUserUI(key, this.users[key].currentPen);
-        }
-        this.updateRoomSettings();
-    }
-
-    updateRoomSettings() {
-        const roomSettings = document.getElementById('room-settings');
-        const users = Object.keys(this.users);
-        let count = 0;
-        for (let i = 0; i < users.length; i++) {
-            const user = this.users[users[i]];
-            if (user.ping === true) count++;
-        }
-        if (count > 0) {
-            roomSettings.classList.add('help-needed');
-        } else {
-            roomSettings.classList.remove('help-needed');
-        }
-    }
-
-    findIDInUserPen(currentPenID, pens) {
-        let index = -1;
-        for (let i = 0; i < pens.length; i++) {
-            if (`${pens[i].id}` === `${currentPenID}`) {
-                index = i;
-                break;
-            }
-        }
-        return index;
-    }
-
-    addSingleUserListener(userID) {
         const roomSettings = document.getElementById('room-settings');
         const user = document.getElementById(userID);
         const preview = user.querySelector('img#preview-icon');
@@ -738,7 +609,7 @@ class CreatorApp extends App {
         const sharePen = user.querySelector('button#share-pen');
         const loadPen = user.querySelector('button#load-pen');
         const promote = user.querySelector('button.promote');
-        const select = document.querySelector('select');
+        const select = user.querySelector('select');
         const id = user.id;
         const { pens } = this.users[id];
 
@@ -751,7 +622,7 @@ class CreatorApp extends App {
         kickBanMenu.onclick = ((event) => {
             kickBanMenu.classList.toggle('open');
         });
-        roomSettings.addEventListener('click', (event) => {
+        roomSettings.onclick = ((event) => {
             console.log('Clicking content');
             const kickBanMenu = document.getElementById(userID).querySelector('.user-remove');
             if (!(kickBanMenu.contains(event.target)) && kickBanMenu.classList.contains('open')) {
@@ -840,7 +711,7 @@ class CreatorApp extends App {
             const index = this.assistants.indexOf(id);
             if (index === -1) {
                 this.assistants.push(id);
-                socket.emit('assistant.promotion', {userID: id});
+                socket.emit('assistant.promotion', {userID: id, users: this.users});
             } else {
                 this.assistants.splice(index, 1);
                 socket.emit('assistant.degradation', {userID: id})
@@ -848,7 +719,92 @@ class CreatorApp extends App {
         })
     }
 
+    updateUI() {
+        if (this.role === 'student') {
+            return;
+        }
+        const connectedUsers = this.countActive();
+        for (const key in connectedUsers) {
+            this.updateUserUI(key, this.users[key].currentPen);
+        }
+        this.updateRoomSettings();
+    }
+
+    updateUserUI(id, newPen, oldPen) {
+        if (this.role === 'student') {
+            return;
+        }
+        console.log(this.users[id]);
+        dust.render('partials/user', this.users[id], (err, out) => {
+            let userDiv = document.getElementById(id);
+            let previousSelected = '';
+            if (userDiv) {
+                userDiv.outerHTML = out;
+                previousSelected = `${userDiv.querySelector('select').selectedOptions[0].id}`;
+            } else {
+                const roomSettings = document.getElementById('users');
+                const div = document.createElement('div');
+                roomSettings.appendChild(div);
+                div.outerHTML = out;
+            }
+
+
+            let index = -1;
+
+            if (oldPen && previousSelected !== '' && `${oldPen.id}` !== previousSelected) {
+                index = this.findIDInUserPen(previousSelected, this.users[id].pens);
+            } else {
+                index = this.findIDInUserPen(newPen.id, this.users[id].pens);
+            }
+
+            console.log('index', index);
+
+            userDiv = document.getElementById(id);
+            userDiv.querySelector('select').options.selectedIndex = index + 1;
+            if (this.users[id].ping) {
+                userDiv.classList.add('help-needed');
+            }
+            this.addSingleUserListener(id);
+        });
+    }
+
+    updateRoomSettings() {
+        if (this.role === 'student') {
+            return;
+        }
+        const roomSettings = document.getElementById('room-settings');
+        const users = Object.keys(this.users);
+        let count = 0;
+        for (let i = 0; i < users.length; i++) {
+            const user = this.users[users[i]];
+            if (user.ping === true) count++;
+        }
+        if (count > 0) {
+            roomSettings.classList.add('help-needed');
+        } else {
+            roomSettings.classList.remove('help-needed');
+        }
+    }
+
+    findIDInUserPen(currentPenID, pens) {
+        if (this.role === 'student') {
+            return;
+        }
+        let index = -1;
+        for (let i = 0; i < pens.length; i++) {
+            if (`${pens[i].id}` === `${currentPenID}`) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
+
     setModalContent(message, confirmListener, cancelListener) {
+        if (this.role === 'student') {
+            return;
+        }
         const modal = document.getElementById('confirm-modal');
         const paragraph = modal.querySelector('p');
         const confirm = modal.querySelector('.confirm');
@@ -860,7 +816,42 @@ class CreatorApp extends App {
         cancel.onclick = cancelListener;
     }
 
+
+    countActive() {
+        if (this.role === 'student') {
+            return;
+        }
+        const connectedUsers = {};
+        for (const key in this.users) {
+            if (this.users[key].state === 'connected') {
+                connectedUsers[key] = this.users[key];
+            }
+        }
+        return connectedUsers;
+    }
+
+
+
+    setUpModalListeners() {
+        if (this.role === 'student') {
+            return;
+        }
+        const modal = document.getElementById('preview-modal');
+        const closeModal = document.getElementById('close-modal');
+        const sharePen = document.getElementById('modal-share');
+        const loadPen = document.getElementById('modal-load');
+        closeModal.onclick = ((event) => {
+            event.preventDefault();
+            modal.classList.toggle('hidden');
+            sharePen.onclick = null;
+            loadPen.onclick = null;
+        });
+    }
+
     setPenContentIntoPen(pen, penToModify, options) {
+        if (this.role === 'student') {
+            return;
+        }
         const iFrame = document.getElementById('iFrame');
         const roomName = this.room.name;
         if (this.getCurrentPen().id === penToModify.id) {
@@ -891,6 +882,9 @@ class CreatorApp extends App {
     }
 
     loadRemotePen(pen, userID) {
+        if (this.role === 'student') {
+            return;
+        }
         this.createPen(() => {
             const newTitle = `${this.users[userID].user.username} - ${pen.title}`;
             this.changePenName(newTitle, this.currentPen, (() => {
@@ -909,28 +903,111 @@ class CreatorApp extends App {
         });
     }
 
-    addTogglerListener() {
-        const roomSettings = document.getElementById('room-settings');
-        const toggler = roomSettings.querySelector('.toggler');
-        const content = document.getElementById('content');
+    signalHelp(id) {
+        if (this.role === 'student') {
+            return;
+        }
+        this.users[id].ping = !this.users[id].ping;
+        document.getElementById(id).classList.toggle('help-needed');
+        this.updateRoomSettings();
+    }
 
-        content.addEventListener('click', () => {
-            if (!(roomSettings.classList.contains('hidden'))) {
-                roomSettings.classList.add('hidden');
-            }
+    userConnected(user) {
+        if (this.role === 'student') {
+            return;
+        }
+        console.log('User: ', user._id, ' joined the room');
+        this.users[user._id] = {
+            user,
+            currentPen: this.publicPen,
+            pens: [],
+            ping: false,
+            state: 'connected',
+        };
+        socket.emit('homePage.updatePopulation', {
+            roomName: this.room.name,
+            population: `${Object.values(this.countActive()).length}`,
+        });
+        this.updateUserUI(user._id, this.publicPen);
+        this.updateParticipantsCounter();
+    }
+
+    userDisconnected(user) {
+        if (this.role === 'student') {
+            return;
+        }
+        console.log('User: ', user, ' left the room');
+        console.log(this.room.users);
+        // delete this.users[user];
+        if (this.users[user].state !== 'banned') {
+            this.users[user].state = 'disconnected';
+        }
+        console.log(this.room.users);
+        socket.emit('homePage.updatePopulation', {
+            roomName: this.room.name,
+            population: `${Object.values(this.countActive()).length}`,
         });
 
-        toggler.onclick = (event) => {
-            roomSettings.classList.toggle('hidden');
-        };
+        document.getElementById(user).outerHTML = '';
 
-        toggler.onmouseenter = (event) => {
-            document.body.style.cursor = 'pointer';
-        };
+        this.updateUI();
+    }
 
-        toggler.onmouseleave = (event) => {
-            document.body.style.cursor = 'default';
-        };
+    updateUserCurrentPen(userID, newPen) {
+        if (this.role === 'student') {
+            return;
+        }
+        const oldPen = this.users[userID].currentPen;
+        this.users[userID].currentPen = newPen;
+        this.updateUserUI(userID, newPen, oldPen);
+        // this.updateUI();
+    }
+
+    removeUserPen(userID, pen) {
+        if (this.role === 'student') {
+            return;
+        }
+        const { pens } = this.users[userID];
+        let index = -1;
+        for (let i = 0; i < pens.length; i++) {
+            if (pens[i].id === pen.id) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index === -1) {
+            return;
+        }
+
+        pens.splice(index, 1);
+
+        index = this.indexOfPenInLinked(pen);
+
+        while (index !== -1) {
+            if (index <= this.currentPen) {
+                this.currentPen--;
+            }
+            this.pens.splice(index, 1);
+            const deletedTab = document.querySelectorAll('.switchTab')[index];
+            deletedTab.parentNode.removeChild(deletedTab);
+            index = this.indexOfPenInLinked(pen);
+        }
+
+        this.setupTabsHandlers();
+        this.switchPen(this.currentPen);
+    }
+
+    updateParticipantsCounter() {
+        if (this.role === 'student') {
+            return;
+        }
+        const participants = document.getElementById('participants');
+        const connectedUsers = this.countActive();
+        const count = Object.values(connectedUsers).length;
+        console.log("Count", count);
+        participants.innerHTML = `${count}`;
+        return connectedUsers;
     }
 
     decodeSharingOptions(code) {
@@ -941,6 +1018,9 @@ class CreatorApp extends App {
     }
 
     handleShareOptions(checkboxs) {
+        if (this.role === 'student') {
+            return;
+        }
         const share = document.getElementById('share-public');
         function updateShare() {
             share.setAttribute('data-html', checkboxs[1].checked);
@@ -963,6 +1043,18 @@ class CreatorApp extends App {
             });
         }
     }
+}
+
+
+class CreatorApp extends App {
+    constructor(room, id) {
+        super(room, id);
+        this.role = 'creator';
+        this.users = {};
+        this.assistants = [];
+    }
+
+
 
     setupRoomInfo() {
         const participants = document.getElementById('participants');
@@ -992,7 +1084,7 @@ class CreatorApp extends App {
         });
 
         const content = document.getElementById('content');
-        content.addEventListener('click', (event) => {
+        content.onclick = ((event) => {
             const sharePublic = document.getElementById('share-public');
             if (sharePublic.classList.contains('open')) {
                 if (!sharePublic.contains(event.target)) {
@@ -1011,18 +1103,5 @@ class CreatorApp extends App {
         this.handleShareOptions(checkboxs);
 
         this.setUpModalListeners();
-    }
-
-    setUpModalListeners() {
-        const modal = document.getElementById('preview-modal');
-        const closeModal = document.getElementById('close-modal');
-        const sharePen = document.getElementById('modal-share');
-        const loadPen = document.getElementById('modal-load');
-        closeModal.onclick = ((event) => {
-            event.preventDefault();
-            modal.classList.toggle('hidden');
-            sharePen.onclick = null;
-            loadPen.onclick = null;
-        });
     }
 }

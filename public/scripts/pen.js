@@ -80,13 +80,13 @@ function init() {
     });
 
     socket.on('settings.userJoined', (user) => {
-        if (app instanceof CreatorApp) {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
             app.userConnected(user);
         }
     });
 
     socket.on('settings.userLeft', (user) => {
-        if (app instanceof CreatorApp) {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
             app.userDisconnected(user);
         }
     });
@@ -95,28 +95,28 @@ function init() {
         const {
             id, pen, rows, difference, positions,
         } = data;
-        if (app instanceof CreatorApp) {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
             app.updateUsers(id, pen, positions, difference, rows);
         }
     });
 
     socket.on('creator.switchPen', (data) => {
         const { id, newPen } = data;
-        if (app instanceof CreatorApp) {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
             app.updateUserCurrentPen(id, newPen);
         }
     });
 
     socket.on('creator.deletedPen', (data) => {
         const { id, pen } = data;
-        if (app instanceof CreatorApp) {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
             app.removeUserPen(id, pen);
         }
     });
 
     socket.on('creator.helpNeeded', (id) => {
         console.log(id);
-        if (app instanceof CreatorApp) {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
             app.signalHelp(id);
             app.updateRoomSettings();
         }
@@ -157,14 +157,20 @@ function init() {
         app.resolveHelp();
     });
 
-    socket.on('assistant.promotion', () => {
+    socket.on('assistant.promotion', (data) => {
+        const { users } = data;
+        delete users[app.userID];
+        console.log(users);
         if (app instanceof App) {
-            console.log("You have been promoted!")
+            socket.emit('assistant.beingPromoted', {roomName: app.room.name});
+            console.log("You have been promoted!");
+            app.receivePromotion(users);
         }
     });
 
     socket.on('assistant.degradation', () => {
         if (app instanceof App) {
+            socket.emit('assistant.beingDegraded', {roomName: app.room.name});
             console.log("You have been degraded!")
         }
     })
