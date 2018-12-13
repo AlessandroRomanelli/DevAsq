@@ -821,6 +821,7 @@ class App {
                         assistants: this.assistants,
                         roomName: this.room.name
                     });
+                    promote.innerHTML = "Demote";
                 } else {
                     this.assistants.splice(index, 1);
                     socket.emit('assistant.degradation', {
@@ -828,6 +829,7 @@ class App {
                         roomName: this.room.name,
                         information: this.users[id],
                     });
+                    promote.innerHTML = "Promote";
                 }
             })
         }
