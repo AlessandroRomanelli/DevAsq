@@ -51,7 +51,7 @@ class App {
 
         if (this.userID === this.room.creator) {
             const sharePublic = document.getElementById('share-public');
-            if (!sharePublic) {return}
+            if (!sharePublic) { return; }
             // sharePublic.querySelector('.info').innerHTML = this.getCurrentPen().title;
             if (this.currentPen === 0) {
                 sharePublic.classList.add('hidden');
@@ -277,24 +277,24 @@ class App {
         if (pen.link) {
             this.updateContentLinkedPen(pen);
             if (this.role !== 'student') {
-                //send to moderators
+                // send to moderators
                 socket.emit('moderators.linkedPenChanged', {
                     roomName: this.room.name,
-                    pen
+                    pen,
                 });
             }
             if (this.role === 'moderator') {
-                //send to creator
+                // send to creator
                 socket.emit('creator.linkedPenChanged', {
                     roomName: this.room.name,
-                    pen
+                    pen,
                 });
             }
         }
     }
 
     updateContentLinkedPen(pen) {
-        if (!this.users) { return }
+        if (!this.users) { return; }
         for (const user in this.users) {
             const userPens = this.users[user].pens;
             for (let i = 0; i < userPens.length; i++) {
@@ -577,9 +577,9 @@ class App {
     receiveDegradation() {
         delete this.users;
         this.role = 'student';
-        document.getElementById('room-settings').outerHTML= '';
+        document.getElementById('room-settings').outerHTML = '';
         const span = document.createElement('span');
-        span.innerHTML = "Ask for help";
+        span.innerHTML = 'Ask for help';
         span.id = 'raise-hand';
         span.classList.add('info');
         document.getElementById('room-info').appendChild(span);
@@ -681,6 +681,7 @@ class App {
 
         if (this.role === 'moderator') {
             promote.parentNode.removeChild(promote);
+            loadPen.classList.add('onlyChild');
             sharePen.parentNode.removeChild(sharePen);
         }
         image.onclick = ((event) => {
@@ -777,7 +778,7 @@ class App {
                     pen: pens[index],
                     userID: this.userID,
                     roomName: this.room.name,
-                    ownerID: id
+                    ownerID: id,
                 });
             });
         }
@@ -819,9 +820,9 @@ class App {
                         userID: id,
                         users: this.users,
                         assistants: this.assistants,
-                        roomName: this.room.name
+                        roomName: this.room.name,
                     });
-                    promote.innerHTML = "Demote";
+                    promote.innerHTML = 'Demote';
                 } else {
                     this.assistants.splice(index, 1);
                     socket.emit('assistant.degradation', {
@@ -829,9 +830,9 @@ class App {
                         roomName: this.room.name,
                         information: this.users[id],
                     });
-                    promote.innerHTML = "Promote";
+                    promote.innerHTML = 'Promote';
                 }
-            })
+            });
         }
     }
 
@@ -945,13 +946,13 @@ class App {
     }
 
 
-
     setUpModalListeners() {
         const modal = document.getElementById('preview-modal');
         const closeModal = document.getElementById('close-modal');
         const sharePen = document.getElementById('modal-share');
         const loadPen = document.getElementById('modal-load');
         if (this.role !== 'creator' && sharePen) {
+            loadPen.classList.add('onlyChild');
             sharePen.parentNode.removeChild(sharePen);
         }
         closeModal.onclick = ((event) => {
@@ -1015,7 +1016,7 @@ class App {
                 socket.emit('creator.linkEstablished', {
                     id: this.userID,
                     pen: this.pens[this.indexOfPenInLinked(pen)],
-                    roomName: this.room.name
+                    roomName: this.room.name,
                 });
             }));
         });
@@ -1048,7 +1049,7 @@ class App {
         this.updateUserUI(user._id, this.publicPen);
         this.updateParticipantsCounter();
         if (this.assistants && this.assistants.includes(user._id)) {
-            socket.emit('assistant.promotion', {userID: user._id, users: this.users});
+            socket.emit('assistant.promotion', { userID: user._id, users: this.users });
         }
     }
 
@@ -1085,8 +1086,8 @@ class App {
     }
 
     removeUserPen(userID, pen) {
-        if (this.role === 'student') { return }
-        if (!this.users || !this.users[userID]) { return }
+        if (this.role === 'student') { return; }
+        if (!this.users || !this.users[userID]) { return; }
         const { pens } = this.users[userID];
         let index = -1;
         for (let i = 0; i < pens.length; i++) {
@@ -1096,7 +1097,7 @@ class App {
             }
         }
 
-        if (index === -1) { return }
+        if (index === -1) { return; }
 
         pens.splice(index, 1);
 
@@ -1117,7 +1118,7 @@ class App {
     }
 
     updateParticipantsCounter() {
-        if (this.role === 'student') { return }
+        if (this.role === 'student') { return; }
         const participants = document.getElementById('participants');
         const connectedUsers = this.countActive();
         const count = Object.values(connectedUsers).length;
@@ -1222,15 +1223,14 @@ class CreatorApp extends App {
     isLinked(pen) {
         if (this.indexOfPenInLinked(pen) !== -1) {
             return true;
-        } else {
-            for (let i = 0; i < this.assistants.length; i++) {
-                const assistant = this.assistants[i];
-                const assistantPens = this.users[assistant].pens;
-                if (this.indexOfPenInLinked(pen, assistantPens) !== -1) {
-                    return true;
-                }
-            }
-            return false;
         }
+        for (let i = 0; i < this.assistants.length; i++) {
+            const assistant = this.assistants[i];
+            const assistantPens = this.users[assistant].pens;
+            if (this.indexOfPenInLinked(pen, assistantPens) !== -1) {
+                return true;
+            }
+        }
+        return false;
     }
 }
