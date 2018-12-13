@@ -200,10 +200,23 @@ function init() {
 
     socket.on('moderator.linkResponse', (data) => {
         const { result, pen, ownerID } = data;
+        console.log(data);
         if (result === 'false') {
             app.loadRemotePen(pen, ownerID);
         }
     });
+
+    socket.on('creator.moderatorEstablishedLink', (data) => {
+        const { pen, id } = data;
+        if (app instanceof CreatorApp) {
+            const userPens = app.users[id].pens;
+            for (let i = 0; i < userPens.length; i++) {
+                if (`${userPens[i].id}` === `${pen.id}`) {
+                    userPens[i].link = pen.link;
+                }
+            }
+        }
+    })
 }
 
 

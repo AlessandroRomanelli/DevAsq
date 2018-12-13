@@ -556,6 +556,12 @@ class App {
         span.id = 'raise-hand';
         span.classList.add('info');
         document.getElementById('room-info').appendChild(span);
+        const toRemove = [];
+        for (let i = this.pens.length - 1; i >= 0; i--) {
+            if (this.pens[i].link) {
+                this.deletePen(i);
+            }
+        }
     }
 
     addTogglerListener() {
@@ -589,8 +595,14 @@ class App {
         if (this.role === 'student') {
             return;
         }
+        if (!this.users || !this.users[userID]) {
+            return;
+        }
         const { pens } = this.users[userID];
 
+        if (!pens) {
+            return;
+        }
         for (let i = 0; i < this.pens.length; i++) {
             const storedPen = this.pens[i];
             if (storedPen.link && storedPen.link.penID === pen.id) {
@@ -626,6 +638,9 @@ class App {
         }
         const roomSettings = document.getElementById('room-settings');
         const user = document.getElementById(userID);
+        if (!user) {
+            return;
+        }
         const preview = user.querySelector('img#preview-icon');
         const image = user.querySelector('img.user-icon');
         const kickBanMenu = user.querySelector('.user-remove');
@@ -653,7 +668,10 @@ class App {
         });
         roomSettings.onclick = ((event) => {
             console.log('Clicking content');
-            const kickBanMenu = document.getElementById(userID).querySelector('.user-remove');
+            const kickBanMenu = user.querySelector('.user-remove');
+            if (!kickBanMenu) {
+                return;
+            }
             if (!(kickBanMenu.contains(event.target)) && kickBanMenu.classList.contains('open')) {
                 kickBanMenu.classList.remove('open');
             }
@@ -766,6 +784,9 @@ class App {
         if (this.role === 'creator') {
             promote.onclick = ((event) => {
                 event.preventDefault();
+                this.users[id].ping = false;
+                user.classList.remove('help-needed');
+                this.updateRoomSettings();
                 const index = this.assistants.indexOf(id);
                 if (index === -1) {
                     this.assistants.push(id);
@@ -964,6 +985,14 @@ class App {
                 this.setupTabsHandlers();
 
                 this.setPenContentIntoPen(pen, this.getCurrentPen());
+                console.log(this.indexOfPenInLinked(pen));
+                console.log(this.pens[this.indexOfPenInLinked(pen)]);
+                console.log(this.pens);
+                socket.emit('creator.linkEstablished', {
+                    id: this.userID,
+                    pen: this.pens[this.indexOfPenInLinked(pen)],
+                    roomName: this.room.name
+                });
             }));
         });
     }
@@ -1027,6 +1056,9 @@ class App {
         if (this.role === 'student') {
             return;
         }
+        if (!this.users || !this.users[userID]) {
+            return;
+        }
         const oldPen = this.users[userID].currentPen;
         this.users[userID].currentPen = newPen;
         this.updateUserUI(userID, newPen, oldPen);
@@ -1034,9 +1066,8 @@ class App {
     }
 
     removeUserPen(userID, pen) {
-        if (this.role === 'student') {
-            return;
-        }
+        if (this.role === 'student') { return }
+        if (!this.users || !this.users[userID]) { return }
         const { pens } = this.users[userID];
         let index = -1;
         for (let i = 0; i < pens.length; i++) {
@@ -1046,9 +1077,7 @@ class App {
             }
         }
 
-        if (index === -1) {
-            return;
-        }
+        if (index === -1) { return }
 
         pens.splice(index, 1);
 
@@ -1069,9 +1098,7 @@ class App {
     }
 
     updateParticipantsCounter() {
-        if (this.role === 'student') {
-            return;
-        }
+        if (this.role === 'student') { return }
         const participants = document.getElementById('participants');
         const connectedUsers = this.countActive();
         const count = Object.values(connectedUsers).length;

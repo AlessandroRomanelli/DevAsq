@@ -401,6 +401,11 @@ io.on('connection', (socket) => {
         const { result, userID, pen, ownerID } = data;
         socket.to(connectionMap.getSocket(userID)).emit('moderator.linkResponse', {result, pen, ownerID});
     });
+
+    socket.on('creator.linkEstablished', (data) => {
+        const { id, pen, roomName } = data;
+        socket.to(getCreatorSocket(roomName)).emit('creator.moderatorEstablishedLink', {id, pen});
+    });
 });
 
 eventBus.on('event', (event) => {
