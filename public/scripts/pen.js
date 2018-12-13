@@ -31,10 +31,8 @@ function init() {
     startParsing(app);
 
     socket.on('connect', () => {
-        console.log('Room page socket connected');
         socket.emit('settings.bindID', { id: user._id });
 
-        console.log(app.room);
 
         socket.emit('settings.joinRoom', {
             roomName: app.room.name,
@@ -46,22 +44,18 @@ function init() {
     });
 
     socket.on('reconnect', (attemptNumber) => {
-        console.log('Socket reconnected!', 'ok');
         socket.emit('settings.bindID', { id: user._id });
     });
 
     socket.on('disconnect', (reason) => {
-        console.log(reason);
         socket.emit('settings.leaveRoom');
     });
 
     socket.on('pen.update', (data) => {
-        console.log(data);
         app.updatePen(data.pen, data.positions, data.difference, data.rows);
     });
 
     socket.on('pen.updatePreview', (data) => {
-        console.log('updating the preview');
         if (app.indexOfPen(data.pen) === app.currentPen) {
             app.changeAcesContent(data.positions, true);
         } else if (app.indexOfPenInLinked(data.pen) === app.currentPen) {
@@ -80,13 +74,13 @@ function init() {
     });
 
     socket.on('settings.userJoined', (user) => {
-        if (app instanceof CreatorApp) {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
             app.userConnected(user);
         }
     });
 
     socket.on('settings.userLeft', (user) => {
-        if (app instanceof CreatorApp) {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
             app.userDisconnected(user);
         }
     });
@@ -95,28 +89,34 @@ function init() {
         const {
             id, pen, rows, difference, positions,
         } = data;
-        if (app instanceof CreatorApp) {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
             app.updateUsers(id, pen, positions, difference, rows);
+        }
+        if (app.role === 'moderator') {
+            socket.emit('moderator.updatePensOnServer', {
+                id: app.userID,
+                pens: app.pens,
+                roomName: app.room.name
+            })
         }
     });
 
     socket.on('creator.switchPen', (data) => {
         const { id, newPen } = data;
-        if (app instanceof CreatorApp) {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
             app.updateUserCurrentPen(id, newPen);
         }
     });
 
     socket.on('creator.deletedPen', (data) => {
         const { id, pen } = data;
-        if (app instanceof CreatorApp) {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
             app.removeUserPen(id, pen);
         }
     });
 
     socket.on('creator.helpNeeded', (id) => {
-        console.log(id);
-        if (app instanceof CreatorApp) {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
             app.signalHelp(id);
             app.updateRoomSettings();
         }
@@ -136,14 +136,12 @@ function init() {
     });
 
     socket.on('room.isAllowed', (data) => {
-        console.log('creator received request to enter', data);
         const { userID } = data;
         if (app instanceof CreatorApp) {
             let response = 'true';
             if (app.users[userID]) {
                 response = `${app.users[userID].state !== 'banned'}`;
             }
-            console.log('sending request to enter');
             socket.emit('room.accessResponse', {
                 userID,
                 response,
@@ -152,20 +150,79 @@ function init() {
         }
     });
 
-    socket.on('pen.resolveHelp', () => {
-        console.log('Creator resolved help');
-        app.resolveHelp();
+    socket.on('pen.resolveHelp', (data) => {
+        app.resolveHelp(data && data.id);
     });
+
+    socket.on('assistant.promotion', (data) => {
+        const { users, assistants } = data;
+        // delete users[app.userID];
+        for (let i = 0; i < assistants.length; i++) {
+            delete users[assistants[i]];
+        }
+        if (app instanceof App) {
+            socket.emit('assistant.beingPromoted', {roomName: app.room.name});
+            app.receivePromotion(users);
+        }
+    });
+
+    socket.on('moderator.removeUser', (data) => {
+        const userID = data.userID;
+        delete app.users[userID];
+        document.getElementById(userID).outerHTML = "";
+    });
+
+    socket.on('moderator.addUser', (data) => {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
+            const { userID, information } = data;
+            app.users[userID] = information;
+            app.updateUI();
+        }
+    });
+
+    socket.on('assistant.degradation', () => {
+        if (app instanceof App) {
+            socket.emit('assistant.beingDegraded', {roomName: app.room.name});
+            app.receiveDegradation()
+        }
+    });
+
+    socket.on('creator.isLinked', (data) => {
+        const { pen, userID, ownerID } = data;
+        socket.emit('moderator.isLinked', {result: `${app.isLinked(pen)}`, userID, pen, ownerID});
+    });
+
+    socket.on('moderator.linkResponse', (data) => {
+        const { result, pen, ownerID } = data;
+        if (result === 'false') {
+            app.loadRemotePen(pen, ownerID);
+        }
+    });
+
+    socket.on('moderators.linkedPenChanged', (data) => {
+        const pen = data.pen;
+        app.updateContentLinkedPen(pen);
+    });
+
+    socket.on('creator.moderatorEstablishedLink', (data) => {
+        const { pen, id } = data;
+        if (app instanceof CreatorApp) {
+            const userPens = app.users[id].pens;
+            for (let i = 0; i < userPens.length; i++) {
+                if (`${userPens[i].id}` === `${pen.id}`) {
+                    userPens[i].link = pen.link;
+                }
+            }
+        }
+    })
 }
 
 
 function handleModals() {
     const modals = document.querySelectorAll('.modal');
-    console.log(modals);
     for (let i = 0; i < modals.length; i++) {
         const modal = modals[i];
         modal.addEventListener('click', (event) => {
-            console.log(event.target);
             if (!event.target) { return; }
             if (!event.target.classList) { return; }
             if (!event.target.classList.contains('modal')) { return; }

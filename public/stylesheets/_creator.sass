@@ -252,6 +252,29 @@
       padding: 1em
       margin: 1em
       transition: 0.2s ease-in-out
+      .user-promote
+        position: absolute
+        top: 0
+        left: 50%
+        transform: translateX(-50%)
+        margin: 0.5em 0
+        height: 20px
+        button
+          color: white
+          outline: 0
+          background: none
+          border: none
+          text-transform: uppercase
+          transition: 0.2s ease-in-out
+          border: 1px solid transparent
+          border-radius: 5px
+          &:hover
+            color: $primary-color
+            border-color: $primary-color
+            background: transparentize($primary-color, 0.9)
+            cursor: pointer
+            transform: translateY(2px)
+
       .difference
         p
           margin-bottom: 0
@@ -307,6 +330,7 @@
       p
         margin: 0.5em 0
       .user-icon
+        margin-top: 1.5em
         max-width: 50px
 
       &.help-needed
@@ -386,6 +410,8 @@
             &:hover
               background: $primary-color
               border-color: darken($primary-color, 10%)
+          &.onlyChild
+            border-radius: 15px
           &:hover
             cursor: pointer
             color: $dark
@@ -465,6 +491,7 @@
   button
     text-transform: uppercase
     transition: 0.2s ease-in-out
+    outline: 0
     &:first-child
       color: white
       padding: 0.5em 1em 0.5em 2em
@@ -483,6 +510,9 @@
       &:hover
         background: $primary-color
         border-color: darken($primary-color, 10%)
+    &.onlyChild
+      padding: 0.5em 2em
+      border-radius: 1.5em
     &:hover
       color: $dark
       cursor: pointer

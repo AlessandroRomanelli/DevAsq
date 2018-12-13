@@ -1,0 +1,10 @@
+<div id='preview-modal' class="modal hidden">
+    <div class="container">
+        <div id="close-modal"></div>
+        <iframe id='preview-iframe'></iframe>
+        <div id='preview-loaders' class="">
+            <button id='modal-share' type="button" name="button">Share pen</button>
+            <button id='modal-load' type="button" name="button">Load pen</button>
+        </div>
+    </div>
+</div>
