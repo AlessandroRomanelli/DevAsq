@@ -383,9 +383,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('assistant.degradation', (data) => {
-        const { userID } = data;
+        const { userID, roomName, information } = data;
         const socketID = connectionMap.getSocket(userID);
-        socket.to(socketID).emit('assistant.degradation')
+        socket.to(socketID).emit('assistant.degradation');
+        socket.to(`${roomName}_moderators`).emit('moderator.addUser', {userID, information});
     });
 
     socket.on('assistant.beingDegraded', (data) => {

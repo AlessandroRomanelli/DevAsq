@@ -583,7 +583,6 @@ class App {
         span.id = 'raise-hand';
         span.classList.add('info');
         document.getElementById('room-info').appendChild(span);
-        const toRemove = [];
         for (let i = this.pens.length - 1; i >= 0; i--) {
             if (this.pens[i].link) {
                 this.deletePen(i);
@@ -824,7 +823,11 @@ class App {
                     });
                 } else {
                     this.assistants.splice(index, 1);
-                    socket.emit('assistant.degradation', {userID: id})
+                    socket.emit('assistant.degradation', {
+                        userID: id,
+                        roomName: this.room.name,
+                        information: this.users[id],
+                    });
                 }
             })
         }

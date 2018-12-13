@@ -172,6 +172,13 @@ function init() {
         document.getElementById(userID).outerHTML = "";
     });
 
+    socket.on('moderator.addUser', (data) => {
+        if (app instanceof CreatorApp || app.role === 'moderator') {
+            const { userID, information } = data;
+            app.users[userID] = information;
+            app.updateUI();
+        }
+    });
 
     socket.on('assistant.degradation', () => {
         if (app instanceof App) {
