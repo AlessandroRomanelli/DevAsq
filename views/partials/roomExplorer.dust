@@ -8,5 +8,12 @@
           <th> Password </th>
           <th>  </th>
       </tr>
+      {#activeRooms}
+          <tr data-name="{name}">
+              {>"partials/room" /}
+              {> "partials/room" /}
+          </tr>
+      {/activeRooms}
+
   </table>
 </div>
