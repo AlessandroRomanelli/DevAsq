@@ -518,6 +518,105 @@ class App {
             this.askForHelp();
         });
         sharePublic.parentNode.removeChild(sharePublic);
+
+        this.setUpLayout();
+    }
+
+    setUpLayout() {
+        const leftLayout = document.getElementById('leftLayout');
+        const centerLayout = document.getElementById('centerLayout');
+        const rightLayout = document.getElementById('rightLayout');
+        const pens = document.getElementById('pens');
+
+        function updateActive(element) {
+            const buttons = element.parentNode.childNodes;
+            for (let i = 0; i < buttons.length; i++) {
+                const button = buttons[i];
+                if (button.classList) button.classList.remove('active');
+            }
+            element.classList.add('active');
+        }
+
+        leftLayout.addEventListener('click', (event) => {
+            console.log('calledLeft');
+            updateActive(event.target);
+            pens.classList.add('leftLayout');
+            pens.classList.remove('centerLayout');
+            pens.classList.remove('rightLayout');
+        });
+        centerLayout.addEventListener('click', (event) => {
+            console.log('calledCenter');
+            updateActive(event.target);
+            pens.classList.remove('leftLayout');
+            pens.classList.add('centerLayout');
+            pens.classList.remove('rightLayout');
+        });
+        rightLayout.addEventListener('click', (event) => {
+            console.log('calledRight');
+            updateActive(event.target);
+            pens.classList.remove('leftLayout');
+            pens.classList.remove('centerLayout');
+            pens.classList.add('rightLayout');
+        });
+
+        const penClasses = ['none', 'html', 'css', 'htmlcss', 'js', 'htmljs', 'cssjs', undefined];
+
+        function convertToClass(n) {
+            return penClasses[n];
+        }
+
+        function updatePensClass() {
+            const editors = document.querySelectorAll('#pens .pen');
+            let count = 0;
+            console.log(editors);
+            for (let i = 0; i < editors.length; i++) {
+                const editor = editors[i];
+                if (!editor.classList.contains('min')) {
+                    count += 2 ** i;
+                }
+            }
+            penClasses.forEach((className) => {
+                pens.classList.remove(className);
+            });
+            const newClass = convertToClass(count);
+            if (newClass) pens.classList.add(newClass);
+        }
+
+        pens.querySelector('div').childNodes.forEach((pen) => {
+            const btns = pen.querySelectorAll('button');
+            btns[0].addEventListener('click', (event) => {
+                const button = event.target;
+                updateActive(button);
+                button.parentNode.parentNode.parentNode.classList.add('max');
+                button.parentNode.parentNode.parentNode.classList.remove('min');
+                pens.querySelector('div').childNodes.forEach((checkPen, index) => {
+                    if (checkPen !== pen) {
+                        checkPen.classList.remove('max');
+                        checkPen.classList.add('min');
+                        const buttons = checkPen.querySelectorAll('.header button');
+                        buttons.forEach((button, index) => {
+                            button.classList.remove('active');
+                            if (index === 2) button.classList.add('active');
+                        });
+                    }
+                });
+                updatePensClass();
+            });
+            btns[1].addEventListener('click', (event) => {
+                const button = event.target;
+                updateActive(button);
+                button.parentNode.parentNode.parentNode.classList.remove('max');
+                button.parentNode.parentNode.parentNode.classList.remove('min');
+                updatePensClass();
+            });
+            btns[2].addEventListener('click', (event) => {
+                const button = event.target;
+                updateActive(button);
+                button.parentNode.parentNode.parentNode.classList.remove('max');
+                button.parentNode.parentNode.parentNode.classList.add('min');
+                updatePensClass();
+            });
+        });
     }
 
     indexOfPen(pen) {
@@ -652,6 +751,7 @@ class App {
             const storedPen = pens[i];
             if (storedPen.id === pen.id) {
                 pens[i] = pen;
+                this.checkDiff(userID, pen.id);
                 return;
             }
         }
@@ -805,6 +905,9 @@ class App {
                 shareModalPen.onclick = sharePen.onclick;
             }
             loadModalPen.onclick = loadPen.onclick;
+        });
+        select.onchange = ((event) => {
+            this.checkDiff(id);
         });
         if (this.role === 'creator') {
             promote.onclick = ((event) => {
@@ -1128,13 +1231,6 @@ class App {
         return connectedUsers;
     }
 
-    decodeSharingOptions(code) {
-        const html = [1, 3, 5, 7].includes(code);
-        const css = [2, 3, 6, 7].includes(code);
-        const js = [4, 5, 6, 7].includes(code);
-        return { html, css, js };
-    }
-
     handleShareOptions(checkboxs) {
         if (this.role === 'student') {
             return;
@@ -1209,6 +1305,7 @@ class App {
         this.handleShareOptions(checkboxs);
 
         this.setUpModalListeners();
+        this.setUpLayout();
     }
 }
 
@@ -1232,5 +1329,65 @@ class CreatorApp extends App {
             }
         }
         return false;
+    }
+
+    checkDiff(id, inputPenID) {
+        const diffProgress = document.getElementById(id).querySelector('.difference-progress');
+        const select = document.getElementById(id).querySelector('select');
+        const penID = select.selectedOptions[0].id;
+        const index = this.findIDInUserPen(penID, this.users[id].pens);
+        const creatorPen = this.getCurrentPen();
+        const userPen = index === -1 ? this.publicPen : this.users[id].pens[index];
+
+        if (inputPenID && `${inputPenID}` !== `${userPen.id}`) {
+            return;
+        }
+
+        console.log(userPen);
+        console.log(creatorPen);
+        const htmlDiff = this.checkSingleDiff(creatorPen.html, userPen.html);
+        const cssDiff = this.checkSingleDiff(creatorPen.css, userPen.css);
+        const javascriptDiff = this.checkSingleDiff(creatorPen.js, userPen.js);
+        console.log(htmlDiff);
+        console.log(cssDiff);
+        console.log(javascriptDiff);
+        // const result = Math.round((htmlDiff + cssDiff + javascriptDiff) / 3 * 100);
+        const result = 100 - Math.round((htmlDiff + cssDiff + javascriptDiff) / 3 * 100);
+        if (result > 66) {
+            diffProgress.classList.add('green');
+            diffProgress.classList.remove('yellow');
+            diffProgress.classList.remove('red');
+        } else if (result <= 66 && result > 33) {
+            diffProgress.classList.remove('green');
+            diffProgress.classList.add('yellow');
+            diffProgress.classList.remove('red');
+        } else {
+            diffProgress.classList.remove('green');
+            diffProgress.classList.remove('yellow');
+            diffProgress.classList.add('red');
+        }
+        diffProgress.style.width = `${result}%`;
+    }
+
+    checkSingleDiff(mainContent, secondContent) {
+        const differences = JsDiff.diffWords(mainContent, secondContent);
+        console.log(differences);
+        let added = 0;
+        let removed = 0;
+        let equal = 0;
+        differences.forEach((difference) => {
+            if (difference.added) {
+                added += difference.value.length;
+            } else if (difference.removed) {
+                removed += difference.value.length;
+            } else {
+                equal += difference.value.length;
+            }
+        });
+        let result = (added + removed) / (added + removed + equal);
+        if (Number.isNaN(result)) {
+            result = 0;
+        }
+        return result;
     }
 }

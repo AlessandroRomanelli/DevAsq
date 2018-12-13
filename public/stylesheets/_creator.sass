@@ -1,17 +1,17 @@
 #room-info
   height: 34px
-  position: absolute
+  position: relative
   display: flex
   flex-direction: row
   align-items: center
-  justify-content: flex-start
+  justify-content: space-between
   text-align: center
   font-size: 0.75em
-  margin-left: 1em
+  margin: 0 1em
   text-transform: uppercase
   color: $primary-color
   z-index: 100
-  span
+  & > span, & > span > span
     display: flex
     align-items: center
     height: 25px
@@ -22,6 +22,34 @@
       text-transform: none
   span:not(:last-child)
     margin-right: 1em
+
+  .layouts
+    button
+      line-height: 0
+      font-size: 1.5em
+      background: none
+      border: none
+      outline: 0
+      transition: 0.2s ease-in-out
+      color: white
+      margin-left: 1em
+      padding: 0
+      width: 20px
+      height: 20px
+      border-radius: 50%
+      border: 1px solid transparent
+      &:first-child
+        margin-left: 0.5em
+      &:hover, &.active
+        cursor: pointer
+        color: $primary-color
+        border-color: white
+      &.active
+        opacity: 0.8
+        border-color: $primary-color
+        &:hover
+          cursor: auto
+
 
   #share-public
     position: relative
@@ -106,6 +134,7 @@
     background: mix($dark, red, 90%)
     transition: 0.4s ease-in-out
     border-radius: 17px
+    height: 16px
     &:before
       content: ''
       position: absolute
@@ -246,6 +275,25 @@
             cursor: pointer
             transform: translateY(2px)
 
+      .difference
+        p
+          margin-bottom: 0
+        .difference-percentage
+          width: 100%
+          height: 10px
+          border-radius: 10px
+          background: $dark
+        .difference-progress
+          width: 100%
+          height: 100%
+          border-radius: 10px
+          transition: 0.5s ease-in-out
+          &.green
+            background: mix(green, white, 66%)
+          &.yellow
+            background: mix(yellow, white, 66%)
+          &.red
+            background: mix(red, white, 66%)
       .user-remove
         position: absolute
         height: 20px
