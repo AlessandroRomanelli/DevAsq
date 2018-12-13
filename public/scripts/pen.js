@@ -189,6 +189,7 @@ function init() {
         if (app instanceof App) {
             socket.emit('assistant.beingDegraded', {roomName: app.room.name});
             console.log("You have been degraded!")
+            app.receiveDegradation()
         }
     });
 

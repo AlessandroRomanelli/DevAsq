@@ -547,6 +547,17 @@ class App {
         this.setUpModalListeners();
     }
 
+    receiveDegradation() {
+        delete this.users;
+        this.role = 'student';
+        document.getElementById('room-settings').outerHTML= '';
+        const span = document.createElement('span');
+        span.innerHTML = "Ask for help";
+        span.id = 'raise-hand';
+        span.classList.add('info');
+        document.getElementById('room-info').appendChild(span);
+    }
+
     addTogglerListener() {
         if (this.role === 'student') {
             return;
@@ -891,7 +902,7 @@ class App {
         const closeModal = document.getElementById('close-modal');
         const sharePen = document.getElementById('modal-share');
         const loadPen = document.getElementById('modal-load');
-        if (this.role !== 'creator') {
+        if (this.role !== 'creator' && sharePen) {
             sharePen.parentNode.removeChild(sharePen);
         }
         closeModal.onclick = ((event) => {
@@ -1065,7 +1076,9 @@ class App {
         const connectedUsers = this.countActive();
         const count = Object.values(connectedUsers).length;
         console.log("Count", count);
-        participants.innerHTML = `${count}`;
+        if (participants) {
+            participants.innerHTML = `${count}`;
+        }
         return connectedUsers;
     }
 
