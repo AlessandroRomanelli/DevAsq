@@ -152,9 +152,9 @@ function init() {
         }
     });
 
-    socket.on('pen.resolveHelp', () => {
+    socket.on('pen.resolveHelp', (data) => {
         console.log('Creator resolved help');
-        app.resolveHelp();
+        app.resolveHelp(data && data.id);
     });
 
     socket.on('assistant.promotion', (data) => {

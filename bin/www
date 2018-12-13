@@ -208,10 +208,12 @@ io.on('connection', (socket) => {
     });
 
     socket.on('pen.resolveHelp', (data) => {
-        const { id } = data;
+        const { id, roomName } = data;
         const userSocket = connectionMap.getSocket(id);
         if (!userSocket) return;
         socket.to(userSocket).emit('pen.resolveHelp');
+        socket.to(`${roomName}_moderators`).emit('pen.resolveHelp', {id});
+        socket.to(getCreatorSocket(roomName)).emit('pen.resolveHelp', {id});
     });
 
     socket.on('user.kick', (data) => {

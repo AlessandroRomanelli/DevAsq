@@ -409,9 +409,13 @@ class App {
         });
     }
 
-    resolveHelp() {
-        const raiseHand = document.getElementById('raise-hand');
-        raiseHand.classList.remove('asking-help');
+    resolveHelp(id) {
+        if (this.role === 'student') {
+            const raiseHand = document.getElementById('raise-hand');
+            raiseHand.classList.remove('asking-help');
+        } else {
+            this.signalHelp(id);
+        }
     }
 
     setupTabsHandlers() {
@@ -616,8 +620,8 @@ class App {
         image.onclick = ((event) => {
             if (this.users[id].ping) {
                 this.signalHelp(id);
+                socket.emit('pen.resolveHelp', { id, roomName: this.room.name });
             }
-            socket.emit('pen.resolveHelp', { id });
         });
         kickBanMenu.onclick = ((event) => {
             kickBanMenu.classList.toggle('open');
