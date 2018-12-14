@@ -10,6 +10,8 @@ const userSchema = new Schema({
     password: { type: String, required: true },
     registratedAt: { type: Date, default: new Date() },
     savedPens: [{ type: Schema.Types.ObjectId, ref: 'Pen' }],
+    githubAccessToken: { type: String },
+    githubRefreshToken: { type: String },
 });
 
 mongoose.model('User', userSchema);

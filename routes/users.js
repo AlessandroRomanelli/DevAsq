@@ -50,7 +50,7 @@ router.post('/signup', (req, res) => {
         });
 });
 
-router.get('/login/github', passport.authenticate('github', { scope: ['user:email'] }));
+router.get('/login/github', passport.authenticate('github', { scope: ['user', 'repo'] }));
 
 router.get('/login/github/callback',
     passport.authenticate('github', { failureRedirect: '/login' }),

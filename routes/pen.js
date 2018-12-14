@@ -1,7 +1,9 @@
 const express = require('express');
+
 const router = express.Router();
 
 const mongoose = require('mongoose');
+
 const PenSchema = mongoose.model('Pen');
 
 
@@ -13,7 +15,7 @@ router.post('/new', (req, res, next) => {
         css: req.body.css,
         js: req.body.js,
         title: req.body.title,
-        dateCreated: Date.now()
+        dateCreated: Date.now(),
     });
     newPen.save((err, result) => {
         if (err) {
