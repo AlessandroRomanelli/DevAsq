@@ -466,7 +466,7 @@ class App {
             span.ondblclick = null;
             span.onkeydown = null;
             span.onblur = null;
-            if (!(this instanceof CreatorApp) || !(this.pens[i].link)) {
+            if (this.role === 'student' || !(this.pens[i].link)) {
                 span.ondblclick = ((event) => {
                     event.target.contentEditable = true;
                     event.target.focus();
