@@ -538,21 +538,18 @@ class App {
         }
 
         leftLayout.addEventListener('click', (event) => {
-            console.log('calledLeft');
             updateActive(event.target);
             pens.classList.add('leftLayout');
             pens.classList.remove('centerLayout');
             pens.classList.remove('rightLayout');
         });
         centerLayout.addEventListener('click', (event) => {
-            console.log('calledCenter');
             updateActive(event.target);
             pens.classList.remove('leftLayout');
             pens.classList.add('centerLayout');
             pens.classList.remove('rightLayout');
         });
         rightLayout.addEventListener('click', (event) => {
-            console.log('calledRight');
             updateActive(event.target);
             pens.classList.remove('leftLayout');
             pens.classList.remove('centerLayout');
@@ -568,7 +565,6 @@ class App {
         function updatePensClass() {
             const editors = document.querySelectorAll('#pens .pen');
             let count = 0;
-            console.log(editors);
             for (let i = 0; i < editors.length; i++) {
                 const editor = editors[i];
                 if (!editor.classList.contains('min')) {
@@ -697,10 +693,25 @@ class App {
         const roomSettings = document.getElementById('room-settings');
         const toggler = roomSettings.querySelector('.toggler');
         const content = document.getElementById('content');
+        const shareOptions = document.getElementById('share-public');
+        console.log(shareOptions);
 
-        content.onclick = (() => {
+        content.onclick = ((event) => {
             if (!(roomSettings.classList.contains('hidden'))) {
                 roomSettings.classList.add('hidden');
+            }
+            console.log(event);
+            console.log(event.target);
+            if (shareOptions && (shareOptions.classList.contains('open'))) {
+                if (!event.target) { return }
+                const target = event.target;
+                if (target.id === 'share-toggler') { return }
+                if (target.id === 'share-options') { return }
+                if (target.className && target.className.split(' ').includes('option-container')) { return }
+                if (target.type === 'checkbox') { return }
+                const texts = ['ALL', 'HTML', 'CSS', 'JS'];
+                if (target.tagName === 'SPAN' && texts.includes(target.innerHTML)) { return }
+                shareOptions.classList.remove('open');
             }
         });
 
@@ -718,24 +729,28 @@ class App {
     }
 
     updateUsers(userID, pen, positions, difference, rows) {
-        if (this.role === 'student') {
-            return;
-        }
-        if (!this.users || !this.users[userID]) {
-            return;
-        }
+        if (this.role === 'student') { return }
+        if (!this.users || !this.users[userID]) { return }
         const { pens } = this.users[userID];
-
-        if (!pens) {
-            return;
-        }
         for (let i = 0; i < this.pens.length; i++) {
             const storedPen = this.pens[i];
             if (storedPen.link && storedPen.link.penID === pen.id) {
+                const newTitle = `${this.users[userID].user.username} - ${pen.title}`;
+                console.log(newTitle, storedPen.title);
+                const titleChanged = newTitle !== storedPen.title;
                 storedPen.title = `${this.users[userID].user.username} - ${pen.title}`;
                 storedPen.html = pen.html;
                 storedPen.css = pen.css;
                 storedPen.js = pen.js;
+
+                if (this.currentPen === i && titleChanged) {
+                    setTimeout(() => {
+                        ace.edit('htmlPen').setReadOnly(false);
+                        ace.edit('cssPen').setReadOnly(false);
+                        ace.edit('jsPen').setReadOnly(false);
+                        document.getElementById(storedPen.id).classList.remove('locked');
+                    }, 0);
+                }
 
                 const tab = document.getElementById(storedPen.id).querySelector('span');
                 // const sharePublic = document.getElementById('share-public');
@@ -745,6 +760,12 @@ class App {
                 if (this.currentPen === i) {
                     this.changeViewContent(positions, difference, rows);
                 }
+
+                socket.emit('creator.broadcastPen', {
+                    roomName: this.room.name,
+                    id: this.userID,
+                    pen: storedPen,
+                });
             }
         }
 
@@ -752,6 +773,7 @@ class App {
             const storedPen = pens[i];
             if (storedPen.id === pen.id) {
                 pens[i] = pen;
+                this.updateUserUI(userID, pen, pen);
                 this.checkDiff(userID, pen.id);
                 return;
             }
@@ -984,6 +1006,19 @@ class App {
                 userDiv.classList.add('help-needed');
             }
             this.addSingleUserListener(id);
+            if (index === -1) {
+                const diffProgress = document.getElementById(id).querySelector('.difference-progress');
+                diffProgress.classList.add('green');
+                diffProgress.classList.remove('yellow');
+                diffProgress.classList.remove('red');
+                diffProgress.style.width = `100%`;
+            } else {
+                this.checkDiff(id, this.users[id].pens[index + 1]);
+            }
+            if (this.assistants && this.assistants.includes(id)) {
+                const promote = document.getElementById(id).querySelector('.promote');
+                promote.innerHTML = 'Demote';
+            }
         });
     }
 
@@ -1324,14 +1359,9 @@ class App {
             return;
         }
 
-        console.log(userPen);
-        console.log(creatorPen);
         const htmlDiff = this.checkSingleDiff(creatorPen.html, userPen.html);
         const cssDiff = this.checkSingleDiff(creatorPen.css, userPen.css);
         const javascriptDiff = this.checkSingleDiff(creatorPen.js, userPen.js);
-        console.log(htmlDiff);
-        console.log(cssDiff);
-        console.log(javascriptDiff);
         // const result = Math.round((htmlDiff + cssDiff + javascriptDiff) / 3 * 100);
         const result = 100 - Math.round((htmlDiff + cssDiff + javascriptDiff) / 3 * 100);
         if (result > 66) {
@@ -1355,7 +1385,6 @@ class App {
             return;
         }
         const differences = JsDiff.diffWords(mainContent, secondContent);
-        console.log(differences);
         let added = 0;
         let removed = 0;
         let equal = 0;
