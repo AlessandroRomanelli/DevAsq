@@ -62,6 +62,7 @@ function login(username, password) {
                 const contentDiv = document.getElementById('content');
                 contentDiv.innerHTML = output;
                 handleRoomForms();
+                addExplorerListener();
             });
         }
     }).catch((err) => {

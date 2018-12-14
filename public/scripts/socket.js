@@ -3,6 +3,7 @@ let currentSort = 'nameDown';
 
 function sortName() {
     const roomTable = document.getElementById('roomTable').childNodes[0];
+    if (!roomTable) return;
     let entries = Array.prototype.slice.call(roomTable.childNodes);
     const headers = entries.splice(0, 1);
 
@@ -22,17 +23,17 @@ function sortName() {
 
     let result = '<tbody>';
     entries.forEach((entry) => {
-        let id = "";
-        let dataName = "";
+        let id = '';
+        let dataName = '';
         if (entry.id) {
             id = `id="${entry.id}"`;
         }
         if (entry.dataset && entry.dataset.name) {
-            dataName = `data-name="${entry.dataset.name}"`
+            dataName = `data-name="${entry.dataset.name}"`;
         }
         result += `<tr ${id} ${dataName}>${entry.innerHTML}</tr>`;
     });
-    result += "</tbody>";
+    result += '</tbody>';
 
     roomTable.innerHTML = result;
     const pop = document.getElementById('pop-sort');
@@ -54,6 +55,7 @@ function sortName() {
 
 function sortPopulation() {
     const roomTable = document.getElementById('roomTable').childNodes[0];
+    if (!roomTable) return;
     let entries = Array.prototype.slice.call(roomTable.childNodes);
     const headers = entries.splice(0, 1);
 
@@ -78,17 +80,17 @@ function sortPopulation() {
 
     let result = '<tbody>';
     entries.forEach((entry) => {
-        let id = "";
-        let dataName = "";
+        let id = '';
+        let dataName = '';
         if (entry.id) {
             id = `id="${entry.id}"`;
         }
         if (entry.dataset.name) {
-            dataName = `data-name="${entry.dataset.name}"`
+            dataName = `data-name="${entry.dataset.name}"`;
         }
         result += `<tr ${id} ${dataName}>${entry.innerHTML}</tr>`;
     });
-    result += "</tbody>";
+    result += '</tbody>';
 
     console.log(currentSort);
     roomTable.innerHTML = result;
@@ -111,24 +113,24 @@ function sortPopulation() {
 
 function insertInSorted() {
     switch (currentSort) {
-        case 'nameUp':
-            currentSort = 'nameDown';
-            sortName();
-            break;
-        case 'nameDown':
-            currentSort = 'nameUp';
-            sortName();
-            break;
-        case 'populationUp':
-            currentSort = 'populationDown';
-            sortPopulation();
-            break;
-        case 'populationDown':
-            currentSort = 'populationUp';
-            sortPopulation();
-            break;
-        default:
-            break;
+    case 'nameUp':
+        currentSort = 'nameDown';
+        sortName();
+        break;
+    case 'nameDown':
+        currentSort = 'nameUp';
+        sortName();
+        break;
+    case 'populationUp':
+        currentSort = 'populationDown';
+        sortPopulation();
+        break;
+    case 'populationDown':
+        currentSort = 'populationUp';
+        sortPopulation();
+        break;
+    default:
+        break;
     }
 }
 
@@ -143,6 +145,7 @@ function insertInSorted() {
     socket.on('homePage.roomDelete', (data) => {
         const roomBrowserTitle = document.getElementById('room-browser-title');
         const roomTable = document.getElementById('roomTable');
+        if (!roomTable) return;
         const roomEntry = document.getElementById(`room_${data.roomName}`);
         roomEntry.parentNode.removeChild(roomEntry);
         if (roomTable.childNodes.length === 1) {
@@ -156,6 +159,7 @@ function insertInSorted() {
         console.log(data);
         const roomBrowserTitle = document.getElementById('room-browser-title');
         const roomTable = document.getElementById('roomTable');
+        if (!roomTable) return;
         const roomBody = roomTable.childNodes[0];
         console.log(roomBody);
 
@@ -176,7 +180,7 @@ function insertInSorted() {
                 users: data.population || '0',
             }, (err, out) => {
                 console.log(out);
-                roomBody.innerHTML = roomBody.innerHTML + out;
+                roomBody.innerHTML += out;
                 insertInSorted();
             });
         }
@@ -192,7 +196,7 @@ function insertInSorted() {
     });
 
     socket.on('room.accessResponse', (data) => {
-        console.log("response received from the server", data);
+        console.log('response received from the server', data);
         const { response, roomName, userID } = data;
         if (`${user._id}` !== `${userID}`) {
             return;
@@ -200,7 +204,7 @@ function insertInSorted() {
         if (response === 'true') {
             window.location.pathname = `/room/${roomName}`;
         } else {
-            handleError({data: 'You are banned'}, 'joinRoomButton');
+            handleError({ data: 'You are banned' }, 'joinRoomButton');
         }
     });
 }());
