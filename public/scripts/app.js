@@ -1185,6 +1185,12 @@ class App {
         if (this.role === 'student') {
             return;
         }
+        if (this.role === 'creator') {
+            if (this.users[user._id] && this.users[user._id].state === 'banned') {
+                socket.emit('user.kick', { userID: user._id });
+                return;
+            }
+        }
         this.users[user._id] = {
             user,
             currentPen: this.publicPen,
