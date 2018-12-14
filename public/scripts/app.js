@@ -510,7 +510,6 @@ class App {
         const roomName = document.getElementById('room-name');
         const raiseHand = document.getElementById('raise-hand');
         const sharePublic = document.getElementById('share-public');
-
         participants.parentNode.parentNode.removeChild(participants.parentNode);
         roomName.innerHTML = this.room.name;
         raiseHand.onclick = (() => {
@@ -518,8 +517,35 @@ class App {
             this.askForHelp();
         });
         sharePublic.parentNode.removeChild(sharePublic);
-
+        this.setupGithubOptions();
         this.setUpLayout();
+    }
+
+    setupGithubOptions() {
+        const githubOptions = document.getElementById('github-options');
+        const githubSave = document.getElementById('github-save');
+        const githubLoad = document.getElementById('github-load');
+        if (!user.githubID) {
+            githubOptions.parentNode.removeChild(githubOptions);
+        }
+        githubSave.onclick = (event) => {
+            event.target.classList.add('warning');
+            const pen = this.pens[this.currentPen];
+            if (pen.html === '' && pen.css === '' && pen.js === '') {
+                return handleError(new Error('Cannot save an empty pen to GitHub'), event.target);
+            }
+            doJSONRequest('POST', '/pen/github', {}, {
+                roomName: this.room.name,
+                pen: this.pens[this.currentPen],
+            }).then((res) => {
+                console.log(res);
+                event.target.classList.remove('warning');
+                if (res.status === 201) {
+                    event.target.classList.add('success');
+                    setTimeout(() => { event.target.classList.remove('success'); }, 5000);
+                }
+            });
+        };
     }
 
     setUpLayout() {
@@ -1306,6 +1332,7 @@ class App {
         this.handleShareOptions(checkboxs);
 
         this.setUpModalListeners();
+        this.setupGithubOptions();
         this.setUpLayout();
     }
 

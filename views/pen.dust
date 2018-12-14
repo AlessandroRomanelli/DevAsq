@@ -40,6 +40,12 @@
                 </div>
               </div>
             </span>
+            <span id='github-options'>GitHub
+              <div class="options">
+                <button id='github-save'>SAVE</button>
+                <button id='github-load'>LOAD</button>
+              </div>
+            </span>
           </span>
           <span class='layouts'>
             Layout:

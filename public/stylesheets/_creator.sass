@@ -20,6 +20,35 @@
       color: white
       font-size: 1.5em
       text-transform: none
+  #github-options
+    position: relative
+    .options
+      position: relative
+      bottom: 0
+      right: 0
+      button
+        display: block
+        background: none
+        border: none
+        color: $primary-color
+        outline: 0
+        transition: 0.3s ease-in-out
+        &:hover
+          color: white
+          cursor: pointer
+        &::after
+          content: '✔'
+          opacity: 0
+          margin-left: 0.5em
+          transition: 0.5s ease-in-out
+        &.warning
+          color: mix(orange, white, 75%)
+        &.success::after
+            color: mix(green, white, 75%)
+            opacity: 1
+
+
+
   span:not(:last-child)
     margin-right: 1em
 

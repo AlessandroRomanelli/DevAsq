@@ -1,5 +1,4 @@
 const express = require('express');
-const { parseHTML, doJSONRequest } = require('../utils');
 const {
     Room, Pen, roomStorage, UIDs,
 } = require('../rooms');
@@ -146,81 +145,6 @@ router.put('/:roomName/pen/:penId', (req, res) => {
     }
 
     res.status(200).json(pen);
-});
-
-router.post('/:roomName/pen/:penId/github', (req, res) => {
-    const { roomName, penId } = req.params;
-    const room = roomStorage[roomName];
-    const pen = room.getUserPen(req.user._id, penId);
-    let penName = pen.title;
-    const { githubID, githubAccessToken, githubRefreshToken } = req.user;
-    if (!githubID) return res.status(403).end();
-    const githubEndpoint = 'https://api.github.com';
-    const headers = {
-        Accept: 'application/vnd.github.v3+json',
-        Authorization: `token ${githubAccessToken}`,
-    };
-    const repositoryName = 'DevAsqPP';
-    let repoName;
-    doJSONRequest('GET', `${githubEndpoint}/user/repos`, headers, null).then((repos) => {
-        let repository;
-        for (let i = 0; i < repos.length; i++) {
-            const repo = repos[i];
-            if (repo.name === repositoryName) {
-                repository = repo;
-                break;
-            }
-        }
-        if (!repository) {
-            const body = {
-                name: repositoryName,
-            };
-            return doJSONRequest('POST', `${githubEndpoint}/user/repos`, headers, body).then(repo => repo);
-        }
-        return repository;
-    }).then((repo) => {
-        repoName = repo.full_name;
-        const now = new Date();
-        penName += `@${roomName}[${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}]`;
-        return doJSONRequest('GET', `${githubEndpoint}/repos/${repoName}/contents/${penName}`, headers, null).then((data) => {
-            if (data.message === 'Not Found' || data.message === 'This repository is empty.') { return []; }
-            return data;
-        }).then((contents) => {
-            let { html } = pen;
-            html = parseHTML(html);
-            const htmlContent = Buffer.from(html).toString('base64');
-            const cssContent = Buffer.from(pen.css).toString('base64');
-            const jsContent = Buffer.from(pen.js).toString('base64');
-            const fileNames = ['app.js', 'index.html', 'style.css'];
-            const fileContents = [jsContent, htmlContent, cssContent];
-
-            const publishFiles = (name, content, sha) => {
-                if (!sha) {
-                    return doJSONRequest('PUT', `${githubEndpoint}/repos/${repoName}/contents/${penName}/${name}`, headers, {
-                        message: `${name} commit`,
-                        content,
-                    });
-                }
-                return doJSONRequest('PUT', `${githubEndpoint}/repos/${repoName}/contents/${penName}/${name}`, headers, {
-                    message: `${name} commit`,
-                    content,
-                    sha,
-                });
-            };
-
-            if (contents.length > 0) {
-                return publishFiles(contents[0].name, fileContents[0], contents[0].sha)
-                    .then(() => publishFiles(contents[1].name, fileContents[1], contents[1].sha))
-                    .then(() => publishFiles(contents[2].name, fileContents[2], contents[2].sha));
-            }
-            return publishFiles(fileNames[0], fileContents[0])
-                .then(() => publishFiles(fileNames[1], fileContents[1]))
-                .then(() => publishFiles(fileNames[2], fileContents[2]));
-        }).catch((err) => {
-            console.error(err);
-        });
-    });
-    res.status(200).json({ status: 200 });
 });
 
 module.exports = router;

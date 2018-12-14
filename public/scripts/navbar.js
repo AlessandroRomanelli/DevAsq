@@ -30,8 +30,7 @@ function updateInputField(isValid, html) {
 }
 
 function handleError(err, html) {
-    console.log(html);
-    const { data } = err;
+    console.error(err);
     html.classList.add('error', 'shake-horizontal');
     setTimeout((html) => { html.classList.remove('shake-horizontal'); }, 1000, html);
 }
