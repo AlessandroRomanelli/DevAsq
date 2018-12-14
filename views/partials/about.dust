@@ -1,4 +1,80 @@
-<div class="about">
-  <p>Welcome to DevASQ++! </p>
-  <p>I</p>
+<div class = "about">
+  <div id="home" class="container">
+    <div class="header">
+      <div class="title">
+        <img src="/images/logo.png" alt="DevAsq++ Logo">
+        <p class="subtitle"> Do together. Learn together. </p>
+      </div>
+    </div>
+  </div>
+  <div class="containerbody">
+    <div class="thisproject">
+      <h1> This Project </h1>
+      <p>
+        This project has been developed during the Fall/Winter semester 2018 for the course of Software Atelier 3 teached by Cesare Pautasso. This is the final product of 4 weeks of work in which we have created this platform in the way you see at the moment. The main structure of DevAsq++ is built with Dust and the style has been added with Sass, all the other features are made with Javascript.
+
+      </p>
+    </div>
+    <div class="howitworks">
+      <h3> How it works </h3>
+      <p>
+      This platform is aimed to help students coding during the hands on performed in the lectures of Web Atelier, here you can:
+      <ul style="list-style-type:none">
+        <li>
+          <h4>Create a room / Join an already existing room</h4>
+          <p>
+            The idea is that the professor creates a room with a name and with a password, if needed. Students when entering will join the room created by the professor and they will be able to see what the professor writes.
+          </p>
+        </li>
+        <li>
+          <h4>Start coding </h4>
+          <p>
+            You will find 3 pens in which you can write HTML, CSS and JS code and a live preview of what you are doing will be displayed. You will also see the tab the professor decides to make public and there will be also the possibility to ask for help.
+          </p>
+        </li>
+        <li>
+          <h4>Creator mode / Student mode</h4>
+          <p>
+            The creator of the room will be able to manage the room, see how many partecipants are there and respond to who asked for help, while the students will have the possibility to ask something to the professor or TA and they will receive a quick help.
+          </p>
+        </li>
+      </ul>
+
+      </p>
+      <h3> Who we are </h3>
+    </div>
+
+  </div>
+  <div class="iconbox">
+      <div id="burro">
+          <img src="images/burro.jpg" />
+          <p class="name">Cristian</p>
+          <p class="surname"> Buratti </p>
+          <p class="role"> Back-end developer</p>
+      </div>
+      <div id="lino">
+          <img src="images/diego.png"/>
+          <p class="name">Diego </p>
+          <p class="surname"> Carlino</p>
+          <p class="role"> Back-end developer</p>
+      </div>
+      <div id="sara">
+          <img src="images/sara.jpg" />
+          <p class="name">Sara</p>
+          <p class="surname"> Mangialavori</p>
+          <p class="role"> Front-end developer</p>
+      </div>
+      <div id="roma">
+          <img src="images/sandro.jpg"/>
+          <p class="name">Alessandro</p>
+          <p class="surname"> Romanelli </p>
+          <p class="role"> Team leader</p>
+      </div>
+      <div id="ale">
+          <img src="images/sandra.jpg"/>
+          <p class="name">Alessandra</p>
+          <p class="surname"> Vicini </p>
+          <p class="role"> Front-end developer</p>
+      </div>
+  </div>
 </div>
