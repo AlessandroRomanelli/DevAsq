@@ -925,9 +925,15 @@ class App {
             modal.classList.toggle('hidden');
             iFrame.src = `/preview/${this.room.name}?penID=${pens[index].id}&userID=${id}`;
             if (shareModalPen) {
-                shareModalPen.onclick = sharePen.onclick;
+                shareModalPen.onclick = ((event) => {
+                    sharePen.click();
+                    modal.classList.add('hidden');
+                })
             }
-            loadModalPen.onclick = loadPen.onclick;
+            loadModalPen.onclick = ((event) => {
+                loadPen.click();
+                modal.classList.add('hidden');
+            });
         });
         select.onchange = ((event) => {
             this.checkDiff(id);
@@ -1094,10 +1100,11 @@ class App {
             loadPen.classList.add('onlyChild');
             sharePen.parentNode.removeChild(sharePen);
         }
+
         closeModal.onclick = ((event) => {
             event.preventDefault();
             modal.classList.toggle('hidden');
-            sharePen.onclick = null;
+            if (sharePen) { sharePen.onclick = null }
             loadPen.onclick = null;
         });
     }
@@ -1188,7 +1195,12 @@ class App {
         this.updateUserUI(user._id, this.publicPen);
         this.updateParticipantsCounter();
         if (this.assistants && this.assistants.includes(user._id)) {
-            socket.emit('assistant.promotion', { userID: user._id, users: this.users });
+            socket.emit('assistant.promotion', {
+                userID: user._id,
+                users: this.users,
+                assistants: this.assistants,
+                roomName: this.room.name
+            });
         }
     }
 
