@@ -1206,6 +1206,15 @@ class App {
                 roomName: this.room.name
             });
         }
+        setTimeout(() => {
+            const current = this.getCurrentPen();
+            if (current.link && current.link.userID === user._id) {
+                ace.edit('htmlPen').setReadOnly(false);
+                ace.edit('cssPen').setReadOnly(false);
+                ace.edit('jsPen').setReadOnly(false);
+                document.getElementById(current.id).classList.remove('locked');
+            }
+        }, 0);
     }
 
     userDisconnected(user) {
