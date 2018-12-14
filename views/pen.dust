@@ -42,8 +42,10 @@
             </span>
             <span id='github-options'>GitHub
               <div class="options">
-                <button id='github-save'>SAVE</button>
-                <button id='github-load'>LOAD</button>
+                <div id='github-save'><span>SAVE</span></div>
+                <div id='github-load'><span>LOAD</span>
+                  <div id='github-folders'></div>
+                </div>
               </div>
             </span>
           </span>

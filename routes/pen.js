@@ -59,7 +59,7 @@ router.get('/github', (req, res) => {
         });
     }).catch((err) => {
         console.error(err);
-        res.status(500).end();
+        res.status(404).json({ status: 404 });
     });
 });
 

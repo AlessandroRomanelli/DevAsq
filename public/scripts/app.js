@@ -525,16 +525,81 @@ class App {
         const githubOptions = document.getElementById('github-options');
         const githubSave = document.getElementById('github-save');
         const githubLoad = document.getElementById('github-load');
+        const githubSelect = document.getElementById('github-folders');
+
+        const convertHTML = (html) => {
+            const lines = html.split('\n');
+            const styleRegex = new RegExp('style.css');
+            const jsRegex = new RegExp('app.js');
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const matches = styleRegex.test(line) || jsRegex.test(line);
+                if (matches) {
+                    lines.splice(i, 1);
+                }
+            }
+            return lines.join('\n');
+        };
+
+        const handleSelectClick = (event) => {
+            const select = event.target;
+            doJSONRequest('GET', `/pen/github/${select.innerHTML}`, {}, null).then((pen) => {
+                console.log(pen);
+                pen.html = convertHTML(pen.html);
+                this.createPen(() => {
+                    const currentPen = this.getCurrentPen();
+                    currentPen.html = pen.html;
+                    currentPen.css = pen.css;
+                    currentPen.js = pen.js;
+                    this.changePenName(pen.title, this.currentPen, () => {
+                        this.updatePen(currentPen);
+                        this.changeAcesContent();
+                        console.log(this.pens);
+                    });
+                });
+            });
+        };
+
+        const updateGithubFolders = (() => {
+            doJSONRequest('GET', '/pen/github', {}, null).then((data) => {
+                const { folders } = data;
+                if (data.status === 404 || (folders && folders.length === 0)) {
+                    githubLoad.classList.add('hidden');
+                    return;
+                }
+                githubLoad.classList.remove('hidden');
+                const options = [];
+                for (let i = 0; i < githubSelect.childNodes.length; i++) {
+                    const option = githubSelect.childNodes[i].innerHTML;
+                    options.push(option);
+                }
+                console.log(options);
+                folders.forEach((folder) => {
+                    if (!options.includes(folder)) {
+                        githubSelect.innerHTML += `<div>${folder}</div>`;
+                    }
+                });
+                const selects = githubSelect.childNodes;
+                for (let i = 0; i < selects.length; i++) {
+                    const select = selects[i];
+                    select.onclick = handleSelectClick.bind(this);
+                }
+            });
+        });
+
         if (!user.githubID) {
             githubOptions.parentNode.removeChild(githubOptions);
         }
+
+        updateGithubFolders();
         githubSave.onclick = (event) => {
             event.target.classList.add('warning');
             const pen = this.pens[this.currentPen];
             if (pen.html === '' && pen.css === '' && pen.js === '') {
+                event.target.classList.remove('warning');
                 return handleError(new Error('Cannot save an empty pen to GitHub'), event.target);
             }
-            doJSONRequest('POST', '/pen/github', {}, {
+            return doJSONRequest('POST', '/pen/github', {}, {
                 roomName: this.room.name,
                 pen: this.pens[this.currentPen],
             }).then((res) => {
@@ -542,10 +607,19 @@ class App {
                 event.target.classList.remove('warning');
                 if (res.status === 201) {
                     event.target.classList.add('success');
-                    setTimeout(() => { event.target.classList.remove('success'); }, 5000);
+                    updateGithubFolders();
+                    setTimeout(() => {
+                        event.target.classList.remove('success');
+                    }, 5000);
                 }
             });
         };
+
+        githubLoad.addEventListener('click', (event) => {
+            const container = document.getElementById('github-pens-container');
+            if (event.target.parentNode.id !== 'github-load') return;
+            event.target.parentNode.classList.toggle('open');
+        });
     }
 
     setUpLayout() {
