@@ -62,7 +62,7 @@ app.use('/', index);
 app.use('/', users);
 app.use('/room', room);
 app.use('/preview', preview);
-// app.use('/pen', pen);
+app.use('/pen', pen);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

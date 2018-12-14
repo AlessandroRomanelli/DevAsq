@@ -45,7 +45,7 @@ function doJSONRequest(method, url, headers, body) {
 
 function parseHTML(html) {
     let parsedHtml = html.split('\n');
-    parsedHtml.splice(3, 0, "<link rel='stylesheet' href='./style.css'/>");
+    parsedHtml.splice(3, 0, "\t\t<link rel='stylesheet' href='./style.css'/>");
     parsedHtml = parsedHtml.join('\n');
     parsedHtml = parsedHtml.split('</body>');
     parsedHtml[0] += '<script charset="utf-8" src="./app.js"></script>\n\t';
@@ -54,10 +54,15 @@ function parseHTML(html) {
     return parsedHtml;
 }
 
+function parseBase64(base64) {
+    return Buffer.from(base64, 'base64').toString('ascii');
+}
+
 module.exports = {
     storeToken,
     consumeToken,
     doFetchRequest,
     doJSONRequest,
     parseHTML,
+    parseBase64,
 };

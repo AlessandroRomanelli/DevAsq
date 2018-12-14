@@ -152,7 +152,7 @@ router.post('/:roomName/pen/:penId/github', (req, res) => {
     const { roomName, penId } = req.params;
     const room = roomStorage[roomName];
     const pen = room.getUserPen(req.user._id, penId);
-    console.log(pen);
+    let penName = pen.title;
     const { githubID, githubAccessToken, githubRefreshToken } = req.user;
     if (!githubID) return res.status(403).end();
     const githubEndpoint = 'https://api.github.com';
@@ -180,34 +180,42 @@ router.post('/:roomName/pen/:penId/github', (req, res) => {
         return repository;
     }).then((repo) => {
         repoName = repo.full_name;
-        return doJSONRequest('GET', `${githubEndpoint}/repos/${repoName}/contents/${penId}`, headers, null).then((res) => {
-            if (res.message === 'Not Found' || res.message === 'This repository is empty.') { return []; }
-            return res;
+        const now = new Date();
+        penName += `@${roomName}[${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}]`;
+        return doJSONRequest('GET', `${githubEndpoint}/repos/${repoName}/contents/${penName}`, headers, null).then((data) => {
+            if (data.message === 'Not Found' || data.message === 'This repository is empty.') { return []; }
+            return data;
         }).then((contents) => {
             let { html } = pen;
             html = parseHTML(html);
             const htmlContent = Buffer.from(html).toString('base64');
             const cssContent = Buffer.from(pen.css).toString('base64');
             const jsContent = Buffer.from(pen.js).toString('base64');
-            if (contents.length > 0) {
-                console.log('There were already some contents');
-                for (let i = 0; i < contents.length; i++) {
-                    const file = contents[i];
-                    console.log(file);
+            const fileNames = ['app.js', 'index.html', 'style.css'];
+            const fileContents = [jsContent, htmlContent, cssContent];
+
+            const publishFiles = (name, content, sha) => {
+                if (!sha) {
+                    return doJSONRequest('PUT', `${githubEndpoint}/repos/${repoName}/contents/${penName}/${name}`, headers, {
+                        message: `${name} commit`,
+                        content,
+                    });
                 }
-            } else {
-                doJSONRequest('PUT', `${githubEndpoint}/repos/${repoName}/contents/${penId}/index.html`, headers, {
-                    message: 'HTML component',
-                    content: htmlContent,
-                }).then(() => doJSONRequest('PUT', `${githubEndpoint}/repos/${repoName}/contents/${penId}/style.css`, headers, {
-                    message: 'CSS component',
-                    content: cssContent,
-                }).then(() => doJSONRequest('PUT', `${githubEndpoint}/repos/${repoName}/contents/${penId}/app.js`, headers, {
-                    message: 'JS component',
-                    content: jsContent,
-                })));
+                return doJSONRequest('PUT', `${githubEndpoint}/repos/${repoName}/contents/${penName}/${name}`, headers, {
+                    message: `${name} commit`,
+                    content,
+                    sha,
+                });
+            };
+
+            if (contents.length > 0) {
+                return publishFiles(contents[0].name, fileContents[0], contents[0].sha)
+                    .then(() => publishFiles(contents[1].name, fileContents[1], contents[1].sha))
+                    .then(() => publishFiles(contents[2].name, fileContents[2], contents[2].sha));
             }
-            console.log('Checking contents');
+            return publishFiles(fileNames[0], fileContents[0])
+                .then(() => publishFiles(fileNames[1], fileContents[1]))
+                .then(() => publishFiles(fileNames[2], fileContents[2]));
         }).catch((err) => {
             console.error(err);
         });
