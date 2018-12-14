@@ -676,6 +676,10 @@ class App {
         const span = document.createElement('span');
         span.innerHTML = 'Ask for help';
         span.id = 'raise-hand';
+        span.onclick = ((event) => {
+            span.classList.toggle('asking-help');
+            this.askForHelp();
+        });
         // span.classList.add('info');
         const roomInfo = document.getElementById('room-info').querySelector('.info');
         roomInfo.appendChild(span);
@@ -1209,7 +1213,7 @@ class App {
             return;
         }
         // delete this.users[user];
-        if (this.users[user].state !== 'banned') {
+        if (this.users && this.users[user] && this.users[user].state !== 'banned') {
             this.users[user].state = 'disconnected';
         }
         socket.emit('homePage.updatePopulation', {
