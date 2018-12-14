@@ -10,7 +10,7 @@
         <div id="room-info">
           <span class='info'>
             <span>Name: <span id="room-name" class="info"></span></span>
-            <span id="raise-hand" class="info">Ask for help</span>
+            <span id="raise-hand">Ask for help</span>
             <span>Participants: <span id="participants" class="info"></span></span>
             <span id="share-public" data-html="true" data-css="true" data-js="true">Share <button id='share-toggler'>▼</button>
               <div id="share-options">

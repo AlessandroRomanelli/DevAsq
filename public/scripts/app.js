@@ -680,7 +680,7 @@ class App {
         const span = document.createElement('span');
         span.innerHTML = 'Ask for help';
         span.id = 'raise-hand';
-        span.classList.add('info');
+        // span.classList.add('info');
         const roomInfo = document.getElementById('room-info').querySelector('.info');
         roomInfo.appendChild(span);
         for (let i = this.pens.length - 1; i >= 0; i--) {
