@@ -1001,7 +1001,7 @@ class App {
 
             if (oldPen && previousSelected !== '' && `${oldPen.id}` !== previousSelected) {
                 index = this.findIDInUserPen(previousSelected, this.users[id].pens);
-            } else {
+            } else if (newPen) {
                 index = this.findIDInUserPen(newPen.id, this.users[id].pens);
             }
 
@@ -1252,9 +1252,22 @@ class App {
 
         pens.splice(index, 1);
 
+
+        if (this.role === 'creator') {
+            for (let i = 0; i < this.assistants.length; i++) {
+                const assistantPens = this.users[this.assistants[i]].pens;
+                const assistantIndex = this.indexOfPenInLinked(pen, assistantPens);
+                if (assistantIndex === -1) { continue }
+                assistantPens.splice(assistantIndex, 1);
+                this.updateUserUI(this.assistants[i], null, null);
+            }
+        }
+
         index = this.indexOfPenInLinked(pen);
 
+
         while (index !== -1) {
+            doFetchRequest('DELETE', `/room/${this.room.name}/pen/${this.pens[index].id}`, {}, {})
             if (index <= this.currentPen) {
                 this.currentPen--;
             }
