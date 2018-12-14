@@ -32,6 +32,7 @@
             img
               margin: 0
               width: 100%
+
             p
               text-align: right
               margin-top: 0
@@ -84,9 +85,15 @@
       align-content: center
 
       img
-        width: 130px
+        max-width: 130px
         height: 130px
         border-radius: 100%
+        border: 5px solid transparent
+        transition: 0.2s ease-in-out
+        &:hover
+          transform: scale(1.2)
+          border-color: $primary-color
+          filter: drop-shadow(0 0 10px darken($primary-color, 20%))
       p
         text-align: center
         width: 130px
