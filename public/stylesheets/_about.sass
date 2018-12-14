@@ -1,0 +1,109 @@
+.about
+  #home.container
+
+      display: grid
+      grid-template-rows: 35vh 1fr
+      grid-template-areas: "header" "content"
+      text-align: center
+      .header
+          pointer-events: none
+          position: relative
+          grid-area: header
+          &:before
+              content: ''
+              position: absolute
+              top: 0
+              left: 0
+              right: 0
+              bottom: 0
+              background: url('/images/aboutbackground.jpg') no-repeat center
+              background-size: cover
+              // filter: blur(1px)
+              z-index: -1
+              // opacity: 0.5
+          .title
+            position: absolute
+            max-width: 500px
+            top: 50%
+            left: 50%
+            transform: translate(-50%, -50%)
+            z-index: 0
+            filter: drop-shadow(0 0 5px $primary-color)
+            img
+              margin: 0
+              width: 100%
+
+            p
+              text-align: right
+              margin-top: 0
+
+  .containerbody
+
+    margin: 0 20%
+
+    p
+      width: 100%
+      padding-left: 8%
+      line-height: 1.6
+      font-size: 16px
+
+    ul
+      li
+        padding-left: 8%
+        p
+          padding-left: 2%
+
+    h4
+      font-size: 19px
+      color: $primary-color
+
+    .thisproject
+      h1
+        font-size: 48px
+        padding-left: 8%
+        color: $primary-color
+
+
+    .howitworks
+      h3
+        font-size: 28px
+        padding-left: 8%
+        color: $primary-color
+
+
+  .iconbox
+    // margin: 3% 10%
+    // text-align: center
+    display: flex
+    flex-direction: row
+    flex-wrap: nowrap
+    justify-content: space-evenly
+    margin: 5% 10% 10%
+
+    div
+      align-items: center
+      align-content: center
+
+      img
+        max-width: 130px
+        height: 130px
+        border-radius: 100%
+        border: 5px solid transparent
+        transition: 0.2s ease-in-out
+        &:hover
+          transform: scale(1.2)
+          border-color: $primary-color
+          filter: drop-shadow(0 0 10px darken($primary-color, 20%))
+      p
+        text-align: center
+        width: 130px
+      .name
+        padding-bottom: 0
+        margin-bottom: 0
+      .surname
+        height: 10px
+        margin-top: 0px
+
+      .role
+        display: inline-block
+        color: #b4b6ba
