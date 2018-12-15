@@ -69,8 +69,8 @@ function generateID() {
     return id;
 }
 
-function Pen(title, userId) {
-    this.id = generateID();
+function Pen(title, userId, penID) {
+    this.id = penID || generateID();
     this.html = '';
     this.css = '';
     this.js = '';

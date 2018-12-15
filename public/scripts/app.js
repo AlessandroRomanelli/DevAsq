@@ -35,6 +35,25 @@ class App {
         this.switchPen(0);
     }
 
+    createGithubPen(githubPen) {
+        const pen = Pen.createFromPen(githubPen);
+        this.pens.push(pen);
+        this.createTabForPen(pen);
+        this.setupTabsHandlers();
+        this.switchPen(this.pens.length - 1);
+        socket.emit('creator.broadcastPen', {
+            roomName: this.room.name,
+            id: this.userID,
+            pen,
+            toSave: 'true',
+        });
+        socket.emit('creator.switchPen', {
+            roomName: this.room.name,
+            id: this.userID,
+            newPen: this.pens[this.pens.length - 1],
+        });
+    }
+
     switchPen(index) {
         const tabs = document.getElementById('tabs').childNodes;
         tabs[this.currentPen].classList.remove('active');
@@ -949,6 +968,7 @@ class App {
             }
         }
         this.users[userID].pens.push(pen);
+        this.updateUserUI(userID, null, null);
     }
 
     addSingleUserListener(userID) {
