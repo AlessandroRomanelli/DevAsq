@@ -753,7 +753,7 @@ class App {
 
         pens.querySelector('div').childNodes.forEach((pen) => {
             const btns = pen.querySelectorAll('button');
-            console.log(btns);
+            console.log(btns)
             btns[0].addEventListener('click', (event) => {
                 const button = event.target;
                 updateActive(button);
@@ -790,7 +790,7 @@ class App {
                             buttons[1].classList.add('active');
                         }
                     }
-                });// a
+                });
                 if (count[2] !== 2) {
                     button.parentNode.parentNode.parentNode.classList.remove('max');
                     button.parentNode.parentNode.parentNode.classList.remove('min');
@@ -831,7 +831,7 @@ class App {
                 updatePensClass();
             });
         });
-    }// test
+    }//test
 
     indexOfPen(pen) {
         let index = -1;
@@ -1562,6 +1562,19 @@ class App {
         for (let i = 1; i < checkboxs.length; i++) {
             const checkbox = checkboxs[i];
             checkbox.addEventListener('input', (event) => {
+                if (!checkbox.checked) {
+                    checkboxs[0].checked = false;
+                } else {
+                    let count = 0;
+                    for (let j = 1; j < checkboxs.length; j++) {
+                        if (!checkboxs[j].checked) {
+                            count++;
+                        }
+                    }
+                    if (count === 0) {
+                        checkboxs[0].checked = true;
+                    }
+                }
                 updateShare();
             });
         }
