@@ -8,7 +8,7 @@ const debug = require('debug')('final-project:server');
 const http = require('http');
 const app = require('../app');
 const eventBus = require('../pubsub');
-const { connectionMap, roomStorage } = require('../rooms');
+const { connectionMap, roomStorage, Pen } = require('../rooms');
 /**
  * Get port from environment and store in Express.
  */
@@ -175,7 +175,14 @@ io.on('connection', (socket) => {
     });
 
     socket.on('creator.broadcastPen', (data) => {
-        const { roomName, id, pen } = data;
+        const { roomName, id, pen, toSave } = data;
+        if (toSave) {
+            const newPen = new Pen(pen.title, id, pen.id);
+            newPen.html = pen.html;
+            newPen.css = pen.css;
+            newPen.js = pen.js;
+            roomStorage[roomName].users[id].push(newPen);
+        }
         const creatorSocket = getCreatorSocket(roomName);
         if (!creatorSocket) return;
         socket.to(creatorSocket).emit('creator.updatePens', { id, pen });
