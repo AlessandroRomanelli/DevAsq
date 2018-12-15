@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css?family=Inconsolata|Open+Sans:300,400')
 
+html:root
+  --font-stack-editor: Inconsolata, monospace
+  --font-stack: 'Open Sans', sans-serif
+  --primary-color: #DE6C2F
+  --color-background: #333333
+  --dark: darken($color-background, 5%)
+  --light: lighten($dark, 10%)
+  --dafault-margin: 30px
+
 $font-stack-editor:    Inconsolata, monospace
 $font-stack: 'Open Sans', sans-serif
 $primary-color: #DE6C2F
@@ -22,14 +31,14 @@ body
   margin: 0
   padding: 0
   color: white
-  font: 100% $font-stack
-  background-color: $color-background
+  font: 100% var(--font-stack)
+  background-color: var(--color-background)
 
 // INDEX STYLE
 
 hr
-  background: $primary-color
-  border-color: darken($primary-color, 10%)
+  background: var(--primary-color)
+  border-color: darken(var(--primary-color), 10%)
 
 form
   fieldset:not(.submit)
@@ -45,7 +54,7 @@ form
       width: 0
       height: 3px
       border-radius: 2px
-      background: $primary-color
+      background: var(--primary-color)
       transform: translate(0, -8px)
       transition: 0.2s all ease-in-out
     &:hover::before
@@ -55,11 +64,11 @@ nav.menu
   display: flex
   align-items: center
   justify-content: space-between
-  background-color: $dark
+  background-color: var(--dark)
   padding: 0 1em
-  border-bottom: 1px solid $light
+  border-bottom: 1px solid var(--light)
   z-index: 10
-  box-shadow: 0 0 10px 0 $dark
+  box-shadow: 0 0 10px 0 var(--dark)
   img
     max-height: 20px
     display: inline-block
@@ -94,7 +103,7 @@ nav.menu
           left: 50%
           transform: translate(-50%, -50%)
           z-index: 0
-          filter: drop-shadow(0 0 5px $primary-color)
+          filter: drop-shadow(0 0 5px var(--primary-color)
           img
             margin: 0
             width: 100%

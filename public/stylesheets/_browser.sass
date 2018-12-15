@@ -19,18 +19,18 @@
         max-width: 100px
 
       td:last-of-type
-        background: transparentize($primary-color, 0.9)
+        background: transparentize(var(--primary-color), 0.9)
         transition: 0.2s ease-in-out
         &:hover
-          background: transparentize($primary-color, 0.1)
+          background: transparentize(var(--primary-color), 0.1)
           color: $dark
 
       &:nth-child(2n)
-        border-top: 1px solid $primary-color
-        background: darken($color-background, 1%)
+        border-top: 1px solid var(--primary-color)
+        background: darken(var(--color-background), 1%)
 
       &:not(:first-child):nth-child(2n+1)
-        border-top: 1px solid darken($primary-color, 10%)
+        border-top: 1px solid darken(var(--primary-color), 10%)
 
 .sort-by
   display: inline-block
@@ -42,7 +42,7 @@
   opacity: 0.5
   transition: 0.2s ease-in-out
   &.active
-    color: $primary-color
+    color: var(--primary-color)
   &.inverse
     transform: scaleX(1.5) rotate(180deg)
   &:hover, &.active
