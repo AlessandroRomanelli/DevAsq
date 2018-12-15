@@ -40,13 +40,9 @@
                 </div>
               </div>
             </span>
-            <span id='github-options'>GitHub
-              <div class="options">
-                <div id='github-save'><span>SAVE</span></div>
-                <div id='github-load'><span>LOAD</span>
-                  <div id='github-folders'></div>
-                </div>
-              </div>
+            <span id='storage-options'>
+              <button id='export'>Export</button>
+              <button id='import'>Import</button>
             </span>
           </span>
           <span class='layouts'>
@@ -109,7 +105,7 @@
       </div>
       {> "partials/confirmModal" /}
       {> "partials/previewModal" /}
-
+      {> "partials/storageModal" /}
       {> "partials/footer" /}
 
       <script src="/socket.io/socket.io.js"></script>

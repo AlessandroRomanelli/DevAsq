@@ -17,65 +17,6 @@ router.use('/', (req, res, next) => {
     return next();
 });
 
-router.post('/new', (req, res) => {
-    console.log(req.body);
-    const newPen = new PenSchema({
-        user: req.user,
-        html: req.body.html,
-        css: req.body.css,
-        js: req.body.js,
-        title: req.body.title,
-        dateCreated: Date.now(),
-    });
-    newPen.save((err, result) => {
-        if (err) {
-            console.log('Error writing to DB');
-            console.log(err);
-        }
-        console.log(result);
-    });
-    res.status(201).end();
-});
-
-router.get('/all', (req, res) => {
-    console.log(req.user);
-    const { savedPens } = req.user;
-    return res.status(200).json({ savedPens });
-});
-
-router.get('/:index', (req, res) => {
-    const { savedPens } = req.user;
-    const { index } = req.params;
-    if (index >= savedPens.length) {
-        return res.status(404).json({ status: 404, message: 'Index out of bounds' });
-    }
-    PenSchema.findById(savedPens[index]).then((pen) => {
-        if (pen && pen !== null) return res.status(200).json({ status: 200, pen });
-        return res.status(404).json({ status: 404, message: 'Not found' });
-    });
-});
-
-router.post('/save', (req, res) => {
-    const { pen, roomName } = req.body;
-    if (pen.html === '' && pen.css === '' && pen.js === '') {
-        return res.status(400).json({ status: 400, message: 'Invalid pen' });
-    }
-    const now = new Date();
-    let { title } = pen;
-    title += `@${roomName}[${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}]`;
-    const html = pen.html || '';
-    const css = pen.css || '';
-    const js = pen.js || '';
-    PenSchema.create({
-        user: req.user._id, html, css, js, title,
-    }).then((dbPen) => {
-        const { savedPens } = req.user;
-        savedPens.push(dbPen._id);
-        User.findByIdAndUpdate(req.user._id, { savedPens }, { new: true }).then((user) => {
-            res.status(200).json(user);
-        });
-    });
-});
 
 router.use('/github', (req, res, next) => {
     const { githubID } = req.user;
@@ -89,11 +30,12 @@ router.get('/github', (req, res) => {
         Accept: 'application/vnd.github.v3+json',
         Authorization: `token ${githubAccessToken}`,
     };
+    console.log(req.user);
     doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents`, headers, null).then((data) => {
         if (data.message) throw new Error(data.message);
         const folders = [];
         data.forEach((folder) => {
-            folders.push(folder.name);
+            folders.push({ title: folder.name });
         });
         res.status(200).json({
             folders,
@@ -103,6 +45,36 @@ router.get('/github', (req, res) => {
         res.status(404).json({ status: 404 });
     });
 });
+
+// router.get('/github/all', (req, res) => {
+//     const { username, githubAccessToken } = req.user;
+//     const headers = {
+//         Accept: 'application/vnd.github.v3+json',
+//         Authorization: `Bearer ${githubAccessToken}`,
+//     };
+//
+//     doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents`, headers, null).then((folders) => {
+//         let count = 0;
+//         const storedPens = {};
+//         function done() {
+//             count += 1;
+//             if (count === folders.length * 3) {
+//                 res.json(storedPens);
+//             }
+//         }
+//         folders.forEach((folder) => {
+//             doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents/${folder.path}`, headers, null).then((files) => {
+//                 storedPens[folder.name] = {};
+//                 files.forEach((file) => {
+//                     doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents/${file.path}`, headers, null).then((data) => {
+//                         storedPens[folder.name][file.name] = parseBase64(data.content);
+//                         done();
+//                     });
+//                 });
+//             });
+//         });
+//     });
+// });
 
 router.get('/github/:dirName', (req, res) => {
     const { dirName } = req.params;
@@ -140,36 +112,6 @@ router.get('/github/:dirName', (req, res) => {
     }).catch((err) => {
         console.error(err);
         res.status(500).end();
-    });
-});
-
-router.get('/github/all', (req, res) => {
-    const { username, githubAccessToken } = req.user;
-    const headers = {
-        Accept: 'application/vnd.github.v3+json',
-        Authorization: `Bearer ${githubAccessToken}`,
-    };
-
-    doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents`, headers, null).then((folders) => {
-        let count = 0;
-        const storedPens = {};
-        function done() {
-            count += 1;
-            if (count === folders.length * 3) {
-                res.json(storedPens);
-            }
-        }
-        folders.forEach((folder) => {
-            doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents/${folder.path}`, headers, null).then((files) => {
-                storedPens[folder.name] = {};
-                files.forEach((file) => {
-                    doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents/${file.path}`, headers, null).then((data) => {
-                        storedPens[folder.name][file.name] = parseBase64(data.content);
-                        done(storedPens);
-                    });
-                });
-            });
-        });
     });
 });
 
@@ -244,6 +186,66 @@ router.post('/github', (req, res) => {
             .catch((err) => {
                 console.error(err);
             });
+    });
+});
+
+router.post('/new', (req, res) => {
+    console.log(req.body);
+    const newPen = new PenSchema({
+        user: req.user,
+        html: req.body.html,
+        css: req.body.css,
+        js: req.body.js,
+        title: req.body.title,
+        dateCreated: Date.now(),
+    });
+    newPen.save((err, result) => {
+        if (err) {
+            console.log('Error writing to DB');
+            console.log(err);
+        }
+        console.log(result);
+    });
+    res.status(201).end();
+});
+
+router.get('/all', (req, res) => {
+    console.log(req.user);
+    const { savedPens } = req.user;
+    return res.status(200).json({ savedPens });
+});
+
+router.get('/:index', (req, res) => {
+    const { savedPens } = req.user;
+    const { index } = req.params;
+    if (index >= savedPens.length) {
+        return res.status(404).json({ status: 404, message: 'Index out of bounds' });
+    }
+    PenSchema.findById(savedPens[index]).then((pen) => {
+        if (pen && pen !== null) return res.status(200).json({ status: 200, pen });
+        return res.status(404).json({ status: 404, message: 'Not found' });
+    });
+});
+
+router.post('/save', (req, res) => {
+    const { pen, roomName } = req.body;
+    if (pen.html === '' && pen.css === '' && pen.js === '') {
+        return res.status(400).json({ status: 400, message: 'Invalid pen' });
+    }
+    const now = new Date();
+    let { title } = pen;
+    title += `@${roomName}[${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}]`;
+    const html = pen.html || '';
+    const css = pen.css || '';
+    const js = pen.js || '';
+    PenSchema.create({
+        user: req.user._id, html, css, js, title,
+    }).then((dbPen) => {
+        const { savedPens } = req.user;
+        savedPens.push(dbPen._id);
+        User.findByIdAndUpdate(req.user._id, { savedPens }, { new: true }).then((user) => {
+            res.status(200).json({ status: 200, savedPens });
+        });
     });
 });
 
