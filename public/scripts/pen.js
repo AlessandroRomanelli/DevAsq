@@ -227,7 +227,7 @@ function init() {
         setTimeout(() => {
             p.innerHTML = "Error";
             modal.classList.add('hidden');
-        }, 1000);
+        }, 2000);
     })
 }
 
