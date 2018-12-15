@@ -27,7 +27,6 @@ router.post('/create', (req, res) => {
     const room = new Room(roomName, _id);
     if (password) {
         room.lock(password, () => {
-            console.log(room);
             roomStorage[roomName] = room;
             res.status(201).json(room);
         });
@@ -47,7 +46,6 @@ router.post('/join', (req, res) => {
             if (!validPassword) {
                 return res.status(403).end();
             }
-            console.log(room);
             return res.status(201).json(room);
         });
     }

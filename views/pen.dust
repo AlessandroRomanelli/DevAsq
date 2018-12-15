@@ -101,7 +101,10 @@
       </div>
       {> "partials/confirmModal" /}
       {> "partials/previewModal" /}
-
+      <div id="modal-error" class="hidden">
+        <img src="/images/alert.png">
+        <p>Error</p>
+      </div>
       {> "partials/footer" /}
 
       <script src="/socket.io/socket.io.js"></script>

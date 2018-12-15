@@ -40,8 +40,6 @@ router.post('/signup', (req, res) => {
         }
         throw new Error('Username already taken');
     }).then(hashedPassword => User.create({ username, password: hashedPassword })).then((user) => {
-        console.log('Local user created');
-        console.log(user);
         res.status(201).end();
     })
         .catch((err) => {

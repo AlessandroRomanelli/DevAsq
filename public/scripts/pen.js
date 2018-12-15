@@ -217,6 +217,17 @@ function init() {
                 }
             }
         }
+    });
+
+    socket.on('preview.error', (error) => {
+        const modal = document.getElementById('modal-error');
+        const p = modal.querySelector('p');
+        p.innerHTML = error;
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            p.innerHTML = "Error";
+            modal.classList.add('hidden');
+        }, 1000);
     })
 }
 

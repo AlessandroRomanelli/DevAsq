@@ -6,7 +6,6 @@ const PenSchema = mongoose.model('Pen');
 
 
 router.post('/new', (req, res, next) => {
-    console.log(req.body);
     const newPen = new PenSchema({
         user: req.user,
         html: req.body.html,
@@ -17,10 +16,7 @@ router.post('/new', (req, res, next) => {
     });
     newPen.save((err, result) => {
         if (err) {
-            console.log('Error writing to DB');
-            console.log(err);
         }
-        console.log(result);
     });
     res.status(201).end();
 });
