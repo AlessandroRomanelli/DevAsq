@@ -23,6 +23,9 @@ function init() {
 
     if (room.creator === user._id) {
         app = new CreatorApp(room, user._id);
+        window.onbeforeunload = function() {
+            return 'If you leave the room will be deleted!';
+        };
     } else {
         app = new App(room, user._id);
     }
