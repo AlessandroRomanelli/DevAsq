@@ -765,8 +765,10 @@ class App {
             if (newClass) pens.classList.add(newClass);
         }
 
+
         pens.querySelector('div').childNodes.forEach((pen) => {
             const btns = pen.querySelectorAll('button');
+            console.log(btns)
             btns[0].addEventListener('click', (event) => {
                 const button = event.target;
                 updateActive(button);
@@ -790,6 +792,16 @@ class App {
                 updateActive(button);
                 button.parentNode.parentNode.parentNode.classList.remove('max');
                 button.parentNode.parentNode.parentNode.classList.remove('min');
+                pens.querySelector('div').childNodes.forEach((checkPen, index) => {
+                    if (checkPen !== pen) {
+                        const buttons = checkPen.querySelectorAll('.header button');
+                        if (buttons[0].classList.contains('active')) {
+                            checkPen.classList.remove('max');
+                            buttons[0].classList.remove('active');
+                            buttons[1].classList.add('active');
+                        }
+                    }
+                });
                 updatePensClass();
             });
             btns[2].addEventListener('click', (event) => {
