@@ -165,8 +165,10 @@ function insertInSorted() {
 
         const roomEntry = document.getElementById(`room_${data.roomName}`);
 
-        roomBrowserTitle.classList.remove('hidden');
-        roomTable.classList.remove('hidden');
+        if (user) {
+            roomBrowserTitle.classList.remove('hidden');
+            roomTable.classList.remove('hidden');
+        }
 
         if (roomEntry) {
             roomEntry.querySelectorAll('td')[1].innerText = data.population;
