@@ -1,0 +1,7 @@
+<div id="storage-modal" class="modal hidden">
+  <div class="container">
+    <div class="close-modal"></div>
+    <div class="content">
+    </div>
+  </div>
+</div>
