@@ -27,7 +27,7 @@
         <script src="/scripts/fetch.js" charset="utf-8"></script>
         {?user}
         <script type="text/javascript">
-            const user = {user|s};
+            let user = {user|s};
         </script>
         {/user}
         <script src="/scripts/navbar.js" charset="utf-8"></script>
