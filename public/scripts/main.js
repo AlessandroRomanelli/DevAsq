@@ -18,11 +18,11 @@ function addExplorerListener() {
 
     name.onclick = sortName;
     population.onclick = sortPopulation;
-
     const listener = ((event) => {
-        if (event.type === 'keydown') {
+
+        if (event.target.tagName === 'INPUT') {
             if (event.key !== 'Enter') { return; }
-        } else if (event.type === 'submit') {
+        } else {
             event.preventDefault();
         }
 
@@ -54,7 +54,6 @@ function addExplorerListener() {
             handleError(err, button);
         });
     });
-
     const rows = document.querySelectorAll('#roomTable tr');
     if (rows.length <= 1) { return; }
     for (let i = 1; i < rows.length; i++) {
