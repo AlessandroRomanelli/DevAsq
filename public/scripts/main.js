@@ -50,7 +50,7 @@ function addExplorerListener() {
             throw err;
         }).catch((err) => {
             console.error(err);
-            const button = link.parentNode;
+            const button = event.target.parentNode.parentNode.querySelector('a').parentNode;
             handleError(err, button);
         });
     });
