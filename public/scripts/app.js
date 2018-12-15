@@ -798,7 +798,6 @@ class App {
                             buttons[0].classList.remove('active');
                             buttons[1].classList.add('active');
                         }
-                        //test
                     }
                 });
                 updatePensClass();
@@ -808,6 +807,27 @@ class App {
                 updateActive(button);
                 button.parentNode.parentNode.parentNode.classList.remove('max');
                 button.parentNode.parentNode.parentNode.classList.add('min');
+                let count = 0;
+                pens.querySelector('div').childNodes.forEach((checkPen, index) => {
+                    if (checkPen !== pen) {
+                        const buttons = checkPen.querySelectorAll('.header button');
+                        if (buttons[2].classList.contains('active')) {
+                            count++;
+                        }
+                    }
+                });
+                if (count === 1) {
+                    pens.querySelector('div').childNodes.forEach((checkPen, index) => {
+                        if (checkPen !== pen) {
+                            const buttons = checkPen.querySelectorAll('.header button');
+                            if (!(buttons[2].classList.contains('active'))) {
+                                checkPen.classList.add('max');
+                                buttons[1].classList.remove('active');
+                                buttons[0].classList.add('active');
+                            }
+                        }
+                    });
+                }
                 updatePensClass();
             });
         });
