@@ -604,7 +604,7 @@ class App {
                         }
                         return doJSONRequest('POST', '/pen/github', {}, {
                             roomName: this.room.name,
-                            pen: this.pens[this.currentPen],
+                            pen: this.getCurrentPen(),
                         }).then((res) => {
                             console.log(res);
                             event.target.classList.remove('warning');
@@ -622,14 +622,27 @@ class App {
                     };
                 });
             } else {
+                if (event.target.disabled) return;
+                event.target.disabled = true;
+                event.target.classList.add('warning');
+                const pen = this.getCurrentPen();
+                if (pen.html === '' && pen.css === '' && pen.js === '') {
+                    event.target.classList.remove('warning');
+                    event.target.disabled = false;
+                    return handleError(new Error('Cannot save an empty pen to GitHub'), event.target);
+                }
                 saveToDatabase().then((res) => {
                     const className = (res.status === 200) ? 'success' : 'error';
-                    assignTemporaryClass(exportButton, className);
+                    event.target.classList.remove('warning');
+                    assignTemporaryClass(event.target, className);
+                    event.target.disabled = false;
                 });
             }
         };
 
         const handleImportOptions = () => {
+            const options = document.getElementById('import-options');
+            if (!options) return;
             const locals = storageModalContent.querySelector('.locals').childNodes;
             const githubs = storageModalContent.querySelector('.githubs').childNodes;
             locals.forEach((local) => {
@@ -642,21 +655,27 @@ class App {
 
         const handleLocalImport = (event) => {
             const { id } = event.target.dataset;
+            event.target.classList.add('loading');
             doJSONRequest('GET', `/pen/${id}`, {}, null).then((res) => {
                 const { status, pen } = res;
+                console.log('Imported pen:');
+                console.log(pen);
                 if (status !== 200) handleError(new Error('Failed to import local pen'), event.target);
                 this.createImportedPen(pen);
+                event.target.classList.remove('loading');
                 storageModal.classList.add('hidden');
             });
         };
 
         const handleGithubImport = (event) => {
-            const folderName = event.target.innerHTML;
-            doJSONRequest('GET', `/pen/github/${folderName}`, {}, null).then((res) => {
+            const { name } = event.target.dataset;
+            event.target.classList.add('loading');
+            doJSONRequest('GET', `/pen/github/${name}`, {}, null).then((res) => {
                 const { status, pen } = res;
                 if (status !== 200) handleError(new Error('Failed to import GitHub pen'), event.target);
                 pen.html = convertHTML(pen.html);
                 this.createImportedPen(pen);
+                event.target.classList.remove('loading');
                 storageModal.classList.add('hidden');
             });
         };

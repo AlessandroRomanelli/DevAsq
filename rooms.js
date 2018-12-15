@@ -172,4 +172,5 @@ module.exports = {
     roomStorage,
     UIDs,
     connectionMap,
+    generateID,
 };

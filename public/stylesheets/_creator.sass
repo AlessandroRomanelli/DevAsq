@@ -20,70 +20,6 @@
       color: white
       font-size: 1.5em
       text-transform: none
-  #github-options
-    position: relative
-    text-align: left
-    .options
-      position: relative
-      bottom: 0
-      right: 0
-      margin-left: 0.5em
-      div > span
-        display: block
-        background: none
-        border: none
-        padding: 0.25em 0.5em
-        outline: 0
-        transition: 0.3s ease-in-out
-        &:hover
-          color: white
-          cursor: pointer
-        &::after
-          position: absolute
-          content: '✔'
-          opacity: 0
-          margin-left: 0.5em
-          transition: 0.5s ease-in-out
-        &.warning
-          color: mix(orange, white, 75%)
-        &.success::after
-            color: mix(green, white, 75%)
-            opacity: 1
-  #github-load
-    position: relative
-    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1)
-    border-radius: 5px 5px 0 0
-    #github-folders
-      position: absolute
-      left: 0
-      top: 0
-      white-space: nowrap
-      background: $primary-color
-      color: $dark
-      display: block
-      opacity: 0
-      padding: 0.5em 0
-      border-radius: 0 5px 5px 5px
-      transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1)
-      pointer-events: none
-      div
-        padding: 0 0.5em
-        color: transparentize($dark, 0.33)
-        transition: 0.2s ease-in-out
-        &:nth-child(2n-1)
-          background: darken($primary-color, 5%)
-        &:hover
-          cursor: pointer
-          color: $dark
-    &.open
-      background: $primary-color
-      color: $dark
-      #github-folders
-        pointer-events: all
-        opacity: 1
-        top: 17px
-
-
 
   & .info > span:not(:last-child)
     margin-right: 1em
@@ -114,6 +50,38 @@
         border-color: $primary-color
         &:hover
           cursor: auto
+  #storage-options button
+    height: 100%
+    background: none
+    border: 1px solid $primary-color
+    border-radius: 0.5em
+    padding: 0.25em 0.5em
+    color: $primary-color
+    text-transform: uppercase
+    outline: 0
+    transition: 0.2s ease-in-out
+    &:not(:last-child)
+      margin-right: 1em
+    &:hover
+      cursor: pointer
+      background: $primary-color
+      color: $dark
+    &:disabled
+      border: 1px solid $light
+      color: $light
+      &:hover
+        background: $light
+        color: $dark
+    &.warning
+      color: mix($dark, $warning, 40%)
+      border-color: mix($dark, $warning, 40%)
+      &:hover
+        background: mix($dark, $warning, 40%)
+    &.success
+      color: mix($dark, $success, 30%)
+      border-color: mix($dark, $success, 30%)
+      &:hover
+        background: mix($dark, $success, 30%)
 
 
   #share-public
@@ -354,11 +322,11 @@
           border-radius: 10px
           transition: 0.5s ease-in-out
           &.green
-            background: mix(green, white, 66%)
+            background: $success
           &.yellow
-            background: mix(yellow, white, 66%)
+            background: $warning
           &.red
-            background: mix(red, white, 66%)
+            background: $error
       .user-remove
         position: absolute
         height: 20px
@@ -596,6 +564,72 @@
     cursor: pointer
     filter: grayscale(0) brightness(1)
 
+#storage-modal .container .content
+  font-size: 1.25em
+  text-align: center
+  #import-options
+    margin-top: 0.5em
+    margin-bottom: 1em
+    text-align: left
+  .option
+    padding: 0.25em 0
+    font-size: 0.8em
+    position: relative
+    padding-left: 35px
+    transition: 0.2s ease-in-out
+    &:not(:first-child)
+      border-top: 1px solid transparentize($primary-color, 0.75)
+    &::before
+      content: ''
+      width: 30px
+      position: absolute
+      top: 0
+      left: 0
+      bottom: 0
+      background: none
+      background-size: cover
+    &:nth-child(2n-1)
+      background: darken($dark, 1%)
+    &:hover
+      cursor: pointer
+      background: transparentize($primary-color, 0.5)
+      color: white
+  .githubs
+    border-top: 2px solid $primary-color
+    .option::before
+      background: url('../images/github.png') no-repeat center
+      filter: invert(1)
+      background-size: 75%
+  .locals .option::before
+    background: url('../images/database.png') no-repeat center
+    filter: invert(1)
+    background-size: 75%
+  button.delete-option
+    position: absolute
+    width: 20px
+    height: 20px
+    right: 5px
+    top: 50%
+    transform: translateY(-50%)
+    background: url('../images/cross.png')
+    background-size: cover
+    filter: grayscale(0) brightness(1)
+    outline: 0
+    border: none
+    transition: 0.2s ease-in-out
+    &:hover
+      cursor: pointer
+      filter: grayscale(1) brightness(2)
+  .option.loading::before
+    background-color: none
+    background: url('../images/loader.png') no-repeat center
+    background-size: cover
+    filter: invert(1)
+    animation: full-rotation 1s linear infinite
+
+
+
+
 /* ----------------------------------------------
  * Generated by Animista on 2018-12-5 21:0:51
  * w: http://animista.net, t: @cssanimista
@@ -647,3 +681,9 @@
 
   100%
     box-shadow: 0 0 30px 10px transparent
+
+@keyframes full-rotation
+  0%
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)
