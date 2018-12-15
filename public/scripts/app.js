@@ -562,11 +562,6 @@ class App {
                     githubOptions.push(folder);
                 });
                 return githubOptions;
-                // const selects = githubSelect.childNodes;
-                // for (let i = 0; i < selects.length; i++) {
-                //     const select = selects[i];
-                //     select.onclick = handleSelectClick.bind(this);
-                // }
             });
         });
 
@@ -615,12 +610,14 @@ class App {
                             event.target.classList.remove('warning');
                             const className = (res.status === 201) ? 'success' : 'error';
                             assignTemporaryClass(event.target, className);
+                            storageModal.classList.add('hidden');
                         });
                     };
                     buttons[1].onclick = (event) => {
                         saveToDatabase().then((res) => {
                             const className = (res.status === 200) ? 'success' : 'error';
                             assignTemporaryClass(event.target, className);
+                            storageModal.classList.add('hidden');
                         });
                     };
                 });
@@ -686,35 +683,14 @@ class App {
                     dust.render('partials/storageImport', { options, locals: savedPens }, (err, output) => {
                         handleDustProduction(err, output);
                         handleImportOptions();
-                        event.target.disabled = undefined;
+                        event.target.disabled = false;
                     });
                 }
             }).catch((err) => {
                 console.error(err);
+                event.target.disabled = false;
             });
         };
-        //
-
-        //
-        // const handleSelectClick = (event) => {
-        //     const select = event.target;
-        //     doJSONRequest('GET', `/pen/github/${select.innerHTML}`, {}, null).then((pen) => {
-        //         console.log(pen);
-        //         pen.html = convertHTML(pen.html);
-        //         this.createPen(() => {
-        //             const currentPen = this.getCurrentPen();
-        //             currentPen.html = pen.html;
-        //             currentPen.css = pen.css;
-        //             currentPen.js = pen.js;
-        //             this.changePenName(pen.title, this.currentPen, () => {
-        //                 this.updatePen(currentPen);
-        //                 this.changeAcesContent();
-        //                 console.log(this.pens);
-        //             });
-        //         });
-        //     });
-        // };
-        //
     }
 
     setUpLayout() {
