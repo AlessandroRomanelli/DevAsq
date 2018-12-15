@@ -841,7 +841,7 @@ class App {
                 updatePensClass();
             });
         });
-    }
+    }//test
 
     indexOfPen(pen) {
         let index = -1;
