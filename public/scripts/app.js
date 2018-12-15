@@ -510,7 +510,6 @@ class App {
         const roomName = document.getElementById('room-name');
         const raiseHand = document.getElementById('raise-hand');
         const sharePublic = document.getElementById('share-public');
-
         participants.parentNode.parentNode.removeChild(participants.parentNode);
         roomName.innerHTML = this.room.name;
         raiseHand.onclick = (() => {
@@ -518,8 +517,196 @@ class App {
             this.askForHelp();
         });
         sharePublic.parentNode.removeChild(sharePublic);
-
+        this.setupStorageOptions();
         this.setUpLayout();
+    }
+
+    setupStorageOptions() {
+        const importButton = document.getElementById('import');
+        const exportButton = document.getElementById('export');
+        const storageModal = document.getElementById('storage-modal');
+        const storageModalContent = storageModal.querySelector('.content');
+
+        const handleDustProduction = (err, output) => {
+            storageModalContent.innerHTML = output;
+            storageModal.classList.remove('hidden');
+        };
+
+        const getGithubOptions = (() => {
+            const githubOptions = [];
+            return doJSONRequest('GET', '/pen/github', {}, null).then((data) => {
+                const { folders } = data;
+                if (data.status === 404 || (folders && folders.length === 0)) {
+                    return githubOptions;
+                }
+                folders.forEach((folder) => {
+                    githubOptions.push(folder);
+                });
+                return githubOptions;
+                // const selects = githubSelect.childNodes;
+                // for (let i = 0; i < selects.length; i++) {
+                //     const select = selects[i];
+                //     select.onclick = handleSelectClick.bind(this);
+                // }
+            });
+        });
+
+        function assignTemporaryClass(htmlNode, className) {
+            htmlNode.classList.add(className);
+            setTimeout(() => htmlNode.classList.remove(className), 2000);
+        }
+
+        const saveToDatabase = () => doJSONRequest('POST', '/pen/save', {}, {
+            pen: this.getCurrentPen(),
+            roomName: this.room.name,
+        });
+
+        exportButton.onclick = (event) => {
+            if (user.githubID) {
+                dust.render('partials/storageExport', {}, (err, output) => {
+                    handleDustProduction(err, output);
+                    const buttons = storageModalContent.querySelectorAll('button');
+                    buttons[0].onclick = (event) => {
+                        console.log(this);
+                        event.target.classList.add('warning');
+                        const pen = this.pens[this.currentPen];
+                        if (pen.html === '' && pen.css === '' && pen.js === '') {
+                            event.target.classList.remove('warning');
+                            return handleError(new Error('Cannot save an empty pen to GitHub'), event.target);
+                        }
+                        return doJSONRequest('POST', '/pen/github', {}, {
+                            roomName: this.room.name,
+                            pen: this.pens[this.currentPen],
+                        }).then((res) => {
+                            console.log(res);
+                            event.target.classList.remove('warning');
+                            if (res.status === 201) {
+                                event.target.classList.add('success');
+                                updateGithubFolders();
+                                setTimeout(() => {
+                                    event.target.classList.remove('success');
+                                }, 5000);
+                            }
+                        });
+                    };
+                    buttons[1].onclick = (event) => {
+                        saveToDatabase().then((res) => {
+                            const className = (res.status === 200) ? 'success' : 'error';
+                            assignTemporaryClass(event.target, className);
+                        });
+                    };
+                });
+            } else {
+                saveToDatabase().then((res) => {
+                    const className = (res.status === 200) ? 'success' : 'error';
+                    assignTemporaryClass(exportButton, className);
+                });
+            }
+        };
+
+        importButton.onclick = (event) => {
+            doJSONRequest('GET', '/pen/all', {}, null).then((data) => {
+                console.log(data);
+                const { savedPens } = data;
+                const localPens = [];
+                function done() {
+                    if (localPens.length === savedPens.length) {
+                        let options = savedPens.length > 0;
+                        if (user.githubID) {
+                            getGithubOptions().then((githubPens) => {
+                                console.log(githubPens);
+                                options = githubPens.length + savedPens.length > 0;
+                                dust.render('partials/storageImport', { options, locals: localPens, githubs: githubPens }, handleDustProduction);
+                            });
+                        } else {
+                            dust.render('partials/storageImport', { options, locals: localPens }, handleDustProduction);
+                        }
+                    }
+                }
+                for (let i = 0; i < savedPens.length; i++) {
+                    doJSONRequest('GET', `/pen/${i}`, {}, null).then((res) => {
+                        localPens.push(res.pen);
+                        done();
+                    });
+                }
+                done();
+            }).catch((err) => {
+                console.error(err);
+            });
+        };
+        // const githubOptions = document.getElementById('github-options');
+        // const githubSave = document.getElementById('github-save');
+        // const githubLoad = document.getElementById('github-load');
+        // const githubSelect = document.getElementById('github-folders');
+        //
+        // const convertHTML = (html) => {
+        //     const lines = html.split('\n');
+        //     const styleRegex = new RegExp('style.css');
+        //     const jsRegex = new RegExp('app.js');
+        //     for (let i = 0; i < lines.length; i++) {
+        //         const line = lines[i];
+        //         const matches = styleRegex.test(line) || jsRegex.test(line);
+        //         if (matches) {
+        //             lines.splice(i, 1);
+        //         }
+        //     }
+        //     return lines.join('\n');
+        // };
+        //
+        // const handleSelectClick = (event) => {
+        //     const select = event.target;
+        //     doJSONRequest('GET', `/pen/github/${select.innerHTML}`, {}, null).then((pen) => {
+        //         console.log(pen);
+        //         pen.html = convertHTML(pen.html);
+        //         this.createPen(() => {
+        //             const currentPen = this.getCurrentPen();
+        //             currentPen.html = pen.html;
+        //             currentPen.css = pen.css;
+        //             currentPen.js = pen.js;
+        //             this.changePenName(pen.title, this.currentPen, () => {
+        //                 this.updatePen(currentPen);
+        //                 this.changeAcesContent();
+        //                 console.log(this.pens);
+        //             });
+        //         });
+        //     });
+        // };
+        //
+
+        //
+        // if (!user.githubID) {
+        //     githubOptions.parentNode.removeChild(githubOptions);
+        // }
+        //
+        // updateGithubFolders();
+        // githubSave.onclick = (event) => {
+        //     event.target.classList.add('warning');
+        //     const pen = this.pens[this.currentPen];
+        //     if (pen.html === '' && pen.css === '' && pen.js === '') {
+        //         event.target.classList.remove('warning');
+        //         return handleError(new Error('Cannot save an empty pen to GitHub'), event.target);
+        //     }
+        //     return doJSONRequest('POST', '/pen/github', {}, {
+        //         roomName: this.room.name,
+        //         pen: this.pens[this.currentPen],
+        //     }).then((res) => {
+        //         console.log(res);
+        //         event.target.classList.remove('warning');
+        //         if (res.status === 201) {
+        //             event.target.classList.add('success');
+        //             updateGithubFolders();
+        //             setTimeout(() => {
+        //                 event.target.classList.remove('success');
+        //             }, 5000);
+        //         }
+        //     });
+        // };
+        //
+        // githubLoad.addEventListener('click', (event) => {
+        //     const container = document.getElementById('github-pens-container');
+        //     if (event.target.parentNode.id !== 'github-load') return;
+        //     event.target.parentNode.classList.toggle('open');
+        // });
     }
 
     setUpLayout() {
@@ -707,14 +894,14 @@ class App {
             console.log(event);
             console.log(event.target);
             if (shareOptions && (shareOptions.classList.contains('open'))) {
-                if (!event.target) { return }
+                if (!event.target) { return; }
                 const target = event.target;
-                if (target.id === 'share-toggler') { return }
-                if (target.id === 'share-options') { return }
-                if (target.className && target.className.split(' ').includes('option-container')) { return }
-                if (target.type === 'checkbox') { return }
+                if (target.id === 'share-toggler') { return; }
+                if (target.id === 'share-options') { return; }
+                if (target.className && target.className.split(' ').includes('option-container')) { return; }
+                if (target.type === 'checkbox') { return; }
                 const texts = ['ALL', 'HTML', 'CSS', 'JS'];
-                if (target.tagName === 'SPAN' && texts.includes(target.innerHTML)) { return }
+                if (target.tagName === 'SPAN' && texts.includes(target.innerHTML)) { return; }
                 shareOptions.classList.remove('open');
             }
         });
@@ -733,8 +920,8 @@ class App {
     }
 
     updateUsers(userID, pen, positions, difference, rows) {
-        if (this.role === 'student') { return }
-        if (!this.users || !this.users[userID]) { return }
+        if (this.role === 'student') { return; }
+        if (!this.users || !this.users[userID]) { return; }
         const { pens } = this.users[userID];
         for (let i = 0; i < this.pens.length; i++) {
             const storedPen = this.pens[i];
@@ -932,7 +1119,7 @@ class App {
                 shareModalPen.onclick = ((event) => {
                     sharePen.click();
                     modal.classList.add('hidden');
-                })
+                });
             }
             loadModalPen.onclick = ((event) => {
                 loadPen.click();
@@ -1021,7 +1208,7 @@ class App {
                 diffProgress.classList.add('green');
                 diffProgress.classList.remove('yellow');
                 diffProgress.classList.remove('red');
-                diffProgress.style.width = `100%`;
+                diffProgress.style.width = '100%';
             } else {
                 this.checkDiff(id, this.users[id].pens[index + 1]);
             }
@@ -1096,21 +1283,31 @@ class App {
 
 
     setUpModalListeners() {
-        const modal = document.getElementById('preview-modal');
-        const closeModal = document.getElementById('close-modal');
+        const modals = document.querySelectorAll('.modal');
         const sharePen = document.getElementById('modal-share');
         const loadPen = document.getElementById('modal-load');
+
+        modals.forEach((modal) => {
+            const closeModal = modal.querySelector('.close-modal');
+            const container = modal.querySelector('.container');
+            if (closeModal) {
+                closeModal.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    modal.classList.add('hidden');
+                    sharePen.onclick = null;
+                    loadPen.onclick = null;
+                });
+            }
+            modal.addEventListener('click', (event) => {
+                if ((!container.contains(event.target)) && !(modal.classList.contains('hidden'))) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
         if (this.role !== 'creator' && sharePen) {
             loadPen.classList.add('onlyChild');
             sharePen.parentNode.removeChild(sharePen);
         }
-
-        closeModal.onclick = ((event) => {
-            event.preventDefault();
-            modal.classList.toggle('hidden');
-            if (sharePen) { sharePen.onclick = null }
-            loadPen.onclick = null;
-        });
     }
 
     setPenContentIntoPen(pen, penToModify, options) {
@@ -1209,7 +1406,7 @@ class App {
                 userID: user._id,
                 users: this.users,
                 assistants: this.assistants,
-                roomName: this.room.name
+                roomName: this.room.name,
             });
         }
         setTimeout(() => {
@@ -1276,7 +1473,7 @@ class App {
             for (let i = 0; i < this.assistants.length; i++) {
                 const assistantPens = this.users[this.assistants[i]].pens;
                 const assistantIndex = this.indexOfPenInLinked(pen, assistantPens);
-                if (assistantIndex === -1) { continue }
+                if (assistantIndex === -1) { continue; }
                 assistantPens.splice(assistantIndex, 1);
                 this.updateUserUI(this.assistants[i], null, null);
             }
@@ -1286,7 +1483,7 @@ class App {
 
 
         while (index !== -1) {
-            doFetchRequest('DELETE', `/room/${this.room.name}/pen/${this.pens[index].id}`, {}, {})
+            doFetchRequest('DELETE', `/room/${this.room.name}/pen/${this.pens[index].id}`, {}, {});
             if (index <= this.currentPen) {
                 this.currentPen--;
             }
@@ -1385,6 +1582,7 @@ class App {
         this.handleShareOptions(checkboxs);
 
         this.setUpModalListeners();
+        this.setupStorageOptions();
         this.setUpLayout();
     }
 

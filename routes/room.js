@@ -27,7 +27,6 @@ router.post('/create', (req, res) => {
     const room = new Room(roomName, _id);
     if (password) {
         room.lock(password, () => {
-            console.log(room);
             roomStorage[roomName] = room;
             res.status(201).json(room);
         });
@@ -47,7 +46,6 @@ router.post('/join', (req, res) => {
             if (!validPassword) {
                 return res.status(403).end();
             }
-            console.log(room);
             return res.status(201).json(room);
         });
     }
@@ -55,11 +53,24 @@ router.post('/join', (req, res) => {
     return res.status(200).json(room);
 });
 
+router.use('/:roomName', (req, res, next) => {
+    const { roomName } = req.params;
+    if (!(roomName in roomStorage)) {
+        console.error('No room was found');
+        return res.status(404).redirect('/');
+    }
+    const room = roomStorage[roomName];
+    const userId = req.user._id;
+    if (!(room.hasUser(userId))) {
+        console.error('No user was found for this room');
+        return res.status(403).end();
+    }
+    next();
+});
+
 router.get('/:roomName', (req, res) => {
     const { roomName } = req.params;
-    if (!(roomName in roomStorage)) { return res.status(404).redirect('/'); }
-    const room = roomStorage[req.params.roomName];
-    if (!(room.hasUser(req.user._id))) return res.status(403).end();
+    const room = roomStorage[roomName];
     return res.render('pen', {
         title: 'DevAsq++', loggedUser: req.user, user: JSON.stringify(req.user), room: JSON.stringify(room),
     });
@@ -67,20 +78,18 @@ router.get('/:roomName', (req, res) => {
 
 router.post('/:roomName/pen', (req, res) => {
     const { roomName } = req.params;
-    if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[roomName];
-    if (!((req.user._id) in room.users)) return res.status(404).end();
-    const newPen = new Pen('New Pen', generateID(), req.user._id);
-    room.users[req.user._id].push(newPen);
+    const userId = req.user._id;
+    const newPen = new Pen('New Pen', generateID(), userId);
+    room.users[userId].push(newPen);
     return res.status(201).json(newPen);
 });
 
 router.delete('/:roomName/pen/:penId', (req, res) => {
     const { roomName, penId } = req.params;
-    if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[roomName];
-    if (!(req.user._id in room.users)) return res.status(404).end();
-    const pens = room.users[req.user._id];
+    const userId = req.user._id;
+    const pens = room.users[userId];
     let idx = -1;
     for (let i = 0; i < pens.length; i += 1) {
         if (pens[i].id === penId) {
@@ -95,14 +104,13 @@ router.delete('/:roomName/pen/:penId', (req, res) => {
 
     const pen = pens.splice(idx, 1);
 
-    if (req.user._id !== room.creator) {
+    if (userId !== room.creator) {
         const creatorPens = room.users[room.creator];
         for (let i = 0; i < creatorPens.length; i++) {
             if (creatorPens[i].link && creatorPens[i].link.penID === penId) {
                 creatorPens.splice(i--, 1);
             }
         }
-
     }
 
     res.status(204).json(pen);
@@ -111,9 +119,7 @@ router.delete('/:roomName/pen/:penId', (req, res) => {
 router.put('/:roomName/pen/:penId', (req, res) => {
     const { roomName, penId } = req.params;
     const { name } = req.body;
-    if (!(roomName in roomStorage)) return res.status(404).end();
     const room = roomStorage[roomName];
-    if (!(req.user._id in room.users)) return res.status(404).end();
     const pens = room.users[req.user._id];
     let pen;
     for (let i = 0; i < pens.length; i += 1) {
@@ -135,7 +141,6 @@ router.put('/:roomName/pen/:penId', (req, res) => {
             creatorPens[i].title = `${req.user.username} - ${name}`;
         }
     }
-
 
     res.status(200).json(pen);
 });
