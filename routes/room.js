@@ -27,7 +27,6 @@ router.post('/create', (req, res) => {
     const room = new Room(roomName, _id);
     if (password) {
         room.lock(password, () => {
-            console.log(room);
             roomStorage[roomName] = room;
             res.status(201).json(room);
         });
@@ -47,7 +46,6 @@ router.post('/join', (req, res) => {
             if (!validPassword) {
                 return res.status(403).end();
             }
-            console.log(room);
             return res.status(201).json(room);
         });
     }
@@ -59,7 +57,7 @@ router.use('/:roomName', (req, res, next) => {
     const { roomName } = req.params;
     if (!(roomName in roomStorage)) {
         console.error('No room was found');
-        return res.status(404).end();
+        return res.status(404).redirect('/');
     }
     const room = roomStorage[roomName];
     const userId = req.user._id;

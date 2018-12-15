@@ -466,7 +466,7 @@ class App {
             span.ondblclick = null;
             span.onkeydown = null;
             span.onblur = null;
-            if (!(this instanceof CreatorApp) || !(this.pens[i].link)) {
+            if (this.role === 'student' || !(this.pens[i].link)) {
                 span.ondblclick = ((event) => {
                     event.target.contentEditable = true;
                     event.target.focus();
@@ -725,21 +725,18 @@ class App {
         }
 
         leftLayout.addEventListener('click', (event) => {
-            console.log('calledLeft');
             updateActive(event.target);
             pens.classList.add('leftLayout');
             pens.classList.remove('centerLayout');
             pens.classList.remove('rightLayout');
         });
         centerLayout.addEventListener('click', (event) => {
-            console.log('calledCenter');
             updateActive(event.target);
             pens.classList.remove('leftLayout');
             pens.classList.add('centerLayout');
             pens.classList.remove('rightLayout');
         });
         rightLayout.addEventListener('click', (event) => {
-            console.log('calledRight');
             updateActive(event.target);
             pens.classList.remove('leftLayout');
             pens.classList.remove('centerLayout');
@@ -755,7 +752,6 @@ class App {
         function updatePensClass() {
             const editors = document.querySelectorAll('#pens .pen');
             let count = 0;
-            console.log(editors);
             for (let i = 0; i < editors.length; i++) {
                 const editor = editors[i];
                 if (!editor.classList.contains('min')) {
@@ -867,6 +863,10 @@ class App {
         const span = document.createElement('span');
         span.innerHTML = 'Ask for help';
         span.id = 'raise-hand';
+        span.onclick = ((event) => {
+            span.classList.toggle('asking-help');
+            this.askForHelp();
+        });
         // span.classList.add('info');
         const roomInfo = document.getElementById('room-info').querySelector('.info');
         roomInfo.appendChild(span);
@@ -884,10 +884,25 @@ class App {
         const roomSettings = document.getElementById('room-settings');
         const toggler = roomSettings.querySelector('.toggler');
         const content = document.getElementById('content');
+        const shareOptions = document.getElementById('share-public');
+        console.log(shareOptions);
 
-        content.onclick = (() => {
+        content.onclick = ((event) => {
             if (!(roomSettings.classList.contains('hidden'))) {
                 roomSettings.classList.add('hidden');
+            }
+            console.log(event);
+            console.log(event.target);
+            if (shareOptions && (shareOptions.classList.contains('open'))) {
+                if (!event.target) { return; }
+                const target = event.target;
+                if (target.id === 'share-toggler') { return; }
+                if (target.id === 'share-options') { return; }
+                if (target.className && target.className.split(' ').includes('option-container')) { return; }
+                if (target.type === 'checkbox') { return; }
+                const texts = ['ALL', 'HTML', 'CSS', 'JS'];
+                if (target.tagName === 'SPAN' && texts.includes(target.innerHTML)) { return; }
+                shareOptions.classList.remove('open');
             }
         });
 
@@ -905,24 +920,28 @@ class App {
     }
 
     updateUsers(userID, pen, positions, difference, rows) {
-        if (this.role === 'student') {
-            return;
-        }
-        if (!this.users || !this.users[userID]) {
-            return;
-        }
+        if (this.role === 'student') { return; }
+        if (!this.users || !this.users[userID]) { return; }
         const { pens } = this.users[userID];
-
-        if (!pens) {
-            return;
-        }
         for (let i = 0; i < this.pens.length; i++) {
             const storedPen = this.pens[i];
             if (storedPen.link && storedPen.link.penID === pen.id) {
+                const newTitle = `${this.users[userID].user.username} - ${pen.title}`;
+                console.log(newTitle, storedPen.title);
+                const titleChanged = newTitle !== storedPen.title;
                 storedPen.title = `${this.users[userID].user.username} - ${pen.title}`;
                 storedPen.html = pen.html;
                 storedPen.css = pen.css;
                 storedPen.js = pen.js;
+
+                if (this.currentPen === i && titleChanged) {
+                    setTimeout(() => {
+                        ace.edit('htmlPen').setReadOnly(false);
+                        ace.edit('cssPen').setReadOnly(false);
+                        ace.edit('jsPen').setReadOnly(false);
+                        document.getElementById(storedPen.id).classList.remove('locked');
+                    }, 0);
+                }
 
                 const tab = document.getElementById(storedPen.id).querySelector('span');
                 // const sharePublic = document.getElementById('share-public');
@@ -932,6 +951,12 @@ class App {
                 if (this.currentPen === i) {
                     this.changeViewContent(positions, difference, rows);
                 }
+
+                socket.emit('creator.broadcastPen', {
+                    roomName: this.room.name,
+                    id: this.userID,
+                    pen: storedPen,
+                });
             }
         }
 
@@ -939,6 +964,7 @@ class App {
             const storedPen = pens[i];
             if (storedPen.id === pen.id) {
                 pens[i] = pen;
+                this.updateUserUI(userID, pen, pen);
                 this.checkDiff(userID, pen.id);
                 return;
             }
@@ -1090,9 +1116,15 @@ class App {
             modal.classList.toggle('hidden');
             iFrame.src = `/preview/${this.room.name}?penID=${pens[index].id}&userID=${id}`;
             if (shareModalPen) {
-                shareModalPen.onclick = sharePen.onclick;
+                shareModalPen.onclick = ((event) => {
+                    sharePen.click();
+                    modal.classList.add('hidden');
+                });
             }
-            loadModalPen.onclick = loadPen.onclick;
+            loadModalPen.onclick = ((event) => {
+                loadPen.click();
+                modal.classList.add('hidden');
+            });
         });
         select.onchange = ((event) => {
             this.checkDiff(id);
@@ -1160,7 +1192,7 @@ class App {
 
             if (oldPen && previousSelected !== '' && `${oldPen.id}` !== previousSelected) {
                 index = this.findIDInUserPen(previousSelected, this.users[id].pens);
-            } else {
+            } else if (newPen) {
                 index = this.findIDInUserPen(newPen.id, this.users[id].pens);
             }
 
@@ -1171,6 +1203,19 @@ class App {
                 userDiv.classList.add('help-needed');
             }
             this.addSingleUserListener(id);
+            if (index === -1) {
+                const diffProgress = document.getElementById(id).querySelector('.difference-progress');
+                diffProgress.classList.add('green');
+                diffProgress.classList.remove('yellow');
+                diffProgress.classList.remove('red');
+                diffProgress.style.width = '100%';
+            } else {
+                this.checkDiff(id, this.users[id].pens[index + 1]);
+            }
+            if (this.assistants && this.assistants.includes(id)) {
+                const promote = document.getElementById(id).querySelector('.promote');
+                promote.innerHTML = 'Demote';
+            }
         });
     }
 
@@ -1337,6 +1382,12 @@ class App {
         if (this.role === 'student') {
             return;
         }
+        if (this.role === 'creator') {
+            if (this.users[user._id] && this.users[user._id].state === 'banned') {
+                socket.emit('user.kick', { userID: user._id });
+                return;
+            }
+        }
         this.users[user._id] = {
             user,
             currentPen: this.publicPen,
@@ -1351,8 +1402,22 @@ class App {
         this.updateUserUI(user._id, this.publicPen);
         this.updateParticipantsCounter();
         if (this.assistants && this.assistants.includes(user._id)) {
-            socket.emit('assistant.promotion', { userID: user._id, users: this.users });
+            socket.emit('assistant.promotion', {
+                userID: user._id,
+                users: this.users,
+                assistants: this.assistants,
+                roomName: this.room.name,
+            });
         }
+        setTimeout(() => {
+            const current = this.getCurrentPen();
+            if (current.link && current.link.userID === user._id) {
+                ace.edit('htmlPen').setReadOnly(false);
+                ace.edit('cssPen').setReadOnly(false);
+                ace.edit('jsPen').setReadOnly(false);
+                document.getElementById(current.id).classList.remove('locked');
+            }
+        }, 0);
     }
 
     userDisconnected(user) {
@@ -1360,7 +1425,7 @@ class App {
             return;
         }
         // delete this.users[user];
-        if (this.users[user].state !== 'banned') {
+        if (this.users && this.users[user] && this.users[user].state !== 'banned') {
             this.users[user].state = 'disconnected';
         }
         socket.emit('homePage.updatePopulation', {
@@ -1403,9 +1468,22 @@ class App {
 
         pens.splice(index, 1);
 
+
+        if (this.role === 'creator') {
+            for (let i = 0; i < this.assistants.length; i++) {
+                const assistantPens = this.users[this.assistants[i]].pens;
+                const assistantIndex = this.indexOfPenInLinked(pen, assistantPens);
+                if (assistantIndex === -1) { continue; }
+                assistantPens.splice(assistantIndex, 1);
+                this.updateUserUI(this.assistants[i], null, null);
+            }
+        }
+
         index = this.indexOfPenInLinked(pen);
 
+
         while (index !== -1) {
+            doFetchRequest('DELETE', `/room/${this.room.name}/pen/${this.pens[index].id}`, {}, {});
             if (index <= this.currentPen) {
                 this.currentPen--;
             }
@@ -1523,14 +1601,9 @@ class App {
             return;
         }
 
-        console.log(userPen);
-        console.log(creatorPen);
         const htmlDiff = this.checkSingleDiff(creatorPen.html, userPen.html);
         const cssDiff = this.checkSingleDiff(creatorPen.css, userPen.css);
         const javascriptDiff = this.checkSingleDiff(creatorPen.js, userPen.js);
-        console.log(htmlDiff);
-        console.log(cssDiff);
-        console.log(javascriptDiff);
         // const result = Math.round((htmlDiff + cssDiff + javascriptDiff) / 3 * 100);
         const result = 100 - Math.round((htmlDiff + cssDiff + javascriptDiff) / 3 * 100);
         if (result > 66) {
@@ -1554,7 +1627,6 @@ class App {
             return;
         }
         const differences = JsDiff.diffWords(mainContent, secondContent);
-        console.log(differences);
         let added = 0;
         let removed = 0;
         let equal = 0;

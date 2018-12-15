@@ -201,10 +201,7 @@ router.post('/new', (req, res) => {
     });
     newPen.save((err, result) => {
         if (err) {
-            console.log('Error writing to DB');
-            console.log(err);
         }
-        console.log(result);
     });
     res.status(201).end();
 });

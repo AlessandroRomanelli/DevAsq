@@ -23,6 +23,9 @@ function init() {
 
     if (room.creator === user._id) {
         app = new CreatorApp(room, user._id);
+        window.onbeforeunload = function() {
+            return 'If you leave the room will be deleted!';
+        };
     } else {
         app = new App(room, user._id);
     }
@@ -214,6 +217,17 @@ function init() {
                 }
             }
         }
+    });
+
+    socket.on('preview.error', (error) => {
+        const modal = document.getElementById('modal-error');
+        const p = modal.querySelector('p');
+        p.innerHTML = error;
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            p.innerHTML = "Error";
+            modal.classList.add('hidden');
+        }, 2000);
     })
 }
 
