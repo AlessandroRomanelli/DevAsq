@@ -13,7 +13,7 @@ const { parseHTML, parseBase64, doJSONRequest } = require('../utils');
 const githubEndpoint = 'https://api.github.com';
 
 router.use('/', (req, res, next) => {
-    if (!req.user) return res.status(403).end();
+    if (!req.user) return res.status(403).json({ status: 403, message: 'Unauthorized' });
     delete req.user.password;
     return next();
 });
@@ -21,7 +21,7 @@ router.use('/', (req, res, next) => {
 
 router.use('/github', (req, res, next) => {
     const { githubID } = req.user;
-    if (!githubID) return res.status(403).end();
+    if (!githubID) return res.status(403).json({ status: 403, message: 'Unauthorized' });
     return next();
 });
 
@@ -46,36 +46,6 @@ router.get('/github', (req, res) => {
         res.status(404).json({ status: 404 });
     });
 });
-
-// router.get('/github/all', (req, res) => {
-//     const { username, githubAccessToken } = req.user;
-//     const headers = {
-//         Accept: 'application/vnd.github.v3+json',
-//         Authorization: `Bearer ${githubAccessToken}`,
-//     };
-//
-//     doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents`, headers, null).then((folders) => {
-//         let count = 0;
-//         const storedPens = {};
-//         function done() {
-//             count += 1;
-//             if (count === folders.length * 3) {
-//                 res.json(storedPens);
-//             }
-//         }
-//         folders.forEach((folder) => {
-//             doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents/${folder.path}`, headers, null).then((files) => {
-//                 storedPens[folder.name] = {};
-//                 files.forEach((file) => {
-//                     doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents/${file.path}`, headers, null).then((data) => {
-//                         storedPens[folder.name][file.name] = parseBase64(data.content);
-//                         done();
-//                     });
-//                 });
-//             });
-//         });
-//     });
-// });
 
 router.get('/github/:dirName', (req, res) => {
     const { dirName } = req.params;
@@ -110,7 +80,7 @@ router.get('/github/:dirName', (req, res) => {
         });
     }).catch((err) => {
         console.error(err);
-        res.status(500).end();
+        res.status(500).json({ status: 500, message: 'Something went wrong' });
     });
 });
 
@@ -210,7 +180,7 @@ router.get('/all', (req, res) => {
     const pens = [];
     function done() {
         if (pens.length === savedPens.length) {
-            return res.status(200).json({ savedPens: pens });
+            return res.status(200).json({ status: 200, savedPens: pens });
         }
     }
     savedPens.forEach((penId) => {

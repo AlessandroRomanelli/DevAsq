@@ -667,7 +667,8 @@ class App {
             event.target.disabled = true;
             doJSONRequest('GET', '/pen/all', {}, null).then((data) => {
                 console.log(data);
-                const { savedPens } = data;
+                const { savedPens, status } = data;
+                if (status !== 200) throw new Error(data.message);
                 let options = savedPens.length > 0;
                 if (user.githubID) {
                     getGithubOptions().then((githubPens) => {
@@ -752,7 +753,7 @@ class App {
 
         pens.querySelector('div').childNodes.forEach((pen) => {
             const btns = pen.querySelectorAll('button');
-            console.log(btns)
+            console.log(btns);
             btns[0].addEventListener('click', (event) => {
                 const button = event.target;
                 updateActive(button);
@@ -774,7 +775,7 @@ class App {
             btns[1].addEventListener('click', (event) => {
                 const button = event.target;
                 updateActive(button);
-                let count = [0, 0, 0];
+                const count = [0, 0, 0];
                 pens.querySelector('div').childNodes.forEach((checkPen, index) => {
                     if (checkPen !== pen) {
                         const buttons = checkPen.querySelectorAll('.header button');
@@ -789,7 +790,7 @@ class App {
                             buttons[1].classList.add('active');
                         }
                     }
-                });//a
+                });// a
                 if (count[2] !== 2) {
                     button.parentNode.parentNode.parentNode.classList.remove('max');
                     button.parentNode.parentNode.parentNode.classList.remove('min');
@@ -830,7 +831,7 @@ class App {
                 updatePensClass();
             });
         });
-    }//test
+    }// test
 
     indexOfPen(pen) {
         let index = -1;
