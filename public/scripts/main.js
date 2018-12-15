@@ -19,42 +19,50 @@ function addExplorerListener() {
     name.onclick = sortName;
     population.onclick = sortPopulation;
 
-
-    const links = document.querySelectorAll('#roomTable a');
-    links.forEach((link) => {
-        link.addEventListener('click', (event) => {
+    const listener = ((event) => {
+        if (event.type === 'keydown') {
+            if (event.key !== 'Enter') { return; }
+        } else if (event.type === 'submit') {
             event.preventDefault();
-            const roomName = link.parentNode.parentNode.dataset.name;
-            const password = link.parentNode.parentNode.querySelector('input').value;
-            doFetchRequest('POST', '/room/join', {
-                'Content-Type': 'application/json',
-            }, JSON.stringify({
-                roomName,
-                password,
-            })).then((res) => {
-                if (res.status === 200 && roomName !== '') {
-                    console.log('requesting permission to enter', roomName);
-                    console.log(user);
-                    socket.emit('room.isAllowed', { roomName, userID: user._id });
-                    return;
-                }
-                let err;
-                if (res.status === 403) {
-                    err = new Error('User was not authorised to enter room');
-                } else if (res.status === 404) {
-                    err = new Error('Room does not exist');
-                } else {
-                    err = new Error(`Something went wrong: ${res.status}`);
-                }
-                err.data = res;
-                throw err;
-            }).catch((err) => {
-                console.error(err);
-                const button = link.parentNode;
-                handleError(err, button);
-            });
+        }
+
+        const roomName = event.target.parentNode.parentNode.dataset.name;
+        const password = event.target.parentNode.parentNode.querySelector('input').value;
+        doFetchRequest('POST', '/room/join', {
+            'Content-Type': 'application/json',
+        }, JSON.stringify({
+            roomName,
+            password,
+        })).then((res) => {
+            if (res.status === 200 && roomName !== '') {
+                socket.emit('room.isAllowed', { roomName, userID: user._id });
+                return;
+            }
+            let err;
+            if (res.status === 403) {
+                err = new Error('User was not authorised to enter room');
+            } else if (res.status === 404) {
+                err = new Error('Room does not exist');
+            } else {
+                err = new Error(`Something went wrong: ${res.status}`);
+            }
+            err.data = res;
+            throw err;
+        }).catch((err) => {
+            console.error(err);
+            const button = link.parentNode;
+            handleError(err, button);
         });
     });
+
+    const rows = document.querySelectorAll('#roomTable tr');
+    if (rows.length <= 1) { return; }
+    for (let i = 1; i < rows.length; i++) {
+        const pswInput = rows[i].querySelector('input');
+        const link = rows[i].querySelector('a');
+        pswInput.addEventListener('keydown', listener);
+        link.addEventListener('click', listener);
+    }
 }
 
 function init() {
