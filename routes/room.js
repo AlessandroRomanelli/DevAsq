@@ -57,7 +57,14 @@ router.post('/join', (req, res) => {
 
 router.get('/:roomName', (req, res) => {
     const { roomName } = req.params;
-    if (!(roomName in roomStorage)) return res.status(404).end();
+    // if (!(roomName in roomStorage)) return res.status(404).end();
+    if (!(roomName in roomStorage)) {
+        return res.render('index', {
+            title: 'DevAsq++',
+            loggedUser: req.user,
+            user: JSON.stringify(req.user)
+        });
+    }
     const room = roomStorage[req.params.roomName];
     if (!(room.hasUser(req.user._id))) return res.status(403).end();
     return res.render('pen', {
