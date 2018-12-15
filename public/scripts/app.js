@@ -798,11 +798,15 @@ class App {
             btns[1].addEventListener('click', (event) => {
                 const button = event.target;
                 updateActive(button);
-                button.parentNode.parentNode.parentNode.classList.remove('max');
-                button.parentNode.parentNode.parentNode.classList.remove('min');
+                let count = [0, 0, 0];
                 pens.querySelector('div').childNodes.forEach((checkPen, index) => {
                     if (checkPen !== pen) {
                         const buttons = checkPen.querySelectorAll('.header button');
+                        buttons.forEach((btn, i) => {
+                            if (btn.classList.contains('active')) {
+                                count[i]++;
+                            }
+                        });
                         if (buttons[0].classList.contains('active')) {
                             checkPen.classList.remove('max');
                             buttons[0].classList.remove('active');
@@ -810,6 +814,15 @@ class App {
                         }
                     }
                 });
+                if (count[2] !== 2) {
+                    button.parentNode.parentNode.parentNode.classList.remove('max');
+                    button.parentNode.parentNode.parentNode.classList.remove('min');
+                } else {
+                    button.classList.remove('active');
+                    button.previousSibling.classList.add('active');
+                    button.parentNode.parentNode.parentNode.classList.add('max');
+                    button.parentNode.parentNode.parentNode.classList.remove('min');
+                }
                 updatePensClass();
             });
             btns[2].addEventListener('click', (event) => {
