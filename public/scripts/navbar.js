@@ -49,17 +49,20 @@ function login(username, password) {
         const err = new Error('Invalid Login');
         err.data = res;
         throw err;
-    }).then((user) => {
-        if (user) {
-            dust.render('partials/loggedUser', { loggedUser: user }, (err, output) => {
+    }).then((userRes) => {
+        if (userRes) {
+            user = userRes;
+            dust.render('partials/loggedUser', { loggedUser: userRes }, (err, output) => {
                 const profileNav = document.querySelector('.profile');
                 profileNav.innerHTML = output;
                 modal.classList.add('hidden');
                 handleLogout();
             });
-            dust.render('partials/rooms', { loggedUser: user }, (err, output) => {
+            dust.render('partials/rooms', { loggedUser: userRes }, (err, output) => {
+                const oldExplorer = document.getElementById('room-browser').innerHTML;
                 const contentDiv = document.getElementById('content');
                 contentDiv.innerHTML = output;
+                document.getElementById('room-browser').innerHTML = oldExplorer;
                 handleRoomForms();
                 addExplorerListener();
             });
@@ -184,8 +187,12 @@ function handleLogout() {
                     handleLoginForm();
                 });
                 dust.render('partials/about', {}, (err, output) => {
+                    const oldExplorer = document.getElementById('room-browser').innerHTML;
                     const contentDiv = document.getElementById('content');
                     contentDiv.innerHTML = output;
+                    document.getElementById('room-browser').innerHTML = oldExplorer;
+                    document.getElementById('room-browser-title').classList.add('hidden');
+                    document.getElementById('roomTable').classList.add('hidden');
                 });
             }
         });

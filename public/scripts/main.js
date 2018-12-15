@@ -16,6 +16,17 @@ function addExplorerListener() {
     const name = document.getElementById('name-sort');
     const population = document.getElementById('pop-sort');
 
+    try {
+        if (user) {
+            if (table.querySelectorAll('tr').length > 1) {
+                document.getElementById('room-browser-title').classList.remove('hidden');
+                table.classList.remove('hidden');
+            }
+        }
+    } catch (e) {
+
+    }
+
     name.onclick = sortName;
     population.onclick = sortPopulation;
     const listener = ((event) => {
