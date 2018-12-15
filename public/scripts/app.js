@@ -35,8 +35,8 @@ class App {
         this.switchPen(0);
     }
 
-    createGithubPen(githubPen) {
-        const pen = Pen.createFromPen(githubPen);
+    createImportedPen(importPen) {
+        const pen = Pen.createFromPen(importPen);
         this.pens.push(pen);
         this.createTabForPen(pen);
         this.setupTabsHandlers();
@@ -646,20 +646,28 @@ class App {
         const handleLocalImport = (event) => {
             const { id } = event.target.dataset;
             doJSONRequest('GET', `/pen/${id}`, {}, null).then((res) => {
-                console.log(res);
+                const { status, pen } = res;
+                if (status !== 200) handleError(new Error('Failed to import local pen'), event.target);
+                this.createImportedPen(pen);
+                storageModal.classList.add('hidden');
             });
         };
 
         const handleGithubImport = (event) => {
             const folderName = event.target.innerHTML;
             doJSONRequest('GET', `/pen/github/${folderName}`, {}, null).then((res) => {
-                const { pen } = res;
+                const { status, pen } = res;
+                if (status !== 200) handleError(new Error('Failed to import GitHub pen'), event.target);
                 pen.html = convertHTML(pen.html);
-                console.log(pen);
+                this.createImportedPen(pen);
+                storageModal.classList.add('hidden');
             });
         };
 
         importButton.onclick = (event) => {
+            console.log('click');
+            if (event.target.disabled) return;
+            event.target.disabled = true;
             doJSONRequest('GET', '/pen/all', {}, null).then((data) => {
                 console.log(data);
                 const { savedPens } = data;
@@ -671,12 +679,14 @@ class App {
                         dust.render('partials/storageImport', { options, locals: savedPens, githubs: githubPens }, (err, output) => {
                             handleDustProduction(err, output);
                             handleImportOptions();
+                            event.target.disabled = false;
                         });
                     });
                 } else {
                     dust.render('partials/storageImport', { options, locals: savedPens }, (err, output) => {
                         handleDustProduction(err, output);
                         handleImportOptions();
+                        event.target.disabled = undefined;
                     });
                 }
             }).catch((err) => {
