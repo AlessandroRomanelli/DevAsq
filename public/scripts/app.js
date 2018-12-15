@@ -646,14 +646,56 @@ class App {
             const locals = storageModalContent.querySelector('.locals').childNodes;
             const githubs = storageModalContent.querySelector('.githubs').childNodes;
             locals.forEach((local) => {
+                const deleteButton = local.querySelector('button');
+                deleteButton.onclick = handleLocalDeletion;
                 local.onclick = handleLocalImport;
             });
             githubs.forEach((github) => {
+                const deleteButton = github.querySelector('button');
+                deleteButton.onclick = handleGithubDeletion;
                 github.onclick = handleGithubImport;
             });
         };
 
+        const handleLocalDeletion = (event) => {
+            const entry = event.target.parentNode;
+            const { id } = entry.dataset;
+            event.preventDefault();
+            if (entry.classList.contains('beingDeleted')) return;
+            entry.classList.add('beingDeleted');
+            console.log('Delete DB');
+            doJSONRequest('DELETE', `/pen/${id}`, {}, null).then((res) => {
+                console.log(res);
+                if (res.status === 200) {
+                    entry.parentNode.removeChild(entry);
+                } else {
+                    handleError(new Error(res.message), event.target);
+                }
+                entry.classList.remove('beingDeleted');
+            });
+        };
+
+        const handleGithubDeletion = (event) => {
+            const entry = event.target.parentNode;
+            const { name } = entry.dataset;
+            event.preventDefault();
+            if (entry.classList.contains('beingDeleted')) return;
+            entry.classList.add('beingDeleted');
+            console.log('Delete Github');
+            doJSONRequest('DELETE', `/pen/github/${name}`, {}, null).then((res) => {
+                console.log(res);
+                if (res.status === 200) {
+                    entry.parentNode.removeChild(entry);
+                } else {
+                    handleError(new Error(res.message), event.target);
+                }
+                entry.classList.remove('beingDeleted');
+            });
+        };
+
         const handleLocalImport = (event) => {
+            if (!event.target.classList.contains('option')
+                || event.target.classList.contains('beingDeleted')) return;
             const { id } = event.target.dataset;
             event.target.classList.add('loading');
             doJSONRequest('GET', `/pen/${id}`, {}, null).then((res) => {
@@ -668,6 +710,8 @@ class App {
         };
 
         const handleGithubImport = (event) => {
+            if (!event.target.classList.contains('option')
+                || event.target.classList.contains('beingDeleted')) return;
             const { name } = event.target.dataset;
             event.target.classList.add('loading');
             doJSONRequest('GET', `/pen/github/${name}`, {}, null).then((res) => {
@@ -772,7 +816,7 @@ class App {
 
         pens.querySelector('div').childNodes.forEach((pen) => {
             const btns = pen.querySelectorAll('button');
-            console.log(btns)
+            console.log(btns);
             btns[0].addEventListener('click', (event) => {
                 const button = event.target;
                 updateActive(button);
@@ -850,7 +894,7 @@ class App {
                 updatePensClass();
             });
         });
-    }//test
+    }// test
 
     indexOfPen(pen) {
         let index = -1;

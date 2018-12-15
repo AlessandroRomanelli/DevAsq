@@ -239,6 +239,20 @@ router.get('/:penId', (req, res) => {
     });
 });
 
+router.delete('/:penId', (req, res) => {
+    const { penId } = req.params;
+    PenSchema.findByIdAndDelete(penId).then((pen) => {
+        console.log('Pen deleted');
+        const { savedPens } = req.user;
+        const index = savedPens.indexOf(penId);
+        savedPens.splice(index, 1);
+        User.findByIdAndUpdate(req.user._id, { savedPens }).then((user) => {
+            if (pen !== null) return res.status(200).json({ status: 200 });
+            return res.status(404).json({ status: 404, message: 'Not found' });
+        });
+    });
+});
+
 router.post('/save', (req, res) => {
     const { pen, roomName } = req.body;
     if (pen.html === '' && pen.css === '' && pen.js === '') {

@@ -594,6 +594,18 @@
       cursor: pointer
       background: transparentize($primary-color, 0.5)
       color: white
+    &.beingDeleted
+      background: $light
+      color: $dark
+      button
+        opacity: 0
+        &:hover
+          cursor: default
+          pointer-events: none
+      &:hover
+        cursor: default
+        pointer-events: none
+
   .githubs
     border-top: 2px solid $primary-color
     .option::before
