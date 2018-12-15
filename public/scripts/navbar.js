@@ -187,8 +187,12 @@ function handleLogout() {
                     handleLoginForm();
                 });
                 dust.render('partials/about', {}, (err, output) => {
+                    const oldExplorer = document.getElementById('room-browser').innerHTML;
                     const contentDiv = document.getElementById('content');
                     contentDiv.innerHTML = output;
+                    document.getElementById('room-browser').innerHTML = oldExplorer;
+                    document.getElementById('room-browser-title').classList.add('hidden');
+                    document.getElementById('roomTable').classList.add('hidden');
                 });
             }
         });
