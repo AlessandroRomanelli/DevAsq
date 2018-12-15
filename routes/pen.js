@@ -5,6 +5,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 const PenSchema = mongoose.model('Pen');
+const User = mongoose.model('User');
 
 const { parseHTML, parseBase64, doJSONRequest } = require('../utils');
 
@@ -13,10 +14,10 @@ const githubEndpoint = 'https://api.github.com';
 router.use('/', (req, res, next) => {
     if (!req.user) return res.status(403).end();
     delete req.user.password;
-    next();
+    return next();
 });
 
-router.post('/new', (req, res, next) => {
+router.post('/new', (req, res) => {
     console.log(req.body);
     const newPen = new PenSchema({
         user: req.user,
@@ -36,10 +37,50 @@ router.post('/new', (req, res, next) => {
     res.status(201).end();
 });
 
+router.get('/all', (req, res) => {
+    console.log(req.user);
+    const { savedPens } = req.user;
+    return res.status(200).json({ savedPens });
+});
+
+router.get('/:index', (req, res) => {
+    const { savedPens } = req.user;
+    const { index } = req.params;
+    if (index >= savedPens.length) {
+        return res.status(404).json({ status: 404, message: 'Index out of bounds' });
+    }
+    PenSchema.findById(savedPens[index]).then((pen) => {
+        if (pen && pen !== null) return res.status(200).json({ status: 200, pen });
+        return res.status(404).json({ status: 404, message: 'Not found' });
+    });
+});
+
+router.post('/save', (req, res) => {
+    const { pen, roomName } = req.body;
+    if (pen.html === '' && pen.css === '' && pen.js === '') {
+        return res.status(400).json({ status: 400, message: 'Invalid pen' });
+    }
+    const now = new Date();
+    let { title } = pen;
+    title += `@${roomName}[${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}]`;
+    const html = pen.html || '';
+    const css = pen.css || '';
+    const js = pen.js || '';
+    PenSchema.create({
+        user: req.user._id, html, css, js, title,
+    }).then((dbPen) => {
+        const { savedPens } = req.user;
+        savedPens.push(dbPen._id);
+        User.findByIdAndUpdate(req.user._id, { savedPens }, { new: true }).then((user) => {
+            res.status(200).json(user);
+        });
+    });
+});
+
 router.use('/github', (req, res, next) => {
     const { githubID } = req.user;
     if (!githubID) return res.status(403).end();
-    next();
+    return next();
 });
 
 router.get('/github', (req, res) => {
