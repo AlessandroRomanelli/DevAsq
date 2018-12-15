@@ -3,7 +3,7 @@
   <div id="import-options">
     <div class="locals">
       {#locals}
-        <div class="local option">{title}</div>
+        <div class="local option" data-id={_id}>{title}</div>
       {/locals}
     </div>
     <div class="githubs">

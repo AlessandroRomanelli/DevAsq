@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const PenSchema = mongoose.model('Pen');
 const User = mongoose.model('User');
 
+const { Pen } = require('../rooms');
 const { parseHTML, parseBase64, doJSONRequest } = require('../utils');
 
 const githubEndpoint = 'https://api.github.com';
@@ -78,7 +79,7 @@ router.get('/github', (req, res) => {
 
 router.get('/github/:dirName', (req, res) => {
     const { dirName } = req.params;
-    const { username, githubAccessToken } = req.user;
+    const { _id, username, githubAccessToken } = req.user;
     const headers = {
         Accept: 'application/vnd.github.v3+json',
         Authorization: `Bearer ${githubAccessToken}`,
@@ -87,14 +88,12 @@ router.get('/github/:dirName', (req, res) => {
     console.log(`${githubEndpoint}/repos/${username}/DevAsqPP/contents/${dirName}`);
     doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents/${dirName}`, headers, null).then((response) => {
         if (response.message) throw new Error(response.message);
-        const pen = {
-            title: dirName,
-        };
+        const pen = new Pen(dirName, _id);
         let count = 0;
         function done() {
             count += 1;
             if (count === 3) {
-                res.status(200).json(pen);
+                res.status(200).json({ status: 200, pen });
             }
         }
         doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents/${dirName}/app.js`, headers, null).then((data) => {
@@ -207,18 +206,25 @@ router.post('/new', (req, res) => {
 });
 
 router.get('/all', (req, res) => {
-    console.log(req.user);
     const { savedPens } = req.user;
-    return res.status(200).json({ savedPens });
+    const pens = [];
+    function done() {
+        if (pens.length === savedPens.length) {
+            return res.status(200).json({ savedPens: pens });
+        }
+    }
+    savedPens.forEach((penId) => {
+        PenSchema.findById(penId, '_id title').then((pen) => {
+            pens.push(pen);
+            done();
+        });
+    });
 });
 
-router.get('/:index', (req, res) => {
-    const { savedPens } = req.user;
-    const { index } = req.params;
-    if (index >= savedPens.length) {
-        return res.status(404).json({ status: 404, message: 'Index out of bounds' });
-    }
-    PenSchema.findById(savedPens[index]).then((pen) => {
+router.get('/:penId', (req, res) => {
+    const { penId } = req.params;
+    PenSchema.findById(penId).then((pen) => {
+        console.log(pen);
         if (pen && pen !== null) return res.status(200).json({ status: 200, pen });
         return res.status(404).json({ status: 404, message: 'Not found' });
     });

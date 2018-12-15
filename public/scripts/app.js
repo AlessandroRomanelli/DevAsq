@@ -551,10 +551,24 @@ class App {
             });
         });
 
-        function assignTemporaryClass(htmlNode, className) {
+        const convertHTML = (html) => {
+            const lines = html.split('\n');
+            const styleRegex = new RegExp('style.css');
+            const jsRegex = new RegExp('app.js');
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const matches = styleRegex.test(line) || jsRegex.test(line);
+                if (matches) {
+                    lines.splice(i, 1);
+                }
+            }
+            return lines.join('\n');
+        };
+
+        const assignTemporaryClass = (htmlNode, className) => {
             htmlNode.classList.add(className);
             setTimeout(() => htmlNode.classList.remove(className), 2000);
-        }
+        };
 
         const saveToDatabase = () => doJSONRequest('POST', '/pen/save', {}, {
             pen: this.getCurrentPen(),
@@ -580,13 +594,8 @@ class App {
                         }).then((res) => {
                             console.log(res);
                             event.target.classList.remove('warning');
-                            if (res.status === 201) {
-                                event.target.classList.add('success');
-                                updateGithubFolders();
-                                setTimeout(() => {
-                                    event.target.classList.remove('success');
-                                }, 5000);
-                            }
+                            const className = (res.status === 201) ? 'success' : 'error';
+                            assignTemporaryClass(event.target, className);
                         });
                     };
                     buttons[1].onclick = (event) => {
@@ -604,54 +613,59 @@ class App {
             }
         };
 
+        const handleImportOptions = () => {
+            const locals = storageModalContent.querySelector('.locals').childNodes;
+            const githubs = storageModalContent.querySelector('.githubs').childNodes;
+            locals.forEach((local) => {
+                local.onclick = handleLocalImport;
+            });
+            githubs.forEach((github) => {
+                github.onclick = handleGithubImport;
+            });
+        };
+
+        const handleLocalImport = (event) => {
+            const { id } = event.target.dataset;
+            doJSONRequest('GET', `/pen/${id}`, {}, null).then((res) => {
+                console.log(res);
+            });
+        };
+
+        const handleGithubImport = (event) => {
+            const folderName = event.target.innerHTML;
+            doJSONRequest('GET', `/pen/github/${folderName}`, {}, null).then((res) => {
+                const { pen } = res;
+                pen.html = convertHTML(pen.html);
+                console.log(pen);
+            });
+        };
+
         importButton.onclick = (event) => {
             doJSONRequest('GET', '/pen/all', {}, null).then((data) => {
                 console.log(data);
                 const { savedPens } = data;
-                const localPens = [];
-                function done() {
-                    if (localPens.length === savedPens.length) {
-                        let options = savedPens.length > 0;
-                        if (user.githubID) {
-                            getGithubOptions().then((githubPens) => {
-                                console.log(githubPens);
-                                options = githubPens.length + savedPens.length > 0;
-                                dust.render('partials/storageImport', { options, locals: localPens, githubs: githubPens }, handleDustProduction);
-                            });
-                        } else {
-                            dust.render('partials/storageImport', { options, locals: localPens }, handleDustProduction);
-                        }
-                    }
-                }
-                for (let i = 0; i < savedPens.length; i++) {
-                    doJSONRequest('GET', `/pen/${i}`, {}, null).then((res) => {
-                        localPens.push(res.pen);
-                        done();
+                let options = savedPens.length > 0;
+                if (user.githubID) {
+                    getGithubOptions().then((githubPens) => {
+                        console.log(githubPens);
+                        options = githubPens.length + savedPens.length > 0;
+                        dust.render('partials/storageImport', { options, locals: savedPens, githubs: githubPens }, (err, output) => {
+                            handleDustProduction(err, output);
+                            handleImportOptions();
+                        });
+                    });
+                } else {
+                    dust.render('partials/storageImport', { options, locals: savedPens }, (err, output) => {
+                        handleDustProduction(err, output);
+                        handleImportOptions();
                     });
                 }
-                done();
             }).catch((err) => {
                 console.error(err);
             });
         };
-        // const githubOptions = document.getElementById('github-options');
-        // const githubSave = document.getElementById('github-save');
-        // const githubLoad = document.getElementById('github-load');
-        // const githubSelect = document.getElementById('github-folders');
         //
-        // const convertHTML = (html) => {
-        //     const lines = html.split('\n');
-        //     const styleRegex = new RegExp('style.css');
-        //     const jsRegex = new RegExp('app.js');
-        //     for (let i = 0; i < lines.length; i++) {
-        //         const line = lines[i];
-        //         const matches = styleRegex.test(line) || jsRegex.test(line);
-        //         if (matches) {
-        //             lines.splice(i, 1);
-        //         }
-        //     }
-        //     return lines.join('\n');
-        // };
+
         //
         // const handleSelectClick = (event) => {
         //     const select = event.target;
@@ -672,41 +686,6 @@ class App {
         //     });
         // };
         //
-
-        //
-        // if (!user.githubID) {
-        //     githubOptions.parentNode.removeChild(githubOptions);
-        // }
-        //
-        // updateGithubFolders();
-        // githubSave.onclick = (event) => {
-        //     event.target.classList.add('warning');
-        //     const pen = this.pens[this.currentPen];
-        //     if (pen.html === '' && pen.css === '' && pen.js === '') {
-        //         event.target.classList.remove('warning');
-        //         return handleError(new Error('Cannot save an empty pen to GitHub'), event.target);
-        //     }
-        //     return doJSONRequest('POST', '/pen/github', {}, {
-        //         roomName: this.room.name,
-        //         pen: this.pens[this.currentPen],
-        //     }).then((res) => {
-        //         console.log(res);
-        //         event.target.classList.remove('warning');
-        //         if (res.status === 201) {
-        //             event.target.classList.add('success');
-        //             updateGithubFolders();
-        //             setTimeout(() => {
-        //                 event.target.classList.remove('success');
-        //             }, 5000);
-        //         }
-        //     });
-        // };
-        //
-        // githubLoad.addEventListener('click', (event) => {
-        //     const container = document.getElementById('github-pens-container');
-        //     if (event.target.parentNode.id !== 'github-load') return;
-        //     event.target.parentNode.classList.toggle('open');
-        // });
     }
 
     setUpLayout() {
