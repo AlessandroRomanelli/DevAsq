@@ -789,7 +789,7 @@ class App {
                             buttons[1].classList.add('active');
                         }
                     }
-                });
+                });//a
                 if (count[2] !== 2) {
                     button.parentNode.parentNode.parentNode.classList.remove('max');
                     button.parentNode.parentNode.parentNode.classList.remove('min');
