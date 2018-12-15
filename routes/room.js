@@ -57,7 +57,7 @@ router.post('/join', (req, res) => {
 
 router.get('/:roomName', (req, res) => {
     const { roomName } = req.params;
-    if (!(roomName in roomStorage)) { return res.redirect('/'); }
+    if (!(roomName in roomStorage)) { return res.status(404).redirect('/'); }
     const room = roomStorage[req.params.roomName];
     if (!(room.hasUser(req.user._id))) return res.status(403).end();
     return res.render('pen', {
