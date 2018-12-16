@@ -58,13 +58,15 @@ router.get('/:roomName', (req, res) => {
 
     const tree = esprima.parseScript(js);
     traverseTree(tree);
-    const finalJs = escodegen.generate(tree);
+    let finalJs = escodegen.generate(tree);
+    let error = `let socket = io(); socket.emit('preview.error', {userID: '${user}', error: err.message})`;
+    finalJs = `try { ${finalJs} } catch (err) { ${error} }`;
 
     let resHtml = html.split('</head>');
     resHtml[0] += `<style>${css}</style>`;
     resHtml = resHtml.join('</head>');
     resHtml = resHtml.split('</body>');
-    resHtml[0] += `<script>${finalJs}</script>`;
+    resHtml[0] += `<script src="/socket.io/socket.io.js"></script><script>${finalJs}</script>`;
     resHtml = resHtml.join('</body>');
     res.send(resHtml);
 });
@@ -81,7 +83,6 @@ router.post('/:roomName', (req, res) => {
     const pens = room.users[req.user._id].slice(0);
     pens.push(room.publicPen);
     let foundPen;
-    console.log(pens);
     pens.forEach((pen) => {
         if (pen.id === penID) {
             pen.name = name;
@@ -91,7 +92,6 @@ router.post('/:roomName', (req, res) => {
             foundPen = pen;
         }
     });
-    console.log(foundPen);
     res.status(201).json(foundPen);
 });
 

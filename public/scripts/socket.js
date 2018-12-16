@@ -155,18 +155,22 @@ function insertInSorted() {
     });
 
     socket.on('homePage.updateRoomCounter', (data) => {
-        console.log('Updating room browser counters');
-        console.log(data);
         const roomBrowserTitle = document.getElementById('room-browser-title');
         const roomTable = document.getElementById('roomTable');
         if (!roomTable) return;
         const roomBody = roomTable.childNodes[0];
-        console.log(roomBody);
 
         const roomEntry = document.getElementById(`room_${data.roomName}`);
 
-        roomBrowserTitle.classList.remove('hidden');
-        roomTable.classList.remove('hidden');
+        try {
+            if (user) {
+                roomBrowserTitle.classList.remove('hidden');
+                roomTable.classList.remove('hidden');
+            }
+
+        } catch (e) {
+
+        }
 
         if (roomEntry) {
             roomEntry.querySelectorAll('td')[1].innerText = data.population;
@@ -198,7 +202,11 @@ function insertInSorted() {
     socket.on('room.accessResponse', (data) => {
         console.log('response received from the server', data);
         const { response, roomName, userID } = data;
-        if (`${user._id}` !== `${userID}`) {
+        try {
+            if (`${user._id}` !== `${userID}`) {
+                return;
+            }
+        } catch (e) {
             return;
         }
         if (response === 'true') {

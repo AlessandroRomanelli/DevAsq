@@ -40,7 +40,7 @@ function preventSpam() {
 
     return function (data) {
         const timeStamp = data.event.timeStamp;
-        if (data.text.length > 2500) {
+        if (data.text.length > 10000) {
             data.text = "";
         }
         if (timeStamp - previousTimeStamp < 1000) {

@@ -10,7 +10,6 @@
       </tr>
       {#activeRooms}
           <tr data-name="{name}">
-              {>"partials/room" /}
               {> "partials/room" /}
           </tr>
       {/activeRooms}

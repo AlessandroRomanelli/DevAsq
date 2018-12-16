@@ -2,8 +2,15 @@ function handleRoomForms() {
     const createRoom = document.getElementById('createRoom');
     const createRoomButton = document.getElementById('createRoomButton');
     if (!createRoom || !createRoomButton) return;
-    createRoomButton.addEventListener('click', (event) => {
-        event.preventDefault();
+
+    const createRoomFields = createRoom.querySelectorAll('input');
+
+    const createRoomListener = ((event) => {
+        if (event.type === 'keydown') {
+            if (event.key !== 'Enter') { return; }
+        } else if (event.type === 'submit') {
+            event.preventDefault();
+        }
         const roomName = createRoom.querySelector('input[name="roomName"]').value;
         const password = createRoom.querySelector('input[name="password"]').value;
         if (!roomName || roomName === '') {
@@ -17,31 +24,45 @@ function handleRoomForms() {
         }, JSON.stringify({
             roomName,
             password,
-        })).then((res) => {
-            let err;
-            if (res.status === 201) {
-                return res.json();
-            }
-            if (res.status === 400) {
-                err = new Error('A room with the same name already exists!');
-            } else if (res.status === 403) {
-                err = new Error('User is not authorised to do this');
-            }
-            err.data = res;
-            throw err;
-        }).then((room) => {
-            if (room.name) window.location.pathname = `/room/${room.name}`;
-        }).catch((err) => {
-            console.error(err);
-            const button = document.getElementById('createRoomButton');
-            handleError(err, button);
-        });
+        }))
+            .then((res) => {
+                let err;
+                if (res.status === 201) {
+                    return res.json();
+                }
+                if (res.status === 400) {
+                    err = new Error('A room with the same name already exists!');
+                } else if (res.status === 403) {
+                    err = new Error('User is not authorised to do this');
+                }
+                err.data = res;
+                throw err;
+            })
+            .then((room) => {
+                if (room.name) window.location.pathname = `/room/${room.name}`;
+            })
+            .catch((err) => {
+                console.error(err);
+                const button = document.getElementById('createRoomButton');
+                handleError(err, button);
+            });
     });
+
+    createRoomButton.addEventListener('click', createRoomListener);
+    createRoomFields[0].addEventListener('keydown', createRoomListener);
+    createRoomFields[1].addEventListener('keydown', createRoomListener);
 
     const joinRoom = document.getElementById('joinRoom');
     const joinRoomButton = document.getElementById('joinRoomButton');
-    joinRoomButton.addEventListener('click', (event) => {
-        event.preventDefault();
+
+    const joinRoomFields = joinRoom.querySelectorAll('input');
+
+    const joinRoomListener = ((event) => {
+        if (event.type === 'keydown') {
+            if (event.key !== 'Enter') { return; }
+        } else if (event.type === 'submit') {
+            event.preventDefault();
+        }
         const roomName = joinRoom.querySelector('input[name="roomName"]').value;
         const password = joinRoom.querySelector('input[name="password"]').value;
         doFetchRequest('POST', '/room/join', {
@@ -72,4 +93,8 @@ function handleRoomForms() {
             handleError(err, button);
         });
     });
+
+    joinRoomButton.addEventListener('click', joinRoomListener);
+    joinRoomFields[0].addEventListener('keydown', joinRoomListener);
+    joinRoomFields[1].addEventListener('keydown', joinRoomListener);
 }

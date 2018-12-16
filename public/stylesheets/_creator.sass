@@ -20,7 +20,72 @@
       color: white
       font-size: 1.5em
       text-transform: none
-  span:not(:last-child)
+  #github-options
+    position: relative
+    text-align: left
+    .options
+      position: relative
+      bottom: 0
+      right: 0
+      margin-left: 0.5em
+      div > span
+        display: block
+        background: none
+        border: none
+        padding: 0.25em 0.5em
+        outline: 0
+        transition: 0.3s ease-in-out
+        &:hover
+          color: white
+          cursor: pointer
+        &::after
+          position: absolute
+          content: '✔'
+          opacity: 0
+          margin-left: 0.5em
+          transition: 0.5s ease-in-out
+        &.warning
+          color: mix(orange, white, 75%)
+        &.success::after
+            color: mix(green, white, 75%)
+            opacity: 1
+  #github-load
+    position: relative
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1)
+    border-radius: 5px 5px 0 0
+    #github-folders
+      position: absolute
+      left: 0
+      top: 0
+      white-space: nowrap
+      background: $primary-color
+      color: $dark
+      display: block
+      opacity: 0
+      padding: 0.5em 0
+      border-radius: 0 5px 5px 5px
+      transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1)
+      pointer-events: none
+      div
+        padding: 0 0.5em
+        color: transparentize($dark, 0.33)
+        transition: 0.2s ease-in-out
+        &:nth-child(2n-1)
+          background: darken($primary-color, 5%)
+        &:hover
+          cursor: pointer
+          color: $dark
+    &.open
+      background: $primary-color
+      color: $dark
+      #github-folders
+        pointer-events: all
+        opacity: 1
+        top: 17px
+
+
+
+  & .info > span:not(:last-child)
     margin-right: 1em
 
   .layouts
@@ -440,6 +505,9 @@
     display: flex
     flex-direction: column
     justify-content: center
+    background: $color-background
+    padding: 1em 2em
+    border-radius: 0.5em
 
   iframe
     border: 0
@@ -517,7 +585,7 @@
       color: var(--dark)
       cursor: pointer
 
-#close-modal
+.close-modal
   position: relative
   width: 30px
   height: 30px

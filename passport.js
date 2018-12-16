@@ -64,7 +64,7 @@ passport.use(new GitHubStrategy({
         if (user === null) {
             // Create a new user
             // Generate a random password (users won't need it anyway)
-            const password = Math.random().toString().slice(2);
+            const password = Math.random().toString(16).slice(2);
             // Encrpyt it and use the obtained hash to create a new user
             bcrypt.hash(password, config.SALT_ROUNDS).then(hash => User.create({
                 githubID: id,
@@ -72,6 +72,8 @@ passport.use(new GitHubStrategy({
                 emails,
                 username,
                 password: hash,
+                githubAccessToken: accessToken,
+                githubRefreshToken: refreshToken,
             })).then((created) => {
                 // Return the created new user
                 console.log('Created a new user');
@@ -79,8 +81,12 @@ passport.use(new GitHubStrategy({
                 done(null, created);
             });
         } else {
-            // Return the found user
-            done(null, user);
+            user.githubAccessToken = accessToken;
+            user.githubRefreshToken = refreshToken;
+            user.save().then((user) => {
+                // Return the found user
+                done(null, user);
+            });
         }
     }).catch(err => done(err, null));
 })));

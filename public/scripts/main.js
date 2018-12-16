@@ -16,45 +16,63 @@ function addExplorerListener() {
     const name = document.getElementById('name-sort');
     const population = document.getElementById('pop-sort');
 
+    try {
+        if (user) {
+            if (table.querySelectorAll('tr').length > 1) {
+                document.getElementById('room-browser-title').classList.remove('hidden');
+                table.classList.remove('hidden');
+            }
+        }
+    } catch (e) {
+
+    }
+
     name.onclick = sortName;
     population.onclick = sortPopulation;
+    const listener = ((event) => {
 
-
-    const links = document.querySelectorAll('#roomTable a');
-    links.forEach((link) => {
-        link.addEventListener('click', (event) => {
+        if (event.target.tagName === 'INPUT') {
+            if (event.key !== 'Enter') { return; }
+        } else {
             event.preventDefault();
-            const roomName = link.parentNode.parentNode.dataset.name;
-            const password = link.parentNode.parentNode.querySelector('input').value;
-            doFetchRequest('POST', '/room/join', {
-                'Content-Type': 'application/json',
-            }, JSON.stringify({
-                roomName,
-                password,
-            })).then((res) => {
-                if (res.status === 200 && roomName !== '') {
-                    console.log('requesting permission to enter', roomName);
-                    console.log(user);
-                    socket.emit('room.isAllowed', { roomName, userID: user._id });
-                    return;
-                }
-                let err;
-                if (res.status === 403) {
-                    err = new Error('User was not authorised to enter room');
-                } else if (res.status === 404) {
-                    err = new Error('Room does not exist');
-                } else {
-                    err = new Error(`Something went wrong: ${res.status}`);
-                }
-                err.data = res;
-                throw err;
-            }).catch((err) => {
-                console.error(err);
-                const button = link.parentNode;
-                handleError(err, button);
-            });
+        }
+
+        const roomName = event.target.parentNode.parentNode.dataset.name;
+        const password = event.target.parentNode.parentNode.querySelector('input').value;
+        doFetchRequest('POST', '/room/join', {
+            'Content-Type': 'application/json',
+        }, JSON.stringify({
+            roomName,
+            password,
+        })).then((res) => {
+            if (res.status === 200 && roomName !== '') {
+                socket.emit('room.isAllowed', { roomName, userID: user._id });
+                return;
+            }
+            let err;
+            if (res.status === 403) {
+                err = new Error('User was not authorised to enter room');
+            } else if (res.status === 404) {
+                err = new Error('Room does not exist');
+            } else {
+                err = new Error(`Something went wrong: ${res.status}`);
+            }
+            err.data = res;
+            throw err;
+        }).catch((err) => {
+            console.error(err);
+            const button = event.target.parentNode.parentNode.querySelector('a').parentNode;
+            handleError(err, button);
         });
     });
+    const rows = document.querySelectorAll('#roomTable tr');
+    if (rows.length <= 1) { return; }
+    for (let i = 1; i < rows.length; i++) {
+        const pswInput = rows[i].querySelector('input');
+        const link = rows[i].querySelector('a');
+        pswInput.addEventListener('keydown', listener);
+        link.addEventListener('click', listener);
+    }
 }
 
 function init() {
