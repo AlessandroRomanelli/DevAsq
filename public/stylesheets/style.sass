@@ -1,13 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Inconsolata|Open+Sans:300,400')
 
-html:root
-  --font-stack-editor: Inconsolata, monospace
-  --font-stack: 'Open Sans', sans-serif
-  --primary-color: #DE6C2F
-  --color-background: #333333
-  --dark: darken($color-background, 5%)
-  --light: lighten($dark, 10%)
-  --dafault-margin: 30px
 
 $font-stack-editor:    Inconsolata, monospace
 $font-stack: 'Open Sans', sans-serif
@@ -16,6 +8,29 @@ $color-background: #333333
 $dark: darken($color-background, 5%)
 $light: lighten($dark, 10%)
 $default-margin: 30px
+
+html:root
+  --font-stack-editor: Inconsolata, monospace
+  --font-stack: 'Open Sans', sans-serif
+  --primary-color: #DE6C2F
+  --dark-primary-color: darken($primary-color, 10%)
+  --dark-primary-color2: darken($primary-color, 20%)
+  --transparent-primary-color: transparentize($primary-color, 0.9)
+  --transparent-primary-color2: transparentize($primary-color, 0.8)
+  --transparent-primary-color3: transparentize($primary-color, 0.5)
+  --transparent-primary-color4: transparentize($primary-color, 0.1)
+  --light-primary-color: lighten($primary-color, 20%)
+  --color-background: #333333
+  --light-background: lighten($color-background, 20%)
+  --dark-background: darken($color-background, 1%)
+  --dark: darken($color-background, 5%)
+  --light: lighten($dark, 10%)
+  --light2: lighten($dark, 20%)
+  --dark-green: mix($dark, green, 90%)
+  --dark-red: mix($dark, red, 90%)
+  --dafault-margin: 30px
+
+
 
 *
   box-sizing: border-box
@@ -38,7 +53,7 @@ body
 
 hr
   background: var(--primary-color)
-  border-color: darken(var(--primary-color), 10%)
+  border-color: --dark-primary-color
 
 form
   fieldset:not(.submit)
@@ -103,7 +118,7 @@ nav.menu
           left: 50%
           transform: translate(-50%, -50%)
           z-index: 0
-          filter: drop-shadow(0 0 5px var(--primary-color)
+          filter: drop-shadow(0 0 5px var(--primary-color))
           img
             margin: 0
             width: 100%

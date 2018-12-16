@@ -116,11 +116,11 @@
     height: 100%
     width: 100%
     &:checked + .slider
-      background-color: mix(var(--dark), green, 90%)
+      background-color: var(--dark-green)
       &::before
         transform: translate(26px)
     &:focus + .slider
-      box-shadow: 0 0 1px mix(var(--dark), green, 90%)
+      box-shadow: 0 0 1px var(--dark-green)
     &:hover
       cursor: pointer
   .slider
@@ -131,7 +131,7 @@
     left: 0
     right: 0
     bottom: 0
-    background: mix(var(--dark), red, 90%)
+    background: var(--dark-red)
     transition: 0.4s ease-in-out
     border-radius: 17px
     height: 16px
@@ -200,7 +200,7 @@
     text-align: center
     padding: 0.25em 0.5em
     border-radius: 1em 1em 0 0
-    border-top: 1px solid lighten(var(--dark), 20%)
+    border-top: 1px solid var(--light2)
     background: var(--color-background)
     position: absolute
     left: 50%
@@ -271,7 +271,7 @@
           &:hover
             color: var(--primary-color)
             border-color: var(--primary-color)
-            background: transparentize(var(--primary-color), 0.9)
+            background: var(--transparent-primary-color)
             cursor: pointer
             transform: translateY(2px)
 
@@ -323,7 +323,7 @@
             color: var(--primary-color)
             &:hover
               cursor: pointer
-              color: darken(var(--primary-color), 10%)
+              color: var(--dark-primary-color)
         &.open .remove-choice
           opacity: 1
 
@@ -379,7 +379,7 @@
           outline: 0
           &:hover
             cursor: pointer
-            background: transparentize(var(--primary-color), 0.8)
+            background: var(--transparent-primary-color2)
             border-color: var(--primary-color)
 
 
@@ -409,7 +409,7 @@
             border-radius: 0 1em 1em 0
             &:hover
               background: var(--primary-color)
-              border-color: darken(var(--primary-color), 10%)
+              border-color: var(--dark-primary-color)
           &.onlyChild
             border-radius: 15px
           &:hover
@@ -509,7 +509,7 @@
       border-color: var(--primary-color)
       &:hover
         background: var(--primary-color)
-        border-color: darken(var(--primary-color), 10%)
+        border-color: var(--dark-primary-color)
     &.onlyChild
       padding: 0.5em 2em
       border-radius: 1.5em
@@ -578,7 +578,7 @@
     box-shadow: 0 0 10px -5px var(--primary-color)
 
   80%
-    box-shadow: 0 0 20px 10px transparentize(var(--primary-color), 0.5)
+    box-shadow: 0 0 20px 10px var(--transparent-primary-color3)
 
   100%
     box-shadow: 0 0 30px 10px transparent

@@ -26,8 +26,8 @@
         background-color: var(--primary-color)
         color: $dark
       &.active:hover
-        border-left-color: darken(var(--primary-color), 10%)
-        border-right-color: darken(var(--primary-color), 10%)
+        border-left-color: var(--dark-primary-color)
+        border-right-color: var(--dark-primary-color)
 
 
 .form-container
@@ -121,7 +121,7 @@
   width: 100%
   max-width: 220px
   border-radius: 0 0 10px 10px
-  border-bottom: 1px solid lighten(var(--dark), 10%)
+  border-bottom: 1px solid var(--light)
   background: var(--dark)
   position: absolute
   top: 45px
@@ -148,7 +148,7 @@
 
   a
     text-decoration: none
-    color: lighten(var(--primary-color), 20%)
+    color: var(--light-primary-color)
     transition: 0.2s ease-in-out
     &:hover
       font-weight: bold
@@ -157,7 +157,7 @@
   .profile-form
     hr
       background: var(--primary-color)
-      border-color: darken(var(--primary-color), 10%)
+      border-color: var(--dark-primary-color)
     fieldset
       border: none
     fieldset:not(.submit)
@@ -211,7 +211,7 @@
 
 
 .shake-horizontal
-	-webkit-animation: shake-horizontal 0.8s cubic-bezier(0.455, 0.030, 0.515, 0.955) both
+  -webkit-animation: shake-horizontal 0.8s cubic-bezier(0.455, 0.030, 0.515, 0.955) both
   wanimation: shake-horizontal 0.8s cubic-bezier(0.455, 0.030, 0.515, 0.955) both
 
 @keyframes shake-horizontal

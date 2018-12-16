@@ -19,18 +19,18 @@
         max-width: 100px
 
       td:last-of-type
-        background: transparentize(var(--primary-color), 0.9)
+        background: var(--transparent-primary-color)
         transition: 0.2s ease-in-out
         &:hover
-          background: transparentize(var(--primary-color), 0.1)
+          background: var(--transparent-primary-color4)
           color: $dark
 
       &:nth-child(2n)
         border-top: 1px solid var(--primary-color)
-        background: darken(var(--color-background), 1%)
+        background: var(--dark-background)
 
       &:not(:first-child):nth-child(2n+1)
-        border-top: 1px solid darken(var(--primary-color), 10%)
+        border-top: 1px solid var(--dark-primary-color)
 
 .sort-by
   display: inline-block
