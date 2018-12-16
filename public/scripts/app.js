@@ -797,23 +797,46 @@ class App {
             element.classList.add('active');
         }
 
+        const dragBar = document.getElementById('dragbar');
+        const controls = pens.querySelector('.controls');
+        const preview = pens.querySelector('.preview');
+        const iframe = document.querySelector('iframe');
+
         leftLayout.addEventListener('click', (event) => {
             updateActive(event.target);
             pens.classList.add('leftLayout');
             pens.classList.remove('centerLayout');
             pens.classList.remove('rightLayout');
+            dragBar.classList.remove('topLayout');
+            dragBar.classList.add('sideLayout');
+            controls.style.height = null;
+            preview.style.height = null;
+            preview.style.flexDirection = 'row';
+            iframe.style.width = `${preview.clientWidth - 5}px`;
         });
         centerLayout.addEventListener('click', (event) => {
             updateActive(event.target);
             pens.classList.remove('leftLayout');
             pens.classList.add('centerLayout');
             pens.classList.remove('rightLayout');
+            dragBar.classList.add('topLayout');
+            dragBar.classList.remove('sideLayout');
+            controls.style.width = null;
+            preview.style.width = null;
+            preview.style.flexDirection = 'column';
+            iframe.style.width = `${preview.clientWidth}px`;
         });
         rightLayout.addEventListener('click', (event) => {
             updateActive(event.target);
             pens.classList.remove('leftLayout');
             pens.classList.remove('centerLayout');
             pens.classList.add('rightLayout');
+            dragBar.classList.remove('topLayout');
+            dragBar.classList.add('sideLayout');
+            controls.style.height = null;
+            preview.style.height = null;
+            preview.style.flexDirection = 'row-reverse';
+            iframe.style.width = `${preview.clientWidth - 5}px`;
         });
 
         const penClasses = ['none', 'html', 'css', 'htmlcss', 'js', 'htmljs', 'cssjs', undefined];
@@ -841,7 +864,6 @@ class App {
 
         pens.querySelector('div').childNodes.forEach((pen) => {
             const btns = pen.querySelectorAll('button');
-            console.log(btns);
             btns[0].addEventListener('click', (event) => {
                 const button = event.target;
                 updateActive(button);
@@ -919,7 +941,7 @@ class App {
                 updatePensClass();
             });
         });
-    }// test
+    }
 
     indexOfPen(pen) {
         let index = -1;
@@ -1004,14 +1026,11 @@ class App {
         const toggler = roomSettings.querySelector('.toggler');
         const content = document.getElementById('content');
         const shareOptions = document.getElementById('share-public');
-        console.log(shareOptions);
 
         content.onclick = ((event) => {
             if (!(roomSettings.classList.contains('hidden'))) {
                 roomSettings.classList.add('hidden');
             }
-            console.log(event);
-            console.log(event.target);
             if (shareOptions && (shareOptions.classList.contains('open'))) {
                 if (!event.target) { return; }
                 const target = event.target;

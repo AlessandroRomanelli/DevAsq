@@ -11,13 +11,14 @@ Array.prototype.last = function () {
 };
 
 let app;
-
 let socket;
+let dragging = false;
 
 function init() {
     handleLoginForm();
     handleLogout();
     handleModals();
+    handleDragBar();
 
     socket = io();
 
@@ -252,4 +253,62 @@ function addTogglerListener(app) {
         const roomSettings = document.getElementById('room-settings');
         roomSettings.parentNode.removeChild(roomSettings);
     }
+}
+
+function handleDragBar() {
+    console.log('Handling the dragBar');
+    const dragBar = document.getElementById('dragbar');
+    const pens = document.getElementById('pens');
+    const controls = pens.querySelector('.controls');
+    const preview = pens.querySelector('.preview');
+    const iframe = document.querySelector('iframe');
+    dragBar.addEventListener('mousedown', (event) => {
+        event.preventDefault();
+        dragging = true;
+        console.log('start dragging');
+        preview.style.pointerEvents = 'none';
+    });
+    pens.addEventListener('mouseup', (event) => {
+        event.preventDefault();
+        dragging = false;
+        console.log('stop dragging');
+        preview.style.pointerEvents = null;
+    });
+    document.addEventListener('mousemove', (event) => {
+        event.preventDefault();
+        if (dragging) {
+            console.log('dragging');
+            if (dragBar.classList.contains('topLayout')) {
+                let oldHeight = controls.clientHeight;
+                let newHeight = event.y - pens.offsetTop;
+                let deltaHeight = newHeight - oldHeight;
+                if (oldHeight + deltaHeight >= 230 && oldHeight + deltaHeight <= 600){
+                    controls.style.height = `${oldHeight + deltaHeight}px`;
+                    preview.style.height = `${preview.clientHeight - deltaHeight}px`;
+                }
+            } else if (dragBar.classList.contains('sideLayout')) {
+                let oldWidth;
+                let newWidth;
+                let deltaWidth;
+                if (preview.style.flexDirection === 'row-reverse') {
+                    oldWidth = preview.clientWidth;
+                    newWidth = event.x;
+                    deltaWidth = newWidth - oldWidth;
+                    if (oldWidth + deltaWidth <= 830 && oldWidth + deltaWidth >= 400){
+                        controls.style.width = `${controls.clientWidth - deltaWidth}px`;
+                        preview.style.width = `${oldWidth + deltaWidth}px`;
+                    }
+                } else if ((preview.style.flexDirection === 'row')) {
+                    oldWidth = controls.clientWidth;
+                    newWidth = event.x;
+                    deltaWidth = newWidth - oldWidth;
+                    if (oldWidth + deltaWidth >= 230 && oldWidth + deltaWidth <= 600){
+                        controls.style.width = `${oldWidth + deltaWidth}px`;
+                        preview.style.width = `${preview.clientWidth - deltaWidth}px`;
+                    }
+                }
+                iframe.style.width = `${preview.clientWidth - 5}px`;
+            }
+        }
+    });
 }
