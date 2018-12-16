@@ -22,6 +22,9 @@ html:root
   --transparent-primary-color2: transparentize($primary-color, 0.8)
   --transparent-primary-color3: transparentize($primary-color, 0.5)
   --transparent-primary-color4: transparentize($primary-color, 0.1)
+  --transparent-warning: transparentize(darken($warning, 10%), 0.2)
+  --transparent-success: transparentize(darken($success, 10%), 0.2)
+  --transparent-error: transparentize(darken($error, 10%), 0.2)
   --light-primary-color: lighten($primary-color, 20%)
   --color-background: #333333
   --light-background: lighten($color-background, 20%)
@@ -32,6 +35,17 @@ html:root
   --dark-green: mix($dark, green, 90%)
   --dark-red: mix($dark, red, 90%)
   --dafault-margin: 30px
+  --white: white
+  --warning: $warning
+  --success: $success
+  --error: $error
+  --dark-warning: darken($warning, 10%)
+  --dark-success: darken($success, 10%)
+  --dark-error: darken($error, 10%)
+  --warning-mix: mix($dark, $warning, 40%)
+  --success-mix: mix($dark, $success, 30%)
+  --darken-white: darken(white, 10%)
+  --darken-dark: darken($dark, 5%)
 
 
 
