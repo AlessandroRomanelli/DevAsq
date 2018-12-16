@@ -233,7 +233,8 @@ function init() {
             modal.classList.add('hidden');
         }, 1500);
     });
-    setTimeout(() => removeRoomLoader(), 2500);
+    fitty('.room .name');
+    // setTimeout(() => removeRoomLoader(), 2500);
 }
 
 function removeRoomLoader() {
