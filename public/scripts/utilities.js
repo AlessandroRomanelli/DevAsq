@@ -320,6 +320,7 @@ function handleLogout() {
         event.preventDefault();
         doFetchRequest('POST', '/logout', {}, '').then((res) => {
             if (res.status === 200) {
+                user = null;
                 if (window.location.pathname.split('/').includes('room')) {
                     window.location.pathname = '/';
                     return;
