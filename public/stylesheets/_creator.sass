@@ -643,35 +643,26 @@
   margin-bottom: 1em
   p
     margin-top: 0
-  button
-    position: relative
-    font-size: 1em
-    background: none
-    outline: 0
+  &.inUse button.warning::before
+    content: ''
+    position: absolute
+    width: 20px
+    height: 20px
+    background: url('../images/loader.png') no-repeat center
+    background-size: cover
+    animation: full-rotation 1s linear infinite
+    left: calc(85% - 10px)
+    top: calc(50% - 10px)
+  &.inUse button
+    border: 1px solid darken($dark, 5%)
+    background: $light
+    color: $dark
+    &:hover
+      cursor: default
+      pointer-events: none
+  &:not(.inUse) button
     border: 1px solid $primary-color
     color: $primary-color
-    border-radius: 1em
-    transition: 0.2s ease-in-out
-    padding: 0.25em 1em
-    &:first-of-type::after
-      background: url('../images/github.png') no-repeat center
-      background-size: 80%
-      left: -60%
-    &:last-of-type::after
-      background: url('../images/database.png') no-repeat center
-      background-size: 80%
-      right: -50%
-    &::after
-      content: ''
-      position: absolute
-      width: 50px
-      height: 50px
-      top: 50%
-      // left: 50%
-      transform: translateY(-50%)
-      z-index: -1
-      opacity: 0
-      transition: 0.5s ease-in-out
     &:hover
       cursor: pointer
       background: transparentize($primary-color, 0.2)
@@ -679,8 +670,72 @@
       &::after
         filter: invert(1)
         opacity: 1
+  button
+    position: relative
+    font-size: 1em
+    background: none
+    outline: 0
+    border-radius: 1em
+    transition: 0.2s ease-in-out
+    padding: 0.25em 1em
+    &:first-of-type::after
+      background: url('../images/github.png') no-repeat center
+      background-size: 100%
+    &:last-of-type::after
+      background: url('../images/database.png') no-repeat center
+      background-size: 100%
+    &::after
+      content: ''
+      position: absolute
+      width: 50px
+      height: 32px
+      top: 50%
+      left: 50%
+      transform: translate(-50%,-50%)
+      z-index: -1
+      opacity: 0
+      transition: 0.5s ease-in-out
     &:not(:last-child)
       margin-right: 1em
+    &.warning
+      padding-right: 1.5em
+      filter: grayscale(0)
+      background: transparentize(darken($warning, 10%), 0.2)
+      border-color: darken($warning, 10%)
+      color: $dark
+      &:hover
+        background: transparentize(darken($warning, 10%), 0.2)
+        border-color: darken($warning, 10%)
+        color: $dark
+    &.success
+      filter: grayscale(0)
+      background: transparentize(darken($success, 10%), 0.2)
+      border-color: darken($success, 10%)
+      color: $dark
+      &:hover
+        background: transparentize(darken($success, 10%), 0.2)
+        border-color: darken($success, 10%)
+        color: $dark
+    &.error
+      filter: grayscale(0)
+      background: transparentize(darken($error, 10%), 0.2)
+      border-color: darken($error, 10%)
+      color: $dark
+      &:hover
+        background: transparentize(darken($error, 10%), 0.2)
+        border-color: darken($error, 10%)
+        color: $dark
+
+    &.success, &.warning, &.error
+      &::after
+        opacity: 1
+        filter: invert(1)
+      &:hover
+        cursor: default
+        pointer-events: none
+        &::after
+          opacity: 1
+          filter: invert(1)
 
 
 

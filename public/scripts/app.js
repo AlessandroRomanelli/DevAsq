@@ -581,7 +581,10 @@ class App {
 
         const assignTemporaryClass = (htmlNode, className) => {
             htmlNode.classList.add(className);
-            setTimeout(() => htmlNode.classList.remove(className), 2000);
+            setTimeout(() => {
+                console.log(`Removing class: ${className} from ${htmlNode}`);
+                htmlNode.classList.remove(className);
+            }, 2000);
         };
 
         const saveToDatabase = () => doJSONRequest('POST', '/pen/save', {}, {
@@ -594,12 +597,19 @@ class App {
                 dust.render('partials/storageExport', {}, (err, output) => {
                     handleDustProduction(err, output);
                     const buttons = storageModalContent.querySelectorAll('button');
-                    buttons[0].onclick = (event) => {
-                        console.log(this);
+                    const activate = (event) => {
                         event.target.classList.add('warning');
+                        event.target.parentNode.classList.add('inUse');
+                    };
+                    const deactivate = (event) => {
+                        event.target.classList.remove('warning');
+                        event.target.parentNode.classList.remove('inUse');
+                    };
+                    buttons[0].onclick = (event) => {
+                        activate(event);
                         const pen = this.pens[this.currentPen];
                         if (pen.html === '' && pen.css === '' && pen.js === '') {
-                            event.target.classList.remove('warning');
+                            deactivate(event);
                             return handleError(new Error('Cannot save an empty pen to GitHub'), event.target);
                         }
                         return doJSONRequest('POST', '/pen/github', {}, {
@@ -607,17 +617,21 @@ class App {
                             pen: this.getCurrentPen(),
                         }).then((res) => {
                             console.log(res);
-                            event.target.classList.remove('warning');
+                            deactivate(event);
                             const className = (res.status === 201) ? 'success' : 'error';
                             assignTemporaryClass(event.target, className);
-                            storageModal.classList.add('hidden');
+                            setTimeout(() => storageModal.classList.add('hidden'), 1000);
                         });
                     };
                     buttons[1].onclick = (event) => {
+                        activate(event);
                         saveToDatabase().then((res) => {
+                            console.log(res);
+                            deactivate(event);
+                            if (res.status === 400) return handleError(new Error(res.message), event.target);
                             const className = (res.status === 200) ? 'success' : 'error';
                             assignTemporaryClass(event.target, className);
-                            storageModal.classList.add('hidden');
+                            setTimeout(() => storageModal.classList.add('hidden'), 1000);
                         });
                     };
                 });
@@ -667,11 +681,18 @@ class App {
             doJSONRequest('DELETE', `/pen/${id}`, {}, null).then((res) => {
                 console.log(res);
                 if (res.status === 200) {
+                    const local = entry.parentNode;
                     entry.parentNode.removeChild(entry);
+                    const localsCount = local.childNodes.length;
+                    const githubCount = local.nextSibling.childNodes.length;
+                    if (localsCount + githubCount === 0) storageModal.classList.add('hidden');
                 } else {
                     handleError(new Error(res.message), event.target);
                 }
                 entry.classList.remove('beingDeleted');
+                const localsCount = entry.parentNode.childNodes.length;
+                const githubCount = entry.parentNode.nextSibling.childNodes.length;
+                if (localsCount + githubCount === 0) storageModal.classList.add('hidden');
             });
         };
 
@@ -680,16 +701,20 @@ class App {
             const { name } = entry.dataset;
             event.preventDefault();
             if (entry.classList.contains('beingDeleted')) return;
-            entry.classList.add('beingDeleted');
+            entry.classList.add('beingDeleted', 'loading');
             console.log('Delete Github');
             doJSONRequest('DELETE', `/pen/github/${name}`, {}, null).then((res) => {
                 console.log(res);
                 if (res.status === 200) {
+                    const github = entry.parentNode;
                     entry.parentNode.removeChild(entry);
+                    const githubCount = github.childNodes.length;
+                    const localsCount = github.previousSibling.childNodes.length;
+                    if (localsCount + githubCount === 0) storageModal.classList.add('hidden');
                 } else {
                     handleError(new Error(res.message), event.target);
                 }
-                entry.classList.remove('beingDeleted');
+                entry.classList.remove('beingDeleted', 'loading');
             });
         };
 
