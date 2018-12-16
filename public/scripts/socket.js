@@ -19,7 +19,6 @@ function sortName() {
 
     entries = headers.concat(entries);
 
-    console.log(currentSort);
 
     let result = '<tbody>';
     entries.forEach((entry) => {
@@ -92,7 +91,6 @@ function sortPopulation() {
     });
     result += '</tbody>';
 
-    console.log(currentSort);
     roomTable.innerHTML = result;
     const pop = document.getElementById('pop-sort');
     const name = document.getElementById('name-sort');
@@ -138,7 +136,6 @@ function insertInSorted() {
     socket = io();
 
     socket.on('connect', () => {
-        console.log('Main page socket connected');
         socket.emit('homePage.joinRoom');
     });
 
@@ -178,12 +175,10 @@ function insertInSorted() {
                 insertInSorted();
             }
         } else {
-            console.log(roomTable);
             dust.render('partials/room', {
                 name: data.roomName,
                 users: data.population || '0',
             }, (err, out) => {
-                console.log(out);
                 roomBody.innerHTML += out;
                 insertInSorted();
             });
@@ -191,16 +186,13 @@ function insertInSorted() {
     });
 
     socket.on('reconnect', (attemptNumber) => {
-        console.log('Socket reconnected!', 'ok');
     });
 
     socket.on('disconnect', (reason) => {
-        console.log(reason);
         socket.emit('homePage.leaveRoom');
     });
 
     socket.on('room.accessResponse', (data) => {
-        console.log('response received from the server', data);
         const { response, roomName, userID } = data;
         try {
             if (`${user._id}` !== `${userID}`) {
