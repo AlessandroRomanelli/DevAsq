@@ -166,7 +166,7 @@
   .pen
     .codePane
       height: calc(100% - 43px)
-      border: 1px solid black
+      border: 1px solid var(--pen-border)
     &.min
       position: relative
       width: 50px
@@ -214,7 +214,7 @@
     font-family: var(--font-stack)
     color: var(--text-color)
     z-index: 0
-    color: gray
+    color: var(--switch-tab)
     letter-spacing: 1px
     transition: 0.2s all ease-in-out
 
@@ -297,7 +297,7 @@
     &:not(.active):hover
       background: linear-gradient(to top, var(--dark) 25%, var(--light) 100%)
       border-bottom-color: transparent
-      box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 var(--color-background)
+      box-shadow: 0 3px 3px var(--box-shadow-tab-hover), inset 0 1px 0 var(--color-background)
 
       color: var(--text-color)
       transition: 0.2s all ease-in-out
