@@ -15,7 +15,7 @@
     border-right: 2px solid transparent
     font-size: 1.2em
     margin-left: 1em
-    color: white
+    color: var(--text-color)
     text-align: center
     padding: 0.5em 1em
     text-decoration: none
@@ -24,7 +24,7 @@
       &:hover, &.active
         cursor: pointer
         background-color: var(--primary-color)
-        color: $dark
+        color: var(--dark)
       &.active:hover
         border-left-color: var(--dark-primary-color)
         border-right-color: var(--dark-primary-color)
@@ -51,7 +51,7 @@
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus
     background-color: transparent !important
-    -webkit-text-fill-color: white
+    -webkit-text-fill-color: var(--text-color)
     -webkit-box-shadow: 0 0 0px 1000px var(--color-background) inset !important
     transition: background-color 5000s ease-in-out 0s
     border-radius: 5px
@@ -75,7 +75,7 @@
       &:hover::before
         width: 100%
     input
-      color: darken(white, 20%)
+      color: var(--light2)
       height: 1.5em
       outline: none
       background: transparent
@@ -86,7 +86,7 @@
       font-size: 1em
       transition: 0.2s ease-in-out
       &:focus
-        color: white
+        color: var(--text-color)
       &:hover
         cursor: pointer
     .submit
@@ -95,7 +95,7 @@
       padding: 0
       border: none
       input
-        color: white
+        color: var(--text-color)
         text-transform: uppercase
         width: auto
         border-radius: 1em

@@ -4,10 +4,10 @@
 $font-stack-editor:    Inconsolata, monospace
 $font-stack: 'Open Sans', sans-serif
 $primary-color: #DE6C2F
-$color-background: #333333
+$color-background: #ffffff
 $dark: darken($color-background, 5%)
+$text-color: lighten(invert($dark), 10%)
 $light: lighten($dark, 10%)
-$default-margin: 30px
 $success: mix(green, white, 66%)
 $warning: mix(yellow, white, 66%)
 $error: mix(red, white, 66%)
@@ -27,16 +27,15 @@ html:root
   --transparent-success: transparentize(darken($success, 10%), 0.2)
   --transparent-error: transparentize(darken($error, 10%), 0.2)
   --light-primary-color: lighten($primary-color, 20%)
-  --color-background: #333333
+  --color-background: $color-background
   --light-background: lighten($color-background, 20%)
   --dark-background: darken($color-background, 1%)
-  --dark: darken($color-background, 5%)
-  --light: lighten($dark, 10%)
+  --dark: $dark
+  --light: $light
   --light2: lighten($dark, 20%)
   --dark-success: mix($dark, green, 90%)
   --dark-error: mix($dark, red, 90%)
-  --dafault-margin: 30px
-  --text-color: white
+  --text-color: $text-color
   --warning: $warning
   --success: $success
   --error: $error
@@ -45,7 +44,7 @@ html:root
   --dark-error: darken($error, 10%)
   --warning-mix: mix($dark, $warning, 40%)
   --success-mix: mix($dark, $success, 30%)
-  --darken-light: darken(white, 10%)
+  --darken-light: darken($light, 10%)
   --darken-dark: darken($dark, 5%)
 
 
