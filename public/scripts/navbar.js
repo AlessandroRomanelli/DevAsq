@@ -1,3 +1,7 @@
+if (!localStorage.website_theme) {
+    localStorage.website_theme = 'dark';
+}
+
 const colorsMap = {
     style: {
         light: {
