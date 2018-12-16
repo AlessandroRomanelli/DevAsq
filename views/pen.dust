@@ -120,9 +120,7 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/dustjs-linkedin/2.7.5/dust-core.min.js" charset="utf-8"></script>
       <script src="/scripts/vendors/fitty/fitty.min.js" charset="utf-8"></script>
       <script src="/scripts/views.js" charset="utf-8"></script>
-      <script src="/scripts/fetch.js" charset="utf-8"></script>
       <script src="/scripts/vendors/diffjs/diff.js"></script>
-      <script src="/scripts/parser.js" charset="utf-8"></script>
       {?room}
       <script type="text/javascript">
           const room = {room|s};
@@ -131,8 +129,7 @@
           // localStorage.user = JSON.stringify(u); // eliminate ?
       </script>
       {/room}
-      <script src="/scripts/app.js" charset="utf-8"></script>
-      <script src="/scripts/navbar.js" charset="utf-8"></script>
+      <script src="/scripts/utilities.js" charset="utf-8"></script>
       <script src="/scripts/pen.js" charset="utf-8"></script>
 
     </body>
