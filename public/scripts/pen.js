@@ -234,7 +234,7 @@ function init() {
         }, 1500);
     });
     fitty('.room .name');
-    // setTimeout(() => removeRoomLoader(), 2500);
+    setTimeout(() => removeRoomLoader(), 2500);
 }
 
 function removeRoomLoader() {
