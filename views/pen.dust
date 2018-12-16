@@ -123,8 +123,8 @@
       <script src="/scripts/vendors/diffjs/diff.js"></script>
       {?room}
       <script type="text/javascript">
-          const room = {room|s};
-          const user = {user|s};
+          let room = {room|s};
+          let user = {user|s};
           // localStorage.room = JSON.stringify(r); // eliminate ?
           // localStorage.user = JSON.stringify(u); // eliminate ?
       </script>
