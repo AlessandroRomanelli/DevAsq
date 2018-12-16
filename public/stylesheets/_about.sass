@@ -28,7 +28,7 @@
             left: 50%
             transform: translate(-50%, -50%)
             z-index: 0
-            filter: drop-shadow(0 0 5px $primary-color)
+            filter: drop-shadow(0 0 5px var(--primary-color))
             img
               margin: 0
               width: 100%
@@ -55,20 +55,20 @@
 
     h4
       font-size: 19px
-      color: $primary-color
+      color: var(--primary-color)
 
     .thisproject
       h1
         font-size: 48px
         padding-left: 8%
-        color: $primary-color
+        color: var(--primary-color)
 
 
     .howitworks
       h3
         font-size: 28px
         padding-left: 8%
-        color: $primary-color
+        color: var(--primary-color)
 
 
   .iconbox
@@ -92,8 +92,8 @@
         transition: 0.2s ease-in-out
         &:hover
           transform: scale(1.2)
-          border-color: $primary-color
-          filter: drop-shadow(0 0 10px darken($primary-color, 20%))
+          border-color: var(--primary-color)
+          filter: drop-shadow(0 0 10px var(--dark-primary-color2))
       p
         text-align: center
         width: 130px
@@ -106,4 +106,4 @@
 
       .role
         display: inline-block
-        color: #b4b6ba
+        color: var(--role-color)

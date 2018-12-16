@@ -9,7 +9,7 @@
   font-size: 0.75em
   margin: 0 1em
   text-transform: uppercase
-  color: $primary-color
+  color: var(--primary-color)
   z-index: 100
   & > span, & > span > span
     display: flex
@@ -17,7 +17,7 @@
     height: 25px
     .info
       margin-left: 0.5em
-      color: white
+      color: var(--text-color)
       font-size: 1.5em
       text-transform: none
 
@@ -32,7 +32,7 @@
       border: none
       outline: 0
       transition: 0.2s ease-in-out
-      color: white
+      color: var(--text-color)
       margin-left: 1em
       padding: 0
       width: 20px
@@ -43,20 +43,20 @@
         margin-left: 0.5em
       &:hover, &.active
         cursor: pointer
-        color: $primary-color
-        border-color: white
+        color: var(--primary-color)
+        border-color: var(--text-color)
       &.active
         opacity: 0.8
-        border-color: $primary-color
+        border-color: var(--primary-color)
         &:hover
           cursor: auto
   #storage-options button
     height: 100%
     background: none
-    border: 1px solid $primary-color
+    border: 1px solid var(--primary-color)
     border-radius: 0.5em
     padding: 0.25em 0.5em
-    color: $primary-color
+    color: var(--primary-color)
     text-transform: uppercase
     outline: 0
     transition: 0.2s ease-in-out
@@ -64,39 +64,39 @@
       margin-right: 1em
     &:hover
       cursor: pointer
-      background: $primary-color
-      color: $dark
+      background: var(--primary-color)
+      color: var(--dark)
     &:disabled
-      border: 1px solid $light
-      color: $light
+      border: 1px solid var(--light)
+      color: var(--light)
       &:hover
-        background: $light
-        color: $dark
+        background: var(--light)
+        color: var(--dark)
     &.warning
-      color: mix($dark, $warning, 40%)
-      border-color: mix($dark, $warning, 40%)
+      color: var(--warning-mix)
+      border-color: var(--warning-mix)
       &:hover
-        background: mix($dark, $warning, 40%)
+        background: var(--warning-mix)
     &.success
-      color: mix($dark, $success, 30%)
-      border-color: mix($dark, $success, 30%)
+      color: var(--success-mix)
+      border-color: var(--success-mix)
       &:hover
-        background: mix($dark, $success, 30%)
+        background: var(--success-mix)
 
 
   #share-public
     position: relative
-    border: 1px solid $primary-color
+    border: 1px solid var(--primary-color)
     border-radius: 0.5em
     height: auto
     padding: 0.25em 0.5em
     transition: 0.2s ease-in-out
     cursor: pointer
     &:hover, &.open
-      background: $primary-color
-      color: $dark
+      background: var(--primary-color)
+      color: var(--dark)
       button
-        color: $dark
+        color: var(--dark)
         opacity: 0.5
     &.open
       border-radius: 0.5em 0.5em 0 0
@@ -110,7 +110,7 @@
       border: none
       padding: 0
       outline: none
-      color: $primary-color
+      color: var(--primary-color)
       transition: 0.2s ease-in-out
       &:hover
         cursor: pointer
@@ -126,7 +126,7 @@
     top: 0
     left: -1px
     transition: translate(-50%, -50%)
-    background: $primary-color
+    background: var(--primary-color)
     text-align: right
     transition: 0.3s ease-out
     border-radius: 0 0.5em 0.5em 0.5em
@@ -150,11 +150,11 @@
     height: 100%
     width: 100%
     &:checked + .slider
-      background-color: mix($dark, green, 90%)
+      background-color: var(--dark-slideron)
       &::before
         transform: translate(26px)
     &:focus + .slider
-      box-shadow: 0 0 1px mix($dark, green, 90%)
+      box-shadow: 0 0 1px var(--dark-slideron)
     &:hover
       cursor: pointer
   .slider
@@ -165,7 +165,7 @@
     left: 0
     right: 0
     bottom: 0
-    background: mix($dark, red, 90%)
+    background: var(--dark-slideroff)
     transition: 0.4s ease-in-out
     border-radius: 17px
     height: 16px
@@ -176,7 +176,7 @@
       width: 13px
       left: 2px
       bottom: 2px
-      background-color: white
+      background-color: var(--text-color)
       transition: 0.4s ease-in-out
       border-radius: 50%
 
@@ -187,12 +187,12 @@
 
 #raise-hand
   position: relative
-  color: white
+  color: var(--text-color)
   align-self: center
   padding: 0.25em 0.75em
   background: transparent
   border-radius: 1em
-  border: 1px solid $primary-color
+  border: 1px solid var(--primary-color)
   font-size: 1em
   transition: 0.2s ease-in-out
   z-index: 10
@@ -202,7 +202,7 @@
     top: 50%
     left: 50%
     transform: translate(-50%, -50%)
-    background: $primary-color
+    background: var(--primary-color)
     width: 100%
     height: 100%
     border-radius: 1em
@@ -211,16 +211,16 @@
     z-index: -1
   &:hover, &.asking-help
     cursor: pointer
-    background: $primary-color
-    color: $dark
+    background: var(--primary-color)
+    color: var(--dark)
 
 #room-settings
-  border-top: 3px solid $primary-color
+  border-top: 3px solid var(--primary-color)
   position: fixed
   bottom: 0
   height: 75vh
   width: 100vw
-  background: $color-background
+  background: var(--color-background)
   z-index: 1000
   transition: 0.5s all ease-in-out
 
@@ -234,8 +234,8 @@
     text-align: center
     padding: 0.25em 0.5em
     border-radius: 1em 1em 0 0
-    border-top: 1px solid lighten($dark, 20%)
-    background: $color-background
+    border-top: 1px solid var(--light2)
+    background: var(--color-background)
     position: absolute
     left: 50%
     top: 1px
@@ -257,7 +257,7 @@
     span::after
       content: 'See Less'
     &:hover
-      color: $primary-color
+      color: var(--primary-color)
   &.hidden
     display: block !important
     transform: translateY(100%)
@@ -281,7 +281,7 @@
     .user
       position: relative
       text-align: center
-      border: 1px solid $light
+      border: 1px solid var(--light)
       border-radius: 0.25em
       padding: 1em
       margin: 1em
@@ -294,7 +294,7 @@
         margin: 0.5em 0
         height: 20px
         button
-          color: white
+          color: var(--text-color)
           outline: 0
           background: none
           border: none
@@ -303,9 +303,9 @@
           border: 1px solid transparent
           border-radius: 5px
           &:hover
-            color: $primary-color
-            border-color: $primary-color
-            background: transparentize($primary-color, 0.9)
+            color: var(--primary-color)
+            border-color: var(--primary-color)
+            background: var(--transparent-primary-color)
             cursor: pointer
             transform: translateY(2px)
 
@@ -316,18 +316,18 @@
           width: 100%
           height: 10px
           border-radius: 10px
-          background: $dark
+          background: var(--dark)
         .difference-progress
           width: 100%
           height: 100%
           border-radius: 10px
           transition: 0.5s ease-in-out
           &.green
-            background: $success
+            background: var(--success)
           &.yellow
-            background: $warning
+            background: var(--warning)
           &.red
-            background: $error
+            background: var(--error)
       .user-remove
         position: absolute
         height: 20px
@@ -354,10 +354,10 @@
           button
             background: none
             border: none
-            color: $primary-color
+            color: var(--primary-color)
             &:hover
               cursor: pointer
-              color: darken($primary-color, 10%)
+              color: var(--dark-primary-color)
         &.open .remove-choice
           opacity: 1
 
@@ -368,10 +368,10 @@
         max-width: 50px
 
       &.help-needed
-        border-color: $primary-color
+        border-color: var(--primary-color)
         .pen-loader
-          background: $primary-color
-          color: $dark
+          background: var(--primary-color)
+          color: var(--dark)
         .signal
           display: block
       .signal
@@ -380,7 +380,7 @@
         top: 50%
         left: 50%
         transform: translate(-50%, -50%)
-        background: $primary-color
+        background: var(--primary-color)
         width: 75px
         height: 75px
         border-radius: 50%
@@ -403,7 +403,7 @@
             filter: grayscale(0) brightness(1)
             transform: scale(1.1)
         select
-          color: $primary-color
+          color: var(--primary-color)
           background: transparent
           border: 1px solid transparent
           font-size: 1em
@@ -413,8 +413,8 @@
           outline: 0
           &:hover
             cursor: pointer
-            background: transparentize($primary-color, 0.8)
-            border-color: $primary-color
+            background: var(--transparent-primary-color2)
+            border-color: var(--primary-color)
 
 
       .pen-actions
@@ -426,29 +426,29 @@
           width: 100%
           background: none
           border: none
-          color: white
+          color: var(--text-color)
           transition: 0.25s ease-in-out
           border: 1px solid transparent
           border-radius: 1em
           &:first-child
-            color: white
-            border-color: white
+            color: var(--text-color)
+            border-color: var(--text-color)
             border-radius: 1em 0 0 1em
             &:hover
-              background: white
-              border-color: darken(white, 10%)
+              background: var(--text-color)
+              border-color: var(--darken-light)
           &:last-child
-            color: $primary-color
-            border-color: $primary-color
+            color: var(--primary-color)
+            border-color: var(--primary-color)
             border-radius: 0 1em 1em 0
             &:hover
-              background: $primary-color
-              border-color: darken($primary-color, 10%)
+              background: var(--primary-color)
+              border-color: var(--dark-primary-color)
           &.onlyChild
             border-radius: 15px
           &:hover
             cursor: pointer
-            color: $dark
+            color: var(--dark)
 
 #preview-icon
   width: 20px
@@ -474,7 +474,7 @@
     display: flex
     flex-direction: column
     justify-content: center
-    background: $color-background
+    background: var(--color-background)
     padding: 1em 2em
     border-radius: 0.5em
 
@@ -483,7 +483,7 @@
     border-radius: 5px
     width: 100%
     height: 500px
-    background: white
+    background: var(--text-color)
   &.hidden
     opacity: 0
     pointer-events: none
@@ -491,6 +491,9 @@
 #confirm-modal
   .container
     width: auto
+    background: var(--color-background)
+    padding: 1em 2em
+    border-radius: 0.5em
     p
       margin-top: 0.5em
       text-align: center
@@ -501,7 +504,7 @@
       button
         background: none
         border: none
-        color: white
+        color: var(--text-color)
         padding: 0.5em 1em
         border-radius: 1em
         opacity: 0.8
@@ -511,12 +514,12 @@
           opacity: 1
 
         &:first-of-type
-          background: white
-          color: $color-background
+          background: var(--text-color)
+          color: var(--color-background)
         &:last-of-type
           margin-left: 1em
-          background: $primary-color
-          color: $color-background
+          background: var(--primary-color)
+          color: var(--color-background)
 #preview-loaders
   margin-top: 0.5em
   display: flex
@@ -527,28 +530,28 @@
     transition: 0.2s ease-in-out
     outline: 0
     &:first-child
-      color: white
+      color: var(--text-color)
       padding: 0.5em 1em 0.5em 2em
       border-radius: 1.5em 0 0 1.5em
-      background: $color-background
-      border-color: white
+      background: var(--color-background)
+      border-color: var(--text-color)
       &:hover
-        background: white
-        border-color: darken(white, 10%)
+        background: var(--text-color)
+        border-color: var(--darken-light)
     &:last-child
-      color: $primary-color
+      color: var(--primary-color)
       padding: 0.5em 2em 0.5em 1em
       border-radius: 0 1.5em 1.5em 0
-      background: $color-background
-      border-color: $primary-color
+      background: var(--color-background)
+      border-color: var(--primary-color)
       &:hover
-        background: $primary-color
-        border-color: darken($primary-color, 10%)
+        background: var(--primary-color)
+        border-color: var(--dark-primary-color)
     &.onlyChild
       padding: 0.5em 2em
       border-radius: 1.5em
     &:hover
-      color: $dark
+      color: var(--dark)
       cursor: pointer
 
 .close-modal
@@ -579,7 +582,7 @@
     padding-left: 35px
     transition: 0.2s ease-in-out
     &:not(:first-child)
-      border-top: 1px solid transparentize($primary-color, 0.75)
+      border-top: 1px solid var(--transparent-primary-color5)
     &::before
       content: ''
       width: 30px
@@ -590,14 +593,14 @@
       background: none
       background-size: cover
     &:nth-child(2n-1)
-      background: darken($dark, 1%)
+      background: var(--dark-background)
     &:hover
       cursor: pointer
-      background: transparentize($primary-color, 0.5)
-      color: white
+      background: var(--transparent-primary-color3)
+      color: var(--text-color)
     &.beingDeleted
-      background: $light
-      color: $dark
+      background: var(--light)
+      color: var(--dark)
       button
         opacity: 0
         &:hover
@@ -608,7 +611,7 @@
         pointer-events: none
 
   .githubs
-    border-top: 2px solid $primary-color
+    border-top: 2px solid var(--primary-color)
     .option::before
       background: url('../images/github.png') no-repeat center
       filter: invert(1)
@@ -655,19 +658,19 @@
     left: calc(85% - 10px)
     top: calc(50% - 10px)
   &.inUse button
-    border: 1px solid darken($dark, 5%)
-    background: $light
-    color: $dark
+    border: 1px solid var(--darken-dark)
+    background: var(--light)
+    color: var(--dark)
     &:hover
       cursor: default
       pointer-events: none
   &:not(.inUse) button
-    border: 1px solid $primary-color
-    color: $primary-color
+    border: 1px solid var(--primary-color)
+    color: var(--primary-color)
     &:hover
       cursor: pointer
-      background: transparentize($primary-color, 0.2)
-      color: $dark
+      background: var(--transparent-primary-color4)
+      color: var(--dark)
       &::after
         filter: invert(1)
         opacity: 1
@@ -701,31 +704,31 @@
     &.warning
       padding-right: 1.5em
       filter: grayscale(0)
-      background: transparentize(darken($warning, 10%), 0.2)
-      border-color: darken($warning, 10%)
-      color: $dark
+      background: var(--transparent-warning)
+      border-color: var(--dark-warning)
+      color: var(--dark)
       &:hover
-        background: transparentize(darken($warning, 10%), 0.2)
-        border-color: darken($warning, 10%)
-        color: $dark
+        background: var(--transparent-warning)
+        border-color: var(--dark-warning)
+        color: var(--dark)
     &.success
       filter: grayscale(0)
-      background: transparentize(darken($success, 10%), 0.2)
-      border-color: darken($success, 10%)
-      color: $dark
+      background: var(--transparent-success)
+      border-color: var(--dark-success)
+      color: var(--dark)
       &:hover
-        background: transparentize(darken($success, 10%), 0.2)
-        border-color: darken($success, 10%)
-        color: $dark
+        background: var(--transparent-success)
+        border-color: var(--dark-success)
+        color: var(--dark)
     &.error
       filter: grayscale(0)
-      background: transparentize(darken($error, 10%), 0.2)
-      border-color: darken($error, 10%)
-      color: $dark
+      background: var(--transparent-error)
+      border-color: var(--dark-error)
+      color: var(--dark)
       &:hover
-        background: transparentize(darken($error, 10%), 0.2)
-        border-color: darken($error, 10%)
-        color: $dark
+        background: var(--transparent-error)
+        border-color: var(--dark-error)
+        color: var(--dark)
 
     &.success, &.warning, &.error
       &::after
@@ -785,10 +788,10 @@
 
 @keyframes glow-box
   0%
-    box-shadow: 0 0 10px -5px $primary-color
+    box-shadow: 0 0 10px -5px var(--primary-color)
 
   80%
-    box-shadow: 0 0 20px 10px transparentize($primary-color, 0.5)
+    box-shadow: 0 0 20px 10px var(--transparent-primary-color3)
 
   100%
     box-shadow: 0 0 30px 10px transparent

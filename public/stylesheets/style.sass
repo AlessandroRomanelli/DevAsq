@@ -1,15 +1,57 @@
 @import url('https://fonts.googleapis.com/css?family=Inconsolata|Open+Sans:300,400')
 
+
 $font-stack-editor:    Inconsolata, monospace
 $font-stack: 'Open Sans', sans-serif
 $primary-color: #DE6C2F
-$color-background: #333333
+$color-background: #1d1f20
 $dark: darken($color-background, 5%)
+$text-color: lighten(invert($dark), 10%)
 $light: lighten($dark, 10%)
-$default-margin: 30px
 $success: mix(green, white, 66%)
 $warning: mix(yellow, white, 66%)
 $error: mix(red, white, 66%)
+
+html:root
+  --font-stack-editor: Inconsolata, monospace
+  --font-stack: 'Open Sans', sans-serif
+  --primary-color: #DE6C2F
+  --dark-primary-color: darken($primary-color, 10%)
+  --dark-primary-color2: darken($primary-color, 20%)
+  --transparent-primary-color: transparentize($primary-color, 0.9)
+  --transparent-primary-color2: transparentize($primary-color, 0.8)
+  --transparent-primary-color3: transparentize($primary-color, 0.5)
+  --transparent-primary-color4: transparentize($primary-color, 0.1)
+  --transparent-primary-color5: transparentize($primary-color, 0.75)
+  --transparent-warning: transparentize(darken($warning, 10%), 0.2)
+  --transparent-success: transparentize(darken($success, 10%), 0.2)
+  --transparent-error: transparentize(darken($error, 10%), 0.2)
+  --light-primary-color: lighten($primary-color, 20%)
+  --color-background: $color-background
+  --light-background: lighten($color-background, 20%)
+  --dark-background: darken($color-background, 1%)
+  --dark: $dark
+  --light: $light
+  --light2: lighten($dark, 20%)
+  --dark-slideron: mix($dark, green, 90%)
+  --dark-slideroff: mix($dark, red, 90%)
+  --text-color: $text-color
+  --warning: $warning
+  --success: $success
+  --error: $error
+  --dark-warning: darken($warning, 10%)
+  --dark-success: darken($success, 10%)
+  --dark-error: darken($error, 10%)
+  --warning-mix: mix($dark, $warning, 40%)
+  --success-mix: mix($dark, $success, 30%)
+  --darken-light: darken($light, 10%)
+  --darken-dark: darken($dark, 5%)
+  --role-color: #b4b6ba
+  --pen-border: black
+  --switch-tab: gray
+  --box-shadow-tab-hover: rgba(0, 0, 0, 0.4)
+
+
 
 *
   box-sizing: border-box
@@ -24,15 +66,16 @@ body
   overflow-x: hidden
   margin: 0
   padding: 0
-  color: white
-  font: 100% $font-stack
-  background-color: $color-background
+  color: var(--text-color)
+  font: 100% var(--font-stack)
+  background-color: var(--color-background)
+  transition: 0.2s ease-in-out
 
 // INDEX STYLE
 
 hr
-  background: $primary-color
-  border-color: darken($primary-color, 10%)
+  background: var(--primary-color)
+  border-color: var(--dark-primary-color)
 
 form
   fieldset:not(.submit)
@@ -48,7 +91,7 @@ form
       width: 0
       height: 3px
       border-radius: 2px
-      background: $primary-color
+      background: var(--primary-color)
       transform: translate(0, -8px)
       transition: 0.2s all ease-in-out
     &:hover::before
@@ -58,14 +101,51 @@ nav.menu
   display: flex
   align-items: center
   justify-content: space-between
-  background-color: $dark
+  background-color: var(--dark)
   padding: 0 1em
-  border-bottom: 1px solid $light
+  border-bottom: 1px solid var(--light)
   z-index: 10
-  box-shadow: 0 0 10px 0 $dark
+  box-shadow: 0 0 10px 0 var(--dark)
+  transition: 0.2s ease-in-out
   img
     max-height: 20px
     display: inline-block
+
+#themeChanger
+  position: relative
+  &::before, &::after
+    content: ''
+    position: absolute
+    width: 16px
+    height: 16px
+    font-size: 0.75em
+    text-align: center
+    text-transform: uppercase
+    z-index: 1
+    &:hover
+      cursor: pointer
+  &::after
+    right: 0
+    background: url('../images/moon.png') no-repeat center
+    background-size: 75%
+    filter: invert(0.2)
+  &::before
+    background: url('../images/sun.png') no-repeat center
+    background-size: 75%
+    filter: invert(1)
+    left: 0
+  input
+    margin: 0
+  .slider
+    background-color: var(--light)
+    &::before
+      z-index: 10
+  &:hover
+    cursor: pointer
+
+
+
+
 
 
 
@@ -97,7 +177,7 @@ nav.menu
           left: 50%
           transform: translate(-50%, -50%)
           z-index: 0
-          filter: drop-shadow(0 0 5px $primary-color)
+          filter: drop-shadow(0 0 5px var(--primary-color))
           img
             margin: 0
             width: 100%
@@ -111,10 +191,10 @@ nav.menu
 
 #roomTable a
   text-decoration: none
-  color: white
+  color: var(--text-color)
 
 #dragbar
-  background-color: $primary-color
+  background-color: var(--primary-color)
 
 .sideLayout
   width: 5px

@@ -1,3 +1,111 @@
+const colorsMap = {
+    style: {
+        light: {
+            '--primary-color': '#DE6C2F',
+            '--dark-primary-color': '#bc551e',
+            '--dark-primary-color2': '#904117',
+            '--transparent-primary-color': 'rgba(222, 108, 47, 0.1)',
+            '--transparent-primary-color2': 'rgba(222, 108, 47, 0.2)',
+            '--transparent-primary-color3': 'rgba(222, 108, 47, 0.5)',
+            '--transparent-primary-color4': 'rgba(222, 108, 47, 0.9)',
+            '--transparent-primary-color5': 'rgba(222, 108, 47, 0.25)',
+            '--transparent-warning': 'rgba(255, 255, 36, 0.8)',
+            '--transparent-success': 'rgba(69, 138, 69, 0.8)',
+            '--transparent-error': 'rgba(255, 36, 36, 0.8)',
+            '--light-primary-color': '#ecaa87',
+            '--color-background': '#dddde2',
+            '--light-background': 'white',
+            '--dark-background': '#dadae0',
+            '--dark': '#cfcfd6',
+            '--light': '#ebebee',
+            '--light2': '#white',
+            '--dark-slideron': '#bbc7c1',
+            '--dark-slideroff': '#d4bbc1',
+            '--text-color': '#4b4b40',
+            '--warning': '#ffff57',
+            '--success': '#57ab57',
+            '--error': '#ff5757',
+            '--dark-warning': '#ffff24',
+            '--dark-success': '#458a45',
+            '--dark-error': '#ff2424',
+            '--warning-mix': '#ecec8a',
+            '--success-mix': '#7bb67d',
+            '--darken-light': '#cfcfd6',
+            '--darken-dark': '#c1c1cb',
+            '--role-color': '#b4b6ba',
+            '--pen-border': 'black',
+            '--switch-tab': 'gray',
+            '--box-shadow-tab-hover': 'rgba(0, 0, 0, 0.4)',
+        },
+        dark: {
+            '--primary-color': '#DE6C2F',
+            '--dark-primary-color': '#bc551e',
+            '--dark-primary-color2': '#904117',
+            '--transparent-primary-color': 'rgba(222, 108, 47, 0.1)',
+            '--transparent-primary-color2': 'rgba(222, 108, 47, 0.2)',
+            '--transparent-primary-color3': 'rgba(222, 108, 47, 0.5)',
+            '--transparent-primary-color4': 'rgba(222, 108, 47, 0.9)',
+            '--transparent-primary-color5': 'rgba(222, 108, 47, 0.25)',
+            '--transparent-warning': 'rgba(255, 255, 36, 0.8)',
+            '--transparent-success': 'rgba(69, 138, 69, 0.8)',
+            '--transparent-error': 'rgba(255, 36, 36, 0.8)',
+            '--light-primary-color': '#ecaa87',
+            '--color-background': '#1d1f20',
+            '--light-background': '#4d5356',
+            '--dark-background': '#1b1c1d',
+            '--dark': '#111213',
+            '--light': '#292c2d',
+            '--light2': '#414648',
+            '--dark-slideron': '#0f1d11',
+            '--dark-slideroff': '#291011',
+            '--text-color': 'white',
+            '--warning': '#ffff57',
+            '--success': '#57ab57',
+            '--error': '#ff5757',
+            '--dark-warning': '#ffff24',
+            '--dark-success': '#458a45',
+            '--dark-error': '#ff2424',
+            '--warning-mix': '#a0a03c',
+            '--success-mix': '#427d42',
+            '--darken-light': '#111213',
+            '--darken-dark': '#050505',
+            '--role-color': '#b4b6ba',
+            '--pen-border': 'black',
+            '--switch-tab': 'gray',
+            '--box-shadow-tab-hover': 'rgba(0, 0, 0, 0.4)',
+        },
+    },
+    aceThemes: {
+        dark: 'tomorrow_night',
+        light: 'eclipse',
+    },
+};
+
+function applyTheme() {
+    const body = document.querySelector('body');
+    const theme = localStorage.website_theme;
+    Object.keys(colorsMap.style[theme]).forEach((property) => {
+        body.style.setProperty(property, colorsMap.style[theme][property]);
+    });
+    const controls = document.querySelector('.controls');
+    if (controls === null) return;
+    const aceTheme = colorsMap.aceThemes[theme];
+    ace.edit('htmlPen').setTheme(`ace/theme/${aceTheme}`);
+    ace.edit('cssPen').setTheme(`ace/theme/${aceTheme}`);
+    ace.edit('jsPen').setTheme(`ace/theme/${aceTheme}`);
+}
+
+function switchTheme(event) {
+    const theme = localStorage.website_theme || 'dark';
+    if (theme === 'dark') {
+        localStorage.website_theme = 'light';
+        applyTheme();
+    } else {
+        localStorage.website_theme = 'dark';
+        applyTheme();
+    }
+}
+
 function validateForm(formData) {
     const { formName, submitName } = formData;
     const form = document.getElementById(formName);
@@ -198,3 +306,11 @@ function handleLogout() {
         });
     });
 }
+
+(function () {
+    const theme = localStorage.website_theme || 'dark';
+    applyTheme(theme);
+    const themeChanger = document.querySelector('#themeChanger input');
+    themeChanger.checked = theme === 'dark';
+    themeChanger.addEventListener('input', event => switchTheme());
+}());

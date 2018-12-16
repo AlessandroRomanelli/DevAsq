@@ -6,13 +6,14 @@
   display: flex
 
   &::after
+    overflow: hidden
     content: ""
     position: absolute
     width: 40px
     height: 100%
     left: 0
-    background: linear-gradient(90deg, $color-background 20%, transparent)
-    // box-shadow: inset 20px 0 15px -10px $color-background
+    background: linear-gradient(90deg, var(--color-background) 20%, transparent)
+
 
   &::-webkit-scrollbar
     display: none
@@ -30,7 +31,7 @@
     padding: 1em
     grid-area: controls
     display: grid
-    background: $dark
+    background: var(--dark)
 
   .pen
     height: 100%
@@ -62,7 +63,7 @@
       padding: 0
       border: none
       outline: 0
-      color: white
+      color: var(--text-color)
       transition: 0.2s all ease-in-out
       filter: grayscale(1) brightness(2)
       opacity: 0.5
@@ -78,7 +79,7 @@
         margin-left: 1em
       &:hover, &.active
         cursor: pointer
-        color: $primary-color
+        color: var(--primary-color)
         filter: grayscale(0) brightness(1)
         opacity: 1
       &.active
@@ -166,7 +167,7 @@
   .pen
     .codePane
       height: calc(100% - 43px)
-      border: 1px solid black
+      border: 1px solid var(--pen-border)
     &.min
       position: relative
       width: 50px
@@ -189,11 +190,11 @@
   padding: 0
   line-height: 1.75em
   text-align: center
-  background-color: $color-background
+  background-color: var(--color-background)
   margin-top: 0.2em
   margin-left: auto
   padding-right: 1em
-  border-bottom: 1px solid lighten($color-background, 20%)
+  border-bottom: 1px solid var(--light-background)
 
   li.switchTab
     flex: 0 0 auto
@@ -206,15 +207,15 @@
     min-width: 140px
     position: relative
     bottom: -2px
-    border: 1px solid lighten($color-background, 20%)
+    border: 1px solid var(--light-background)
     border-top-left-radius: 0.25em
     border-top-right-radius: 0.25em
-    background: $color-background
+    background: var(--color-background)
     font-size: 1em
-    font-family: $font-stack
-    color: white
+    font-family: var(--font-stack)
+    color: var(--text-color)
     z-index: 0
-    color: gray
+    color: var(--switch-tab)
     letter-spacing: 1px
     transition: 0.2s all ease-in-out
 
@@ -224,7 +225,7 @@
 
     &.locked
       &::after
-        color: $primary-color
+        color: var(--primary-color)
         position: absolute
         top: 50%
         left: 50%
@@ -284,8 +285,8 @@
       cursor: pointer
 
     &.active
-      color: white
-      background: $dark
+      color: var(--text-color)
+      background: var(--dark)
       border-bottom: 0
 
       .closeButton
@@ -295,12 +296,11 @@
       cursor: pointer
 
     &:not(.active):hover
-      background: linear-gradient(to top, $dark 25%, lighten($dark, 10%) 100%)
+      background: linear-gradient(to top, var(--dark) 25%, var(--light) 100%)
       border-bottom-color: transparent
-      box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 $color-background
+      box-shadow: 0 3px 3px var(--box-shadow-tab-hover), inset 0 1px 0 var(--color-background)
 
-      // text-shadow: 0 1px $color-background
-      color: white
+      color: var(--text-color)
       transition: 0.2s all ease-in-out
 
     &:last-of-type
