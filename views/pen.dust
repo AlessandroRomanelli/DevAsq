@@ -96,6 +96,7 @@
             </div>
           </div>
           <div class="preview">
+            <div id="dragbar" class="topLayout"></div>
             <iframe id="iFrame" src="/preview.html"></iframe>
           </div>
         </div>
