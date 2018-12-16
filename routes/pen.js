@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const PenSchema = mongoose.model('Pen');
 const User = mongoose.model('User');
 
-const { Pen } = require('../rooms');
+const { Pen, generateID } = require('../rooms');
 const { parseHTML, parseBase64, doJSONRequest } = require('../utils');
 
 const githubEndpoint = 'https://api.github.com';
@@ -82,6 +82,38 @@ router.get('/github/:dirName', (req, res) => {
         console.error(err);
         res.status(500).json({ status: 500, message: 'Something went wrong' });
     });
+});
+
+router.delete('/github/:dirName', (req, res) => {
+    const { dirName } = req.params;
+    const { username, githubAccessToken } = req.user;
+    const headers = {
+        Accept: 'application/vnd.github.v3+json',
+        Authorization: `Bearer ${githubAccessToken}`,
+    };
+    doJSONRequest('GET', `${githubEndpoint}/repos/${username}/DevAsqPP/contents/${dirName}`, headers, null).then((response) => {
+        if (response.message) throw new Error(response.message);
+        console.log(response);
+        let count = 0;
+        function deleteContents() {
+            if (count === response.length) return res.status(200).json({ status: 200 });
+            const { name, sha } = response[count];
+            return doJSONRequest('DELETE', `${githubEndpoint}/repos/${username}/DevAsqPP/contents/${dirName}/${name}`, headers, {
+                message: `Deleting ${name}`,
+                sha,
+            }).then((data) => {
+                console.log(data);
+                count += 1;
+                deleteContents();
+            }).catch((err) => {
+                console.error(err);
+                res.status(500).json({ status: 500 });
+            });
+        }
+
+        deleteContents();
+    });
+    // doJSONRequest('DELETE', `${githubEndpoint}/repos/${username}/DevAsqPP/contents/${dirName}`);
 });
 
 router.post('/github', (req, res) => {
@@ -176,6 +208,7 @@ router.post('/new', (req, res) => {
 });
 
 router.get('/all', (req, res) => {
+    console.log(req.user);
     const { savedPens } = req.user;
     const pens = [];
     function done() {
@@ -185,18 +218,38 @@ router.get('/all', (req, res) => {
     }
     savedPens.forEach((penId) => {
         PenSchema.findById(penId, '_id title').then((pen) => {
+            console.log(pen);
             pens.push(pen);
             done();
+        }).catch((err) => {
+            console.error(err);
+            res.status(500).json({ status: 500, message: err.message });
         });
     });
+    done();
 });
 
 router.get('/:penId', (req, res) => {
     const { penId } = req.params;
     PenSchema.findById(penId).then((pen) => {
-        console.log(pen);
+        pen = JSON.parse(JSON.stringify(pen));
+        pen.id = generateID();
         if (pen && pen !== null) return res.status(200).json({ status: 200, pen });
         return res.status(404).json({ status: 404, message: 'Not found' });
+    });
+});
+
+router.delete('/:penId', (req, res) => {
+    const { penId } = req.params;
+    PenSchema.findByIdAndDelete(penId).then((pen) => {
+        console.log('Pen deleted');
+        const { savedPens } = req.user;
+        const index = savedPens.indexOf(penId);
+        savedPens.splice(index, 1);
+        User.findByIdAndUpdate(req.user._id, { savedPens }).then((user) => {
+            if (pen !== null) return res.status(200).json({ status: 200 });
+            return res.status(404).json({ status: 404, message: 'Not found' });
+        });
     });
 });
 
@@ -206,7 +259,7 @@ router.post('/save', (req, res) => {
         return res.status(400).json({ status: 400, message: 'Invalid pen' });
     }
     const now = new Date();
-    let { title } = pen;
+    let { title, _id } = pen;
     title += `@${roomName}[${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}]`;
     const html = pen.html || '';
     const css = pen.css || '';
@@ -214,11 +267,15 @@ router.post('/save', (req, res) => {
     PenSchema.create({
         user: req.user._id, html, css, js, title,
     }).then((dbPen) => {
+        console.log(dbPen);
         const { savedPens } = req.user;
         savedPens.push(dbPen._id);
-        User.findByIdAndUpdate(req.user._id, { savedPens }, { new: true }).then((user) => {
+        return User.findByIdAndUpdate(req.user._id, { savedPens }, { new: true }).then((user) => {
             res.status(200).json({ status: 200, savedPens });
         });
+    }).catch((err) => {
+        console.error(err);
+        res.status(500).json({ status: 500, message: err.message });
     });
 });
 

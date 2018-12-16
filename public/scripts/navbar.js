@@ -32,7 +32,7 @@ function updateInputField(isValid, html) {
 function handleError(err, html) {
     console.error(err);
     html.classList.add('error', 'shake-horizontal');
-    setTimeout((html) => { html.classList.remove('shake-horizontal'); }, 1000, html);
+    setTimeout((html) => { html.classList.remove('error', 'shake-horizontal'); }, 1000, html);
 }
 
 function login(username, password) {

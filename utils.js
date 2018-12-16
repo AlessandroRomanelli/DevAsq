@@ -24,7 +24,7 @@ function doFetchRequest(method, url, headers, body) {
     if (method === 'GET' && body !== undefined && body !== null) { throw new Error(); }
 
     const parameters = { method, headers };
-    if (method === 'POST' || method === 'PUT') {
+    if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
         parameters.body = body;
     }
     return fetch(url, parameters);
@@ -35,7 +35,7 @@ function doJSONRequest(method, url, headers, body) {
     if (headers['Content-Type'] && headers['Content-Type'] !== 'application/json') { throw new Error(); }
 
     headers.Accept = 'application/json';
-    if (method === 'POST' || method === 'PUT') {
+    if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
         headers['Content-Type'] = 'application/json';
         body = JSON.stringify(body);
     }

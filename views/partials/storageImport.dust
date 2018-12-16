@@ -3,12 +3,12 @@
   <div id="import-options">
     <div class="locals">
       {#locals}
-        <div class="local option" data-id={_id}>{title}</div>
+        <div class="local option" data-id="{_id}">{title}<button class='delete-option'></button></div>
       {/locals}
     </div>
     <div class="githubs">
       {#githubs}
-        <div class="github option">{title}</div>
+        <div class="github option" data-name="{title}">{title}<button class='delete-option'></button></div>
       {/githubs}
     </div>
   </div>
