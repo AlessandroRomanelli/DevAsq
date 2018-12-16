@@ -308,7 +308,7 @@ function handleDragBar() {
                     oldWidth = preview.clientWidth;
                     newWidth = event.x;
                     deltaWidth = newWidth - oldWidth;
-                    if (oldWidth + deltaWidth <= 830 && oldWidth + deltaWidth >= 400) {
+                    if (oldWidth + deltaWidth <= pens.clientWidth - 235 && oldWidth + deltaWidth >= pens.clientWidth - 605) {
                         controls.style.width = `${controls.clientWidth - deltaWidth}px`;
                         preview.style.width = `${oldWidth + deltaWidth}px`;
                     }
@@ -321,7 +321,8 @@ function handleDragBar() {
                         preview.style.width = `${preview.clientWidth - deltaWidth}px`;
                     }
                 }
-                iframe.style.width = `${preview.clientWidth - 5}px`;
+                // iframe.style.width = `${preview.clientWidth - 5}px`;
+                iframe.style.width = `calc(100vw - ${controls.style.width + 5})`;
             }
         }
     });
