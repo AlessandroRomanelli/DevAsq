@@ -639,6 +639,49 @@
     filter: invert(1)
     animation: full-rotation 1s linear infinite
 
+#export-options
+  margin-bottom: 1em
+  p
+    margin-top: 0
+  button
+    position: relative
+    font-size: 1em
+    background: none
+    outline: 0
+    border: 1px solid $primary-color
+    color: $primary-color
+    border-radius: 1em
+    transition: 0.2s ease-in-out
+    padding: 0.25em 1em
+    &:first-of-type::after
+      background: url('../images/github.png') no-repeat center
+      background-size: 80%
+      left: -60%
+    &:last-of-type::after
+      background: url('../images/database.png') no-repeat center
+      background-size: 80%
+      right: -50%
+    &::after
+      content: ''
+      position: absolute
+      width: 50px
+      height: 50px
+      top: 50%
+      // left: 50%
+      transform: translateY(-50%)
+      z-index: -1
+      opacity: 0
+      transition: 0.5s ease-in-out
+    &:hover
+      cursor: pointer
+      background: transparentize($primary-color, 0.2)
+      color: $dark
+      &::after
+        filter: invert(1)
+        opacity: 1
+    &:not(:last-child)
+      margin-right: 1em
+
 
 
 

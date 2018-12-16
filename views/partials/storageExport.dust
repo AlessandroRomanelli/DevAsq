@@ -1,3 +1,5 @@
-<p>Where do you want to save your pen?</p>
-<button>Github</button>
-<button>Server DB</button>
+<div id="export-options">
+  <p>Where do you want to save your pen?</p>
+  <button>Github</button>
+  <button>Server DB</button>
+</div>
