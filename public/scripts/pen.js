@@ -15,6 +15,7 @@ let socket;
 let dragging = false;
 
 function init() {
+    document.querySelector('body').style.overflow = 'hidden';
     handleLoginForm();
     handleLogout();
     handleModals();
@@ -232,6 +233,17 @@ function init() {
             modal.classList.add('hidden');
         }, 1500);
     });
+    fitty('.room .name');
+    setTimeout(() => removeRoomLoader(), 2500);
+}
+
+function removeRoomLoader() {
+    const loader = document.getElementById('page-loader');
+    loader.classList.add('closing');
+    setTimeout(() => {
+        loader.parentNode.removeChild(loader);
+        document.querySelector('body').style.overflow = 'auto';
+    }, 700);
 }
 
 

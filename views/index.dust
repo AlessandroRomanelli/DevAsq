@@ -18,11 +18,11 @@
 
 
         {> "partials/footer" /}
-        <script src="/scripts/dustjs/dust-core.min.js" charset="utf-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dustjs-linkedin/2.7.5/dust-core.min.js" charset="utf-8"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script src="/scripts/socket.js" charset="utf-8"></script>
-        <script src="/scripts/ace/ace.js" charset="utf-8"></script>
-        <script src="/scripts/ace/ext-language_tools.js" charset="utf-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.2/ace.js" charset="utf-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.2/ext-language_tools.js" charset="utf-8"></script>
         <script src="/scripts/views.js" charset="utf-8"></script>
         <script src="/scripts/fetch.js" charset="utf-8"></script>
         {?user}
