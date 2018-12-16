@@ -270,7 +270,6 @@ function addTogglerListener(app) {
 }
 
 function handleDragBar() {
-    console.log('Handling the dragBar');
     const dragBar = document.getElementById('dragbar');
     const pens = document.getElementById('pens');
     const controls = pens.querySelector('.controls');
@@ -279,19 +278,16 @@ function handleDragBar() {
     dragBar.addEventListener('mousedown', (event) => {
         event.preventDefault();
         dragging = true;
-        console.log('start dragging');
         preview.style.pointerEvents = 'none';
     });
     pens.addEventListener('mouseup', (event) => {
         event.preventDefault();
         dragging = false;
-        console.log('stop dragging');
         preview.style.pointerEvents = null;
     });
     document.addEventListener('mousemove', (event) => {
         event.preventDefault();
         if (dragging) {
-            console.log('dragging');
             if (dragBar.classList.contains('topLayout')) {
                 const oldHeight = controls.clientHeight;
                 const newHeight = event.y - pens.offsetTop;

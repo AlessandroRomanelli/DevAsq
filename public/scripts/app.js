@@ -582,7 +582,6 @@ class App {
         const assignTemporaryClass = (htmlNode, className) => {
             htmlNode.classList.add(className);
             setTimeout(() => {
-                console.log(`Removing class: ${className} from ${htmlNode}`);
                 htmlNode.classList.remove(className);
             }, 2000);
         };
@@ -616,7 +615,6 @@ class App {
                             roomName: this.room.name,
                             pen: this.getCurrentPen(),
                         }).then((res) => {
-                            console.log(res);
                             deactivate(event);
                             const className = (res.status === 201) ? 'success' : 'error';
                             assignTemporaryClass(event.target, className);
@@ -626,7 +624,6 @@ class App {
                     buttons[1].onclick = (event) => {
                         activate(event);
                         saveToDatabase().then((res) => {
-                            console.log(res);
                             deactivate(event);
                             if (res.status === 400) return handleError(new Error(res.message), event.target);
                             const className = (res.status === 200) ? 'success' : 'error';
@@ -677,9 +674,7 @@ class App {
             event.preventDefault();
             if (entry.classList.contains('beingDeleted')) return;
             entry.classList.add('beingDeleted');
-            console.log('Delete DB');
             doJSONRequest('DELETE', `/pen/${id}`, {}, null).then((res) => {
-                console.log(res);
                 if (res.status === 200) {
                     const local = entry.parentNode;
                     entry.parentNode.removeChild(entry);
@@ -699,9 +694,7 @@ class App {
             event.preventDefault();
             if (entry.classList.contains('beingDeleted')) return;
             entry.classList.add('beingDeleted', 'loading');
-            console.log('Delete Github');
             doJSONRequest('DELETE', `/pen/github/${name}`, {}, null).then((res) => {
-                console.log(res);
                 if (res.status === 200) {
                     const github = entry.parentNode;
                     entry.parentNode.removeChild(entry);
@@ -722,8 +715,6 @@ class App {
             event.target.classList.add('loading');
             doJSONRequest('GET', `/pen/${id}`, {}, null).then((res) => {
                 const { status, pen } = res;
-                console.log('Imported pen:');
-                console.log(pen);
                 if (status !== 200) handleError(new Error('Failed to import local pen'), event.target);
                 this.createImportedPen(pen);
                 event.target.classList.remove('loading');
@@ -747,17 +738,14 @@ class App {
         };
 
         importButton.onclick = (event) => {
-            console.log('click');
             if (event.target.disabled) return;
             event.target.disabled = true;
             doJSONRequest('GET', '/pen/all', {}, null).then((data) => {
-                console.log(data);
                 const { savedPens, status } = data;
                 if (status !== 200) throw new Error(data.message);
                 let options = savedPens.length > 0;
                 if (user.githubID) {
                     getGithubOptions().then((githubPens) => {
-                        console.log(githubPens);
                         options = githubPens.length + savedPens.length > 0;
                         dust.render('partials/storageImport', { options, locals: savedPens, githubs: githubPens }, (err, output) => {
                             handleDustProduction(err, output);
@@ -1062,7 +1050,6 @@ class App {
             const storedPen = this.pens[i];
             if (storedPen.link && storedPen.link.penID === pen.id) {
                 const newTitle = `${this.users[userID].user.username} - ${pen.title}`;
-                console.log(newTitle, storedPen.title);
                 const titleChanged = newTitle !== storedPen.title;
                 storedPen.title = `${this.users[userID].user.username} - ${pen.title}`;
                 storedPen.html = pen.html;

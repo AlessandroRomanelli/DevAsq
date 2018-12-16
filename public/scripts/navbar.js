@@ -195,7 +195,6 @@ function handleSignupForm() {
     const modal = document.getElementById('login-signup-modal');
     const signupUsername = document.getElementById('signup-name');
     addMultiListeners('blur keyup change click paste', signupUsername, (event) => {
-        console.log(event.target.value);
         updateInputField(event.target.value !== '', event.target.parentNode);
         validateForm({ formName: 'signupForm', submitName: 'signup-submit' });
     });
