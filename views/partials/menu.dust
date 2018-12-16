@@ -1,10 +1,12 @@
 <nav class="menu">
-  <a class="logo" href="/">
-    <img src="/images/logo.png" alt="DevAsq++ Logo">
+  <div>
+    <a class="logo" href="/">
+      <img src="/images/logo.png" alt="DevAsq++ Logo">
+    </a>
     <label id='themeChanger' class="switch">
       <input type="checkbox" checked><span class="slider"></span>
     </label>
-  </a>
+  </div>
   <div class="profile">
     {> "partials/loggedUser" /}
   </div>

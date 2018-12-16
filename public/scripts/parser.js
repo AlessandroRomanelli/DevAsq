@@ -14,9 +14,11 @@ function startParsing(app) {
     cssAce.session.setUseSoftTabs(false);
     jsAce.session.setUseSoftTabs(false);
 
-    htmlAce.setTheme('ace/theme/tomorrow_night');
-    cssAce.setTheme('ace/theme/tomorrow_night');
-    jsAce.setTheme('ace/theme/tomorrow_night');
+    const theme = localStorage.website_theme;
+    const aceTheme = colorsMap.aceThemes[theme];
+    htmlAce.setTheme(`ace/theme/${aceTheme}`);
+    cssAce.setTheme(`ace/theme/${aceTheme}`);
+    jsAce.setTheme(`ace/theme/${aceTheme}`);
 
     setAceOptions([htmlAce, cssAce, jsAce]);
 

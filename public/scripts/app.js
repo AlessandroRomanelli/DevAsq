@@ -690,9 +690,6 @@ class App {
                     handleError(new Error(res.message), event.target);
                 }
                 entry.classList.remove('beingDeleted');
-                const localsCount = entry.parentNode.childNodes.length;
-                const githubCount = entry.parentNode.nextSibling.childNodes.length;
-                if (localsCount + githubCount === 0) storageModal.classList.add('hidden');
             });
         };
 

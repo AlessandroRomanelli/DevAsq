@@ -76,7 +76,8 @@ const colorsMap = {
         },
     },
     aceThemes: {
-
+        dark: 'tomorrow_night',
+        light: 'eclipse',
     },
 };
 
@@ -86,6 +87,12 @@ function applyTheme() {
     Object.keys(colorsMap.style[theme]).forEach((property) => {
         body.style.setProperty(property, colorsMap.style[theme][property]);
     });
+    const controls = document.querySelector('.controls');
+    if (controls === null) return;
+    const aceTheme = colorsMap.aceThemes[theme];
+    ace.edit('htmlPen').setTheme(`ace/theme/${aceTheme}`);
+    ace.edit('cssPen').setTheme(`ace/theme/${aceTheme}`);
+    ace.edit('jsPen').setTheme(`ace/theme/${aceTheme}`);
 }
 
 function switchTheme(event) {
@@ -98,13 +105,6 @@ function switchTheme(event) {
         applyTheme();
     }
 }
-
-(function () {
-    const theme = localStorage.website_theme || 'dark';
-    applyTheme(theme);
-    const themeChanger = document.querySelector('#themeChanger input');
-    themeChanger.addEventListener('input', event => switchTheme());
-}());
 
 function validateForm(formData) {
     const { formName, submitName } = formData;
@@ -306,3 +306,10 @@ function handleLogout() {
         });
     });
 }
+
+(function () {
+    const theme = localStorage.website_theme || 'dark';
+    applyTheme(theme);
+    const themeChanger = document.querySelector('#themeChanger input');
+    themeChanger.addEventListener('input', event => switchTheme());
+}());

@@ -24,7 +24,7 @@ function init() {
 
     if (room.creator === user._id) {
         app = new CreatorApp(room, user._id);
-        window.onbeforeunload = function() {
+        window.onbeforeunload = function () {
             return 'If you leave the room will be deleted!';
         };
     } else {
@@ -100,8 +100,8 @@ function init() {
             socket.emit('moderator.updatePensOnServer', {
                 id: app.userID,
                 pens: app.pens,
-                roomName: app.room.name
-            })
+                roomName: app.room.name,
+            });
         }
     });
 
@@ -165,7 +165,7 @@ function init() {
             delete users[assistants[i]];
         }
         if (app instanceof App) {
-            socket.emit('assistant.beingPromoted', {roomName: app.room.name});
+            socket.emit('assistant.beingPromoted', { roomName: app.room.name });
             app.receivePromotion(users);
         }
     });
@@ -173,7 +173,7 @@ function init() {
     socket.on('moderator.removeUser', (data) => {
         const userID = data.userID;
         delete app.users[userID];
-        document.getElementById(userID).outerHTML = "";
+        document.getElementById(userID).outerHTML = '';
     });
 
     socket.on('moderator.addUser', (data) => {
@@ -186,14 +186,16 @@ function init() {
 
     socket.on('assistant.degradation', () => {
         if (app instanceof App) {
-            socket.emit('assistant.beingDegraded', {roomName: app.room.name});
-            app.receiveDegradation()
+            socket.emit('assistant.beingDegraded', { roomName: app.room.name });
+            app.receiveDegradation();
         }
     });
 
     socket.on('creator.isLinked', (data) => {
         const { pen, userID, ownerID } = data;
-        socket.emit('moderator.isLinked', {result: `${app.isLinked(pen)}`, userID, pen, ownerID});
+        socket.emit('moderator.isLinked', {
+            result: `${app.isLinked(pen)}`, userID, pen, ownerID,
+        });
     });
 
     socket.on('moderator.linkResponse', (data) => {
@@ -226,10 +228,10 @@ function init() {
         p.innerHTML = error;
         modal.classList.remove('hidden');
         setTimeout(() => {
-            p.innerHTML = "Error";
+            p.innerHTML = 'Error';
             modal.classList.add('hidden');
         }, 1500);
-    })
+    });
 }
 
 
@@ -279,10 +281,10 @@ function handleDragBar() {
         if (dragging) {
             console.log('dragging');
             if (dragBar.classList.contains('topLayout')) {
-                let oldHeight = controls.clientHeight;
-                let newHeight = event.y - pens.offsetTop;
-                let deltaHeight = newHeight - oldHeight;
-                if (oldHeight + deltaHeight >= 230 && oldHeight + deltaHeight <= 600){
+                const oldHeight = controls.clientHeight;
+                const newHeight = event.y - pens.offsetTop;
+                const deltaHeight = newHeight - oldHeight;
+                if (oldHeight + deltaHeight >= 230 && oldHeight + deltaHeight <= 600) {
                     controls.style.height = `${oldHeight + deltaHeight}px`;
                     preview.style.height = `${preview.clientHeight - deltaHeight}px`;
                 }
@@ -294,7 +296,7 @@ function handleDragBar() {
                     oldWidth = preview.clientWidth;
                     newWidth = event.x;
                     deltaWidth = newWidth - oldWidth;
-                    if (oldWidth + deltaWidth <= 830 && oldWidth + deltaWidth >= 400){
+                    if (oldWidth + deltaWidth <= 830 && oldWidth + deltaWidth >= 400) {
                         controls.style.width = `${controls.clientWidth - deltaWidth}px`;
                         preview.style.width = `${oldWidth + deltaWidth}px`;
                     }
@@ -302,7 +304,7 @@ function handleDragBar() {
                     oldWidth = controls.clientWidth;
                     newWidth = event.x;
                     deltaWidth = newWidth - oldWidth;
-                    if (oldWidth + deltaWidth >= 230 && oldWidth + deltaWidth <= 600){
+                    if (oldWidth + deltaWidth >= 230 && oldWidth + deltaWidth <= 600) {
                         controls.style.width = `${oldWidth + deltaWidth}px`;
                         preview.style.width = `${preview.clientWidth - deltaWidth}px`;
                     }
