@@ -317,8 +317,7 @@ function handleDragBar() {
                         preview.style.width = `${preview.clientWidth - deltaWidth}px`;
                     }
                 }
-                // iframe.style.width = `${preview.clientWidth - 5}px`;
-                iframe.style.width = `calc(100vw - ${controls.style.width + 5})`;
+                iframe.style.width = `calc(100vw - ${controls.style.width})`;
             }
         }
     });

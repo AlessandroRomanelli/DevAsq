@@ -797,7 +797,7 @@ class App {
             controls.style.height = null;
             preview.style.height = null;
             preview.style.flexDirection = 'row';
-            iframe.style.width = `calc(100vw - ${controls.style.width + 5})`;
+            iframe.style.width = `calc(100vw - ${controls.style.width})`;
         });
         centerLayout.addEventListener('click', (event) => {
             updateActive(event.target);
@@ -809,7 +809,6 @@ class App {
             controls.style.width = null;
             preview.style.width = null;
             preview.style.flexDirection = 'column';
-            // iframe.style.width = `calc(100vw - ${controls.style.width})`;
         });
         rightLayout.addEventListener('click', (event) => {
             updateActive(event.target);
@@ -821,7 +820,7 @@ class App {
             controls.style.height = null;
             preview.style.height = null;
             preview.style.flexDirection = 'row-reverse';
-            iframe.style.width = `calc(100vw - ${controls.style.width + 5})`;
+            iframe.style.width = `calc(100vw - ${controls.style.width})`;
         });
 
         const penClasses = ['none', 'html', 'css', 'htmlcss', 'js', 'htmljs', 'cssjs', undefined];
