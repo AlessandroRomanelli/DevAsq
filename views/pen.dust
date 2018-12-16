@@ -122,14 +122,11 @@
       <script src="/scripts/views.js" charset="utf-8"></script>
       <script src="/scripts/vendors/diffjs/diff.js"></script>
       {?room}
-      <script type="text/javascript">
-          let room = {room|s};
-          let user = {user|s};
-          // localStorage.room = JSON.stringify(r); // eliminate ?
-          // localStorage.user = JSON.stringify(u); // eliminate ?
+      <script id='toBeDeleted' type="text/javascript">
+          serverRoom = {room|s};
+          serverUser = {user|s};
       </script>
       {/room}
-      <script src="/scripts/utilities.js" charset="utf-8"></script>
       <script src="/scripts/pen.js" charset="utf-8"></script>
 
     </body>

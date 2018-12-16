@@ -1,4 +1,5 @@
 (function () {
+    let user;
     String.prototype.splice = function (idx, rem, str) {
         return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
     };
@@ -422,11 +423,19 @@
     }
 
     function init() {
+        initHiddenVars()
         handleRoomForms();
         handleLoginForm();
         handleLogout();
         addExplorerListener();
         initTheme()
+    }
+
+    function initHiddenVars () {
+        if (serverUser) user = serverUser || null
+        const script = document.getElementById('toBeDeleted')
+        script.parentNode.removeChild(script)
+        delete serverUser
     }
 
     function initTheme() {

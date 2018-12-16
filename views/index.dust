@@ -24,11 +24,14 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.2/ext-language_tools.js" charset="utf-8"></script>
         <script src="/scripts/views.js" charset="utf-8"></script>
         {?user}
-        <script type="text/javascript">
-            let user = {user|s};
+        <script id="toBeDeleted" type="text/javascript">
+            serverUser = {user|s};
+        </script>
+        {:else}
+        <script id="toBeDeleted" type="text/javascript">
+            serverUser = null;
         </script>
         {/user}
-        <script src="/scripts/utilities.js" charset="utf-8"></script>
         <script src="/scripts/main.js" charset="utf-8"></script>
     </body>
 

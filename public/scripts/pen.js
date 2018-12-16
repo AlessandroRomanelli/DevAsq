@@ -1,4 +1,6 @@
 (function () {
+    let user;
+    let room;
     String.prototype.splice = function (idx, rem, str) {
         return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
     };
@@ -359,7 +361,17 @@
         });
     }
 
+    function initHiddenVars() {
+        if (serverUser) user = serverUser || null;
+        if (serverRoom) room = serverRoom || null;
+        const script = document.getElementById('toBeDeleted');
+        script.parentNode.removeChild(script);
+        delete serverUser
+        delete serverRoom
+    }
+
     function init() {
+        initHiddenVars();
         document.querySelector('body').style.overflowY = 'hidden';
         handleLoginForm();
         handleLogout();
