@@ -40,6 +40,10 @@
                 </div>
               </div>
             </span>
+            <span id='storage-options'>
+              <button id='export'>Export</button>
+              <button id='import'>Import</button>
+            </span>
           </span>
           <span class='layouts'>
             Layout:
@@ -101,7 +105,11 @@
       </div>
       {> "partials/confirmModal" /}
       {> "partials/previewModal" /}
-
+      {> "partials/storageModal" /}
+      <div id="modal-error" class="hidden">
+        <img src="/images/alert.png">
+        <p>Error</p>
+      </div>
       {> "partials/footer" /}
 
       <script src="/socket.io/socket.io.js"></script>

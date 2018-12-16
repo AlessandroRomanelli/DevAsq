@@ -1,0 +1,17 @@
+{?options}
+  Choose one from the following options:
+  <div id="import-options">
+    <div class="locals">
+      {#locals}
+        <div class="local option" data-id={_id}>{title}</div>
+      {/locals}
+    </div>
+    <div class="githubs">
+      {#githubs}
+        <div class="github option">{title}</div>
+      {/githubs}
+    </div>
+  </div>
+{:else}
+  No options available for import
+{/options}
