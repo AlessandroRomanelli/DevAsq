@@ -311,5 +311,6 @@ function handleLogout() {
     const theme = localStorage.website_theme || 'dark';
     applyTheme(theme);
     const themeChanger = document.querySelector('#themeChanger input');
+    themeChanger.checked = theme === 'dark';
     themeChanger.addEventListener('input', event => switchTheme());
 }());

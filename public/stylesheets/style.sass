@@ -111,6 +111,42 @@ nav.menu
     max-height: 20px
     display: inline-block
 
+#themeChanger
+  position: relative
+  &::before, &::after
+    content: ''
+    position: absolute
+    width: 16px
+    height: 16px
+    font-size: 0.75em
+    text-align: center
+    text-transform: uppercase
+    z-index: 1
+    &:hover
+      cursor: pointer
+  &::after
+    right: 0
+    background: url('../images/moon.png') no-repeat center
+    background-size: 75%
+    filter: invert(0.2)
+  &::before
+    background: url('../images/sun.png') no-repeat center
+    background-size: 75%
+    filter: invert(1)
+    left: 0
+  input
+    margin: 0
+  .slider
+    background-color: var(--light)
+    &::before
+      z-index: 10
+  &:hover
+    cursor: pointer
+
+
+
+
+
 
 
 #home.container
