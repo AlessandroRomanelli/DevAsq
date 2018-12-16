@@ -15,7 +15,7 @@ let socket;
 let dragging = false;
 
 function init() {
-    document.querySelector('body').style.overflow = 'hidden';
+    document.querySelector('body').style.overflowY = 'hidden';
     handleLoginForm();
     handleLogout();
     handleModals();
@@ -242,7 +242,7 @@ function removeRoomLoader() {
     loader.classList.add('closing');
     setTimeout(() => {
         loader.parentNode.removeChild(loader);
-        document.querySelector('body').style.overflow = 'auto';
+        document.querySelector('body').style.overflowY = 'auto';
     }, 700);
 }
 
@@ -577,35 +577,35 @@ class App {
         let differenceRows = this.countLines(value);
 
         switch (mode) {
-            case 'html':
-                if (htmlAce.getReadOnly()) {
-                    return;
-                }
-                differenceLength = value.length - pen.html.length;
-                differenceRows -= this.countLines(pen.html);
-                pen.html = value;
-                if (userPen) { userPen.html = value; }
-                break;
-            case 'css':
-                if (cssAce.getReadOnly()) {
-                    return;
-                }
-                differenceLength = value.length - pen.css.length;
-                differenceRows -= this.countLines(pen.css);
-                pen.css = value;
-                if (userPen) { userPen.css = value; }
-                break;
-            case 'javascript':
-                if (jsAce.getReadOnly()) {
-                    return;
-                }
-                differenceLength = value.length - pen.js.length;
-                differenceRows -= this.countLines(pen.js);
-                pen.js = value;
-                if (userPen) { userPen.js = value; }
-                break;
-            default:
-                break;
+        case 'html':
+            if (htmlAce.getReadOnly()) {
+                return;
+            }
+            differenceLength = value.length - pen.html.length;
+            differenceRows -= this.countLines(pen.html);
+            pen.html = value;
+            if (userPen) { userPen.html = value; }
+            break;
+        case 'css':
+            if (cssAce.getReadOnly()) {
+                return;
+            }
+            differenceLength = value.length - pen.css.length;
+            differenceRows -= this.countLines(pen.css);
+            pen.css = value;
+            if (userPen) { userPen.css = value; }
+            break;
+        case 'javascript':
+            if (jsAce.getReadOnly()) {
+                return;
+            }
+            differenceLength = value.length - pen.js.length;
+            differenceRows -= this.countLines(pen.js);
+            pen.js = value;
+            if (userPen) { userPen.js = value; }
+            break;
+        default:
+            break;
         }
 
         const html = htmlAce.getCursorPosition();
@@ -2131,7 +2131,6 @@ class CreatorApp extends App {
         return false;
     }
 }
-
 
 
 // parser
