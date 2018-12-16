@@ -150,11 +150,11 @@
     height: 100%
     width: 100%
     &:checked + .slider
-      background-color: var(--dark-green)
+      background-color: var(--dark-success)
       &::before
         transform: translate(26px)
     &:focus + .slider
-      box-shadow: 0 0 1px var(--dark-green)
+      box-shadow: 0 0 1px var(--dark-success)
     &:hover
       cursor: pointer
   .slider
@@ -165,7 +165,7 @@
     left: 0
     right: 0
     bottom: 0
-    background: var(--dark-red)
+    background: var(--dark-error)
     transition: 0.4s ease-in-out
     border-radius: 17px
     height: 16px
@@ -436,7 +436,7 @@
             border-radius: 1em 0 0 1em
             &:hover
               background: var(--text-color)
-              border-color: var(--darken-white)
+              border-color: var(--darken-light)
           &:last-child
             color: var(--primary-color)
             border-color: var(--primary-color)
@@ -537,7 +537,7 @@
       border-color: var(--text-color)
       &:hover
         background: var(--text-color)
-        border-color: var(--darken-white)
+        border-color: var(--darken-light)
     &:last-child
       color: var(--primary-color)
       padding: 0.5em 2em 0.5em 1em
