@@ -22,6 +22,7 @@ html:root
   --transparent-primary-color2: transparentize($primary-color, 0.8)
   --transparent-primary-color3: transparentize($primary-color, 0.5)
   --transparent-primary-color4: transparentize($primary-color, 0.1)
+  --transparent-primary-color5: transparentize($primary-color, 0.75)
   --transparent-warning: transparentize(darken($warning, 10%), 0.2)
   --transparent-success: transparentize(darken($success, 10%), 0.2)
   --transparent-error: transparentize(darken($error, 10%), 0.2)
@@ -62,7 +63,7 @@ body
   overflow-x: hidden
   margin: 0
   padding: 0
-  color: white
+  color: var(--white)
   font: 100% var(--font-stack)
   background-color: var(--color-background)
 
@@ -70,7 +71,7 @@ body
 
 hr
   background: var(--primary-color)
-  border-color: --dark-primary-color
+  border-color: var(--dark-primary-color)
 
 form
   fieldset:not(.submit)
@@ -149,7 +150,7 @@ nav.menu
 
 #roomTable a
   text-decoration: none
-  color: white
+  color: var(--white)
 
 @import login
 @import about
