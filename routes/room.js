@@ -81,14 +81,14 @@ router.get('/:roomName', (req, res) => {
         loggedUser: req.user,
         user: JSON.stringify(req.user),
         room: JSON.stringify(room),
-        roomName: room.name,
+        roomName,
         creator: creator.username,
     })).catch(err => res.render('pen', {
         title: 'DevAsq++',
         loggedUser: req.user,
         user: JSON.stringify(req.user),
         room: JSON.stringify(room),
-        roomName: room.name,
+        roomName,
     }));
 });
 
