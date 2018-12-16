@@ -14,9 +14,9 @@ function startParsing(app) {
     cssAce.session.setUseSoftTabs(false);
     jsAce.session.setUseSoftTabs(false);
 
-    htmlAce.setTheme('ace/theme/monokai');
-    cssAce.setTheme('ace/theme/monokai');
-    jsAce.setTheme('ace/theme/monokai');
+    htmlAce.setTheme('ace/theme/ambiance');
+    cssAce.setTheme('ace/theme/ambiance');
+    jsAce.setTheme('ace/theme/ambiance');
 
     setAceOptions([htmlAce, cssAce, jsAce]);
 
@@ -30,9 +30,9 @@ function startParsing(app) {
     cssPen.onkeyup = handleKey(app, cssAce, timer);
     jsPen.onkeyup = handleKey(app, jsAce, timer);
 
-    htmlAce.on("paste", preventSpam());
-    cssAce.on("paste", preventSpam());
-    jsAce.on("paste", preventSpam());
+    htmlAce.on('paste', preventSpam());
+    cssAce.on('paste', preventSpam());
+    jsAce.on('paste', preventSpam());
 }
 
 function preventSpam() {
@@ -41,14 +41,14 @@ function preventSpam() {
     return function (data) {
         const timeStamp = data.event.timeStamp;
         if (data.text.length > 10000) {
-            data.text = "";
+            data.text = '';
         }
         if (timeStamp - previousTimeStamp < 1000) {
-            data.text = "";
+            data.text = '';
         } else {
             previousTimeStamp = timeStamp;
         }
-    }
+    };
 }
 
 function handleKey(app, ace, timer) {
@@ -82,9 +82,9 @@ function createTimer(app, delay) {
 }
 
 function renderIFrame(app) {
-    const htmlAce = ace.edit("htmlPen");
-    const cssAce = ace.edit("cssPen");
-    const jsAce = ace.edit("jsPen");
+    const htmlAce = ace.edit('htmlPen');
+    const cssAce = ace.edit('cssPen');
+    const jsAce = ace.edit('jsPen');
     const iFrame = document.getElementById('iFrame');
 
     return function () {
@@ -97,7 +97,7 @@ function renderIFrame(app) {
         const positions = {
             html: htmlAce.getCursorPosition(),
             css: cssAce.getCursorPosition(),
-            js: jsAce.getCursorPosition()
+            js: jsAce.getCursorPosition(),
         };
 
         const roomName = app.room.name;
@@ -117,7 +117,7 @@ function renderIFrame(app) {
                 socket.emit('pen.preview', {
                     pen: app.getCurrentPen(),
                     userID: app.room.creator,
-                    moderators: `${roomName}_moderators`
+                    moderators: `${roomName}_moderators`,
                 });
             }
         });
