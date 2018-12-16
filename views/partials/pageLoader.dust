@@ -1,0 +1,8 @@
+<div id="page-loader">
+  <div></div>
+  <div class="room">
+    <span class="name">{roomName}</span>
+    <span class="creator">By <b>{creator}</b></span>
+  </div>
+  <div></div>
+</div>

@@ -1,9 +1,14 @@
 const express = require('express');
+const mongoose = require('mongoose');
+
 const {
     Room, Pen, roomStorage, UIDs,
 } = require('../rooms');
 
 const router = express.Router();
+
+
+const User = mongoose.model('User');
 
 function generateID() {
     const id = Math.random().toString(36).substring(2, 16);
@@ -71,9 +76,20 @@ router.use('/:roomName', (req, res, next) => {
 router.get('/:roomName', (req, res) => {
     const { roomName } = req.params;
     const room = roomStorage[roomName];
-    return res.render('pen', {
-        title: 'DevAsq++', loggedUser: req.user, user: JSON.stringify(req.user), room: JSON.stringify(room),
-    });
+    User.findById(room.creator).then(creator => res.render('pen', {
+        title: 'DevAsq++',
+        loggedUser: req.user,
+        user: JSON.stringify(req.user),
+        room: JSON.stringify(room),
+        roomName: room.name,
+        creator: creator.username,
+    })).catch(err => res.render('pen', {
+        title: 'DevAsq++',
+        loggedUser: req.user,
+        user: JSON.stringify(req.user),
+        room: JSON.stringify(room),
+        roomName: room.name,
+    }));
 });
 
 router.post('/:roomName/pen', (req, res) => {

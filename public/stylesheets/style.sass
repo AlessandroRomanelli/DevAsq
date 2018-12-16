@@ -143,12 +143,6 @@ nav.menu
   &:hover
     cursor: pointer
 
-
-
-
-
-
-
 #home.container
     display: grid
     grid-template-rows: 50vh 1fr
@@ -209,6 +203,85 @@ nav.menu
 .preview
   display: flex
   flex-direction: column
+
+#page-loader
+  position: absolute
+  top: 0
+  z-index: 100
+  width: 100vw
+  height: 100vh
+  div:not(.room)
+    position: absolute
+    top: 0
+    height: 100vh
+    width: 50vw
+    background: var(--color-background)
+    overflow: hidden
+    transition: 0.5s linear
+    &::after
+      content: ''
+      position: absolute
+      top: 50%
+      width: 400px
+      height: 400px
+      border-radius: 50%
+      border: 5px solid var(--primary-color)
+      animation: pulsate-border 1s ease-in-out infinite
+    &:first-of-type
+      right: 0
+      &::after
+        left: 0
+        transform: translate(-50%, -50%)
+    &:last-of-type
+      left: 0
+      &::after
+        right: 0
+        transform: translate(50%, -50%)
+  .room
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+    z-index: 1000
+    span
+      text-align: center
+      display: block
+      &.name
+        font-size: 5em
+        text-transform: uppercase
+        letter-spacing: -2px
+        font-weight: bold
+        line-height: 0.9em
+      b
+        color: var(--primary-color)
+  &.closing
+    pointer-events: none
+    div:not(.room)
+      &:first-of-type
+        right: -100%
+      &:last-of-type
+        left: -100%
+    .room
+      animation: fade-out 0.7s cubic-bezier(0.550, 0.085, 0.680, 0.530) both
+
+@keyframes pulsate-border
+  0%
+    border-width: 2px
+  10%
+    border-width: 20px
+  100%
+    border-width: 2px
+
+@keyframes fade-out
+  0%
+    -webkit-transform: translate(-50%, -50%, 1)
+    transform: translate(-50%, -50%, 1)
+    opacity: 1
+
+  100%
+    -webkit-transform: translate(-50%, -50%, 600px)
+    transform: translate(-50%, -50%, 600px)
+    opacity: 0
 
 
 
