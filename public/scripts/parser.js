@@ -14,9 +14,9 @@ function startParsing(app) {
     cssAce.session.setUseSoftTabs(false);
     jsAce.session.setUseSoftTabs(false);
 
-    htmlAce.setTheme('ace/theme/ambiance');
-    cssAce.setTheme('ace/theme/ambiance');
-    jsAce.setTheme('ace/theme/ambiance');
+    htmlAce.setTheme('ace/theme/tomorrow_night');
+    cssAce.setTheme('ace/theme/tomorrow_night');
+    jsAce.setTheme('ace/theme/tomorrow_night');
 
     setAceOptions([htmlAce, cssAce, jsAce]);
 
