@@ -11,14 +11,14 @@
     <div class="thisproject">
       <h1> This Project </h1>
       <p>
-        This project has been developed during the Fall/Winter semester 2018 for the course of Software Atelier 3 teached by Cesare Pautasso. This is the final product of 4 weeks of work in which we have created this platform in the way you see at the moment. The main structure of DevAsq++ is built with Dust and the style has been added with Sass, all the other features are made with Javascript.
+        This project has been developed during the Fall/Winter semester 2018 for the course of Software Atelier 3 taught by Cesare Pautasso. This is the final product of 4 weeks of work in which we have created this platform in the way you see at the moment. The skeleton of DevAsq++ is built with Dust and the style has been added with Sass, all the other features are made with Javascript.
 
       </p>
     </div>
     <div class="howitworks">
       <h3> How it works </h3>
       <p>
-      This platform is aimed to help students coding during the hands on performed in the lectures of Web Atelier, here you can:
+      This platform is aimed to help students coding during the hands on performed in the lectures of Web Atelier, once logged you will be able to:
       <ul style="list-style-type:none">
         <li>
           <h4>Create a room / Join an already existing room</h4>
@@ -50,7 +50,7 @@
           <img src="images/burro.jpg" />
           <p class="name">Cristian</p>
           <p class="surname"> Buratti </p>
-          <p class="role"> Back-end developer</p>
+          <p class="role"> Front-end developer</p>
       </div>
       <div id="lino">
           <img src="images/diego.png"/>
@@ -68,7 +68,7 @@
           <img src="images/sandro.jpg"/>
           <p class="name">Alessandro</p>
           <p class="surname"> Romanelli </p>
-          <p class="role"> Team leader</p>
+          <p class="role"> Back-end developer</p>
       </div>
       <div id="ale">
           <img src="images/sandra.jpg"/>
