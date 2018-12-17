@@ -372,7 +372,7 @@
 
     function init() {
         initHiddenVars();
-        document.querySelector('body').style.overflowY = 'hidden';
+        document.querySelector('body').style.position = 'fixed';
         handleLoginForm();
         handleLogout();
         handleModals();
@@ -609,7 +609,7 @@
         loader.classList.add('closing');
         setTimeout(() => {
             loader.parentNode.removeChild(loader);
-            document.querySelector('body').style.overflowY = 'auto';
+            document.querySelector('body').style.position = 'relative';
         }, 700);
     }
 
