@@ -1035,8 +1035,13 @@
                         userPens[i].html = pen.html;
                         userPens[i].css = pen.css;
                         userPens[i].js = pen.js;
-                        this.checkDiff(user, userPens[i].id);
                     }
+                }
+                const select = document.getElementById(user).querySelector('select');
+                const selected = select.selectedOptions[0].id;
+                const index = this.findIDInUserPen(selected, userPens);
+                if (index !== -1) {
+                    this.checkDiff(user, userPens[index].id);
                 }
             }
         }
@@ -2016,7 +2021,9 @@
                 return;
             }
             if (doNotRefresh) {
-                const index = this.findIDInUserPen(this.users[id].currentPen.id, this.users[id].pens);
+                const select = document.getElementById(id).querySelector('select');
+                const selected = select.selectedOptions[0].id;
+                const index = this.findIDInUserPen(selected, this.users[id].pens);
                 if (index !== -1) {
                     this.checkDiff(id, this.users[id].pens[index + 1]);
                 }
