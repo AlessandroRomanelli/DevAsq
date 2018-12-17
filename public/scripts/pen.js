@@ -502,6 +502,7 @@
             if (app instanceof CreatorApp) {
                 let response = 'true';
                 if (app.users[userID]) {
+                    console.log(app.users[userID]);
                     response = `${app.users[userID].state !== 'banned'}`;
                 }
                 socket.emit('room.accessResponse', {
@@ -584,6 +585,10 @@
                     }
                 }
             }
+        });
+
+        socket.on('user.ban', (data) => {
+            app.users[data.userID].state = 'banned';
         });
 
         socket.on('preview.error', (error) => {
@@ -1869,7 +1874,11 @@
                     (() => {
                         const modal = document.getElementById('confirm-modal');
                         modal.classList.toggle('hidden');
-                        this.users[id].state = 'banned';
+                        if (this.role === 'creator') {
+                            this.users[id].state = 'banned';
+                        } else if(this.role === 'moderator') {
+                            socket.emit('user.ban', { roomName: this.room.name, userID: id });
+                        }
                         socket.emit('user.kick', { userID: id });
                     }),
                     (() => {
