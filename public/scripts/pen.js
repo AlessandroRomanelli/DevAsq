@@ -2007,7 +2007,6 @@
             }
             if (doNotRefresh) {
                 const index = this.findIDInUserPen(this.users[id].currentPen.id, this.users[id].pens);
-                console.log(index);
                 if (index !== -1) {
                     this.checkDiff(id, this.users[id].pens[index + 1]);
                 }
