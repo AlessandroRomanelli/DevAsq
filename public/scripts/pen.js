@@ -1030,6 +1030,7 @@
                         userPens[i].html = pen.html;
                         userPens[i].css = pen.css;
                         userPens[i].js = pen.js;
+                        this.checkDiff(user, userPens[i].id);
                     }
                 }
             }
