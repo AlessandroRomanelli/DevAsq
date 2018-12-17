@@ -2258,7 +2258,11 @@
                 population: `${Object.values(this.countActive()).length}`,
             });
 
-            document.getElementById(user).outerHTML = '';
+            const element = document.getElementById(user);
+            if (!element) {
+                return;
+            }
+            element.outerHTML = '';
 
             this.updateUI();
             this.updateParticipantsCounter();
