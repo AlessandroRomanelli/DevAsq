@@ -532,6 +532,12 @@
             const userID = data.userID;
             delete app.users[userID];
             document.getElementById(userID).outerHTML = '';
+            for (let i = app.pens.length - 1; i >= 0; i--) {
+                const pen = app.pens[i];
+                if (pen.link && `${pen.link.userID}` === `${userID}`) {
+                    app.deletePen(i);
+                }
+            }
         });
 
         socket.on('moderator.addUser', (data) => {
