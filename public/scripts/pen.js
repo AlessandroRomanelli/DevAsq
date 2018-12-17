@@ -502,7 +502,6 @@
             if (app instanceof CreatorApp) {
                 let response = 'true';
                 if (app.users[userID]) {
-                    console.log(app.users[userID]);
                     response = `${app.users[userID].state !== 'banned'}`;
                 }
                 socket.emit('room.accessResponse', {
@@ -2067,12 +2066,7 @@
                 }
                 this.addSingleUserListener(id);
                 if (index === -1) {
-                    this.checkDiff(id, this.pens[0]);
-                    // const diffProgress = document.getElementById(id).querySelector('.difference-progress');
-                    // diffProgress.classList.add('green');
-                    // diffProgress.classList.remove('yellow');
-                    // diffProgress.classList.remove('red');
-                    // diffProgress.style.width = '100%';
+                    this.checkDiff(id, this.publicPen.id);
                 } else {
                     this.checkDiff(id, this.users[id].pens[index + 1]);
                 }
