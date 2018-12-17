@@ -411,11 +411,15 @@ io.on('connection', (socket) => {
         socket.to(getCreatorSocket(roomName)).emit('moderators.linkedPenChanged', {pen});
     });
 
-
     socket.on('preview.error', (data) => {
         const { userID, error } = data;
         const socketID = connectionMap.getSocket(userID);
         socket.to(socketID).emit('preview.error', error);
+    });
+
+    socket.on('user.ban', (data) => {
+        const { roomName, userID } = data;
+        socket.to(getCreatorSocket(roomName)).emit('user.ban', {userID});
     });
 });
 
