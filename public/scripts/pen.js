@@ -688,6 +688,15 @@
                 }
             }
         });
+        window.onresize = (event) => {
+            const newWidth = event.target.innerWidth;
+            const pens = document.getElementById('pens');
+            const controls = pens.querySelector('.controls');
+            const preview = pens.querySelector('.preview');
+            if (pens.classList.contains('rightLayout') || pens.classList.contains('leftLayout')) {
+                preview.style.width = `${newWidth - controls.clientWidth}px`;
+            }
+        };
     }
 
 
