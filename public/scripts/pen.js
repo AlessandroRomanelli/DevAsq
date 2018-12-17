@@ -532,6 +532,12 @@
             const userID = data.userID;
             delete app.users[userID];
             document.getElementById(userID).outerHTML = '';
+            for (let i = app.pens.length - 1; i >= 0; i--) {
+                const pen = app.pens[i];
+                if (pen.link && `${pen.link.userID}` === `${userID}`) {
+                    app.deletePen(i);
+                }
+            }
         });
 
         socket.on('moderator.addUser', (data) => {
@@ -688,6 +694,15 @@
                 }
             }
         });
+        window.onresize = (event) => {
+            const newWidth = event.target.innerWidth;
+            const pens = document.getElementById('pens');
+            const controls = pens.querySelector('.controls');
+            const preview = pens.querySelector('.preview');
+            if (pens.classList.contains('rightLayout') || pens.classList.contains('leftLayout')) {
+                preview.style.width = `${newWidth - controls.clientWidth}px`;
+            }
+        };
     }
 
 
@@ -1779,7 +1794,7 @@
                 const storedPen = pens[i];
                 if (storedPen.id === pen.id) {
                     pens[i] = pen;
-                    this.updateUserUI(userID, pen, pen);
+                    this.updateUserUI(userID, pen, pen, true);
                     this.checkDiff(userID, pen.id);
                     return;
                 }
@@ -1986,8 +2001,15 @@
             this.updateRoomSettings();
         }
 
-        updateUserUI(id, newPen, oldPen) {
+        updateUserUI(id, newPen, oldPen, doNotRefresh) {
             if (this.role === 'student') {
+                return;
+            }
+            if (doNotRefresh) {
+                const index = this.findIDInUserPen(this.users[id].currentPen.id, this.users[id].pens);
+                if (index !== -1) {
+                    this.checkDiff(id, this.users[id].pens[index + 1]);
+                }
                 return;
             }
             dust.render('partials/user', this.users[id], (err, out) => {
@@ -2249,7 +2271,11 @@
                 population: `${Object.values(this.countActive()).length}`,
             });
 
-            document.getElementById(user).outerHTML = '';
+            const element = document.getElementById(user);
+            if (!element) {
+                return;
+            }
+            element.outerHTML = '';
 
             this.updateUI();
             this.updateParticipantsCounter();
