@@ -1031,7 +1031,14 @@
                     });
                 }
             }
-        }
+            if (this.role !== 'student')  {
+                for (const user in this.users) {
+                    const select = document.getElementById(user).querySelector('select');
+                    const selected = select.selectedOptions[0].id;
+                    this.checkDiff(user, selected);
+                }
+            }
+         }
 
         updateContentLinkedPen(pen) {
             if (!this.users) { return; }
