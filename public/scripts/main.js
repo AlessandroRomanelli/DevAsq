@@ -1,4 +1,16 @@
 (function () {
+    console.log(`
+ _____      _____                _____    _____    _____
+|     \\    |       \\         /  |     |  |        |     |
+|      \\   |        |       |   |     |  |        |     |     |        |
+|       \\  |___      \\     /    |_____|  |_____   |     |  ___|___  ___|___
+|       /  |          |   |     |     |        |  |     |     |        |
+|      /   |           \\ /      |     |        |  |   \\ |     |        | 
+|_____/    |_____       |       |     |   _____|  |____\\|
+                                                        \\
+                                                         \\
+
+    `);
     let user;
     String.prototype.splice = function (idx, rem, str) {
         return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
