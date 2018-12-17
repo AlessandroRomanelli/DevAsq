@@ -792,6 +792,14 @@
                     sharePublic.classList.remove('hidden');
                 }
             }
+
+            if (this.role !== 'student') {
+                for (const user in this.users) {
+                    const select = document.getElementById(user).querySelector('select');
+                    const selected = select.selectedOptions[0].id;
+                    this.checkDiff(user, selected);
+                }
+            }
         }
 
         setPositions(positions) {
@@ -2059,11 +2067,12 @@
                 }
                 this.addSingleUserListener(id);
                 if (index === -1) {
-                    const diffProgress = document.getElementById(id).querySelector('.difference-progress');
-                    diffProgress.classList.add('green');
-                    diffProgress.classList.remove('yellow');
-                    diffProgress.classList.remove('red');
-                    diffProgress.style.width = '100%';
+                    this.checkDiff(id, this.pens[0]);
+                    // const diffProgress = document.getElementById(id).querySelector('.difference-progress');
+                    // diffProgress.classList.add('green');
+                    // diffProgress.classList.remove('yellow');
+                    // diffProgress.classList.remove('red');
+                    // diffProgress.style.width = '100%';
                 } else {
                     this.checkDiff(id, this.users[id].pens[index + 1]);
                 }
