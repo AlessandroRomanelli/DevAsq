@@ -1794,7 +1794,7 @@
                 const storedPen = pens[i];
                 if (storedPen.id === pen.id) {
                     pens[i] = pen;
-                    this.updateUserUI(userID, pen, pen);
+                    this.updateUserUI(userID, pen, pen, true);
                     this.checkDiff(userID, pen.id);
                     return;
                 }
@@ -2001,8 +2001,16 @@
             this.updateRoomSettings();
         }
 
-        updateUserUI(id, newPen, oldPen) {
+        updateUserUI(id, newPen, oldPen, doNotRefresh) {
             if (this.role === 'student') {
+                return;
+            }
+            if (doNotRefresh) {
+                const index = this.findIDInUserPen(this.users[id].currentPen.id, this.users[id].pens);
+                console.log(index);
+                if (index !== -1) {
+                    this.checkDiff(id, this.users[id].pens[index + 1]);
+                }
                 return;
             }
             dust.render('partials/user', this.users[id], (err, out) => {
